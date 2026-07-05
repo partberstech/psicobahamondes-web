@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Psicobahamondes · Cal Style</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #ffffff;
+      color: #242424;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; color: #242424; }
+    .logo span { color: #898989; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { text-decoration: none; color: #242424; font-size: 14px; font-weight: 500; }
+    .nav-links a:hover { opacity: 0.6; }
+    .nav-cta {
+      background: #242424; color: #fff; border: none;
+      padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.8; }
+
+    /* HERO */
+    .hero {
+      padding: 100px 0 80px; text-align: center;
+    }
+    .hero h1 {
+      font-size: 48px; font-weight: 700; line-height: 1.1;
+      letter-spacing: -1.5px; color: #242424; max-width: 720px; margin: 0 auto;
+    }
+    .hero p {
+      font-size: 18px; font-weight: 300; line-height: 1.6;
+      color: #898989; max-width: 600px; margin: 20px auto 0;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex; justify-content: center; gap: 4px;
+      margin-bottom: 60px; background: #f5f5f5; border-radius: 10px;
+      padding: 4px; max-width: 480px; margin-left: auto; margin-right: auto;
+    }
+    .tab {
+      flex: 1; padding: 10px 20px; border: none; background: transparent;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+      color: #898989; border-radius: 8px; cursor: pointer; transition: all 0.15s;
+    }
+    .tab.active { background: #ffffff; color: #242424; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .tab:hover:not(.active) { color: #242424; }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 28px; font-weight: 600; letter-spacing: -0.3px;
+      margin-bottom: 8px; color: #242424;
+    }
+    .section-desc {
+      font-size: 16px; font-weight: 300; color: #898989;
+      max-width: 600px; margin-bottom: 48px;
+    }
+
+    /* CARDS GRID */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px; }
+    .card {
+      background: #ffffff; border-radius: 12px; padding: 32px 24px;
+      box-shadow: 0 0 0 1px rgba(34,42,53,0.08), 0 4px 8px rgba(34,42,53,0.04);
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 0 0 1px rgba(34,42,53,0.12), 0 8px 16px rgba(34,42,53,0.06); }
+    .card-icon { font-size: 28px; margin-bottom: 16px; }
+    .card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #242424; }
+    .card p { font-size: 14px; font-weight: 300; color: #898989; line-height: 1.6; }
+    .card-cta {
+      display: inline-block; margin-top: 16px; font-size: 14px; font-weight: 500;
+      color: #0099ff; text-decoration: none;
+    }
+    .card-cta:hover { text-decoration: underline; }
+
+    /* FEATURE SECTION */
+    .feature {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+      align-items: center; margin-bottom: 80px; padding: 60px 0;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .feature-text h2 { font-size: 32px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .feature-text p { font-size: 16px; font-weight: 300; color: #898989; line-height: 1.7; }
+    .feature-visual {
+      background: #f5f5f5; border-radius: 12px; height: 280px;
+      display: flex; align-items: center; justify-content: center;
+      color: #898989; font-size: 14px;
+      box-shadow: 0 0 0 1px rgba(34,42,53,0.08), 0 4px 8px rgba(34,42,53,0.04);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center; padding: 48px 0; border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    footer p { font-size: 13px; font-weight: 400; color: #898989; }
+
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+      .feature { grid-template-columns: 1fr; gap: 32px; }
+      .hero h1 { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <div class="logo">Psicobahamondes<span>.cl</span></div>
+      <div class="nav-links">
+        <a href="#">Inicio</a>
+        <a href="#">Sobre mí</a>
+        <a href="#">Servicios</a>
+        <a href="#" style="font-weight:600">Recursos</a>
+        <a href="#">Contacto</a>
+      </div>
+      <button class="nav-cta">Agendar cita</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Recursos para tu<br>crecimiento personal</h1>
+      <p>Explora herramientas de autoconocimiento diseñadas para acompañarte en tu proceso de terapia y desarrollo personal.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="tabs">
+        <button class="tab active">Eneagrama</button>
+        <button class="tab">Constelaciones</button>
+        <button class="tab">Neuropsicología</button>
+      </div>
+
+      <h2 class="section-title">Eneagrama</h2>
+      <p class="section-desc">Descubre tu tipo de personalidad y comprende tus patrones de comportamiento.</p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>Test Rápido</h3>
+          <p>8 preguntas para una primera aproximación a tu eneatipo. Resultados inmediatos.</p>
+          <a href="#" class="card-cta">Comenzar →</a>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔍</div>
+          <h3>Test RHETI Completo</h3>
+          <p>144 preguntas de elección forzada basadas en el inventario oficial. Incluye detección de alas.</p>
+          <a href="#" class="card-cta">Iniciar test →</a>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔄</div>
+          <h3>Explorador Visual</h3>
+          <p>Navega el eneagrama interactivo con flechas de estrés y crecimiento entre tipos.</p>
+          <a href="#" class="card-cta">Explorar →</a>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-text">
+          <h2>Test de Eneagrama<br>completo (RHETI)</h2>
+          <p>144 preguntas de elección forzada que evaluan tus patrones de pensamiento, emoción y comportamiento. Obtén tu tipo principal, ala dominante y dirección de integración. Los resultados te ayudarán a comprender mejor tu mapa interno.</p>
+        </div>
+        <div class="feature-visual">[ Preview del test interactivo ]</div>
+      </div>
+
+      <h2 class="section-title">Constelaciones Familiares</h2>
+      <p class="section-desc">Una mirada sistémica a las dinámicas familiares que influyen en tu vida.</p>
+      <div class="grid">
+        <div class="card"><div class="card-icon">🌳</div><h3>¿Qué son?</h3><p>Entiende el enfoque sistémico de Bert Hellinger y cómo se aplica en sesiones individuales y grupales.</p></div>
+        <div class="card"><div class="card-icon">📸</div><h3>Galería</h3><p>Imágenes de sesiones y dinámicas que ilustran el trabajo de constelaciones.</p></div>
+        <div class="card"><div class="card-icon">❓</div><h3>Preguntas Frecuentes</h3><p>Resolvemos tus dudas sobre cómo funciona una constelación y qué esperar.</p></div>
+      </div>
+
+      <h2 class="section-title">Neuropsicología</h2>
+      <p class="section-desc">Conoce cómo funciona tu cerebro y potencia tus capacidades cognitivas.</p>
+      <div class="grid">
+        <div class="card"><div class="card-icon">🧠</div><h3>Cerebro Interactivo</h3><p>Explora las regiones cerebrales y sus funciones asociadas en un modelo 3D interactivo.</p></div>
+        <div class="card"><div class="card-icon">📊</div><h3>Funciones Cognitivas</h3><p>Atención, memoria, lenguaje y funciones ejecutivas explicadas de forma simple.</p></div>
+        <div class="card"><div class="card-icon">✨</div><h3>Estimulación Cognitiva</h3><p>Ejercicios y recomendaciones para mantener tu cerebro activo y saludable.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container"><p>© 2026 Psicobahamondes.cl · Pedro Bahamondes · Neuropsicólogo</p></div>
+  </footer>
+</body>
+</html>
