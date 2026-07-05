@@ -10,3 +10,8 @@ out/
 .env.local
 .env.*.local
 *.tsbuildinfo
+
+# SQLite database files (local dev)
+data/*.db
+data/*.db-wal
+data/*.db-shm
