@@ -1,14 +1,13 @@
 import { createClient } from '@libsql/client'
 
-const url = process.env.TURSO_DATABASE_URL || 'file:data/bookings.db'
-const authToken = process.env.TURSO_AUTH_TOKEN
-
-let client: ReturnType<typeof createClient> | null = null
+function tursoUrl() { return process.env.TURSO_DATABASE_URL || '' }
+function authToken() { return process.env.TURSO_AUTH_TOKEN || '' }
 
 export function getDb() {
-  if (client) return client
-  client = createClient(url.startsWith('file:') ? { url } : { url, authToken })
-  return client
+  const url = tursoUrl()
+  const token = authToken()
+  const useTurso = url.startsWith('libsql://')
+  return createClient(useTurso ? { url, authToken: token } : { url })
 }
 
 export async function migrate() {
@@ -23,18 +22,16 @@ export async function migrate() {
       date TEXT NOT NULL,
       time TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'confirmed',
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      created_at TEXT DEFAULT (datetime('now'))
     )
-  `)
-  await db.execute(`
-    CREATE INDEX IF NOT EXISTS idx_bookings_date_time
-    ON bookings(date, time, session_type)
   `)
 }
 
+export type SessionType = 'sesion-cero' | 'consulta-presencial' | 'consulta-telematica'
+
 export type Booking = {
   id: string
-  session_type: string
+  session_type: SessionType
   name: string
   email: string
   phone: string
@@ -44,4 +41,18 @@ export type Booking = {
   created_at: string
 }
 
-export type SessionType = 'sesion-cero' | 'consulta-presencial' | 'consulta-telematica'
+// Escapes single quotes for safe inline SQL (date/sessionType are validated against regexp)
+function esc(s: string) { return `'${s.replace(/'/g, "''")}'` }
+
+export async function queryBookedTimes(date: string, sessionType: SessionType): Promise<Set<string>> {
+  if (!tursoUrl()) return new Set()
+  try {
+    const db = getDb()
+    const sql = `SELECT time FROM bookings WHERE date = ${esc(date)} AND session_type = ${esc(sessionType)} AND status = 'confirmed'`
+    const result = await db.execute(sql)
+    return new Set(result.rows.map((r: any) => r.time as string))
+  } catch (e) {
+    console.error('[db] queryBookedTimes error:', e)
+    return new Set()
+  }
+}

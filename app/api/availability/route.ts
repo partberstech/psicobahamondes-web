@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAvailableSlots, type SessionType } from '@/lib/availability'
+import { getSlotsFromConfig, type SessionType } from '@/lib/availability'
+import { queryBookedTimes } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid or missing date (YYYY-MM-DD)' }, { status: 400 })
   }
 
-  const slots = await getAvailableSlots(type, date)
+  const bookedTimes = await queryBookedTimes(date, type)
+  const slots = getSlotsFromConfig(type, date, bookedTimes)
   return NextResponse.json({ slots, type, date })
 }

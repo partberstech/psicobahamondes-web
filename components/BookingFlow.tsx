@@ -368,6 +368,10 @@ export default function BookingFlow() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                     Editar datos
                   </button>
+                  <button onClick={() => setStep('select')} className="flex items-center gap-1 text-xs mt-1.5 transition-opacity hover:opacity-60" style={{ color: '#6b7280' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                    Cambiar tipo de consulta
+                  </button>
                 </div>
 
                 <div className="text-xs leading-relaxed p-4 rounded-xl flex items-start gap-3" style={{ background: '#f9fafb', color: '#6b7280' }}>
