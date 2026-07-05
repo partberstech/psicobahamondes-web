@@ -1,15 +1,8 @@
 {
- "extends": "next/core-web-vitals",
- "plugins": ["@typescript-eslint"],
- "parserOptions": {
-   "project": "./tsconfig.json"
- },
- "rules": {
-   "react/no-unescaped-entities": "off",
-   "next/no-page-custom-font": "off",
-   "next/no-img-element": "off",
-   "@typescript-eslint/no-unused-vars": "off",
-   "@typescript-eslint/no-empty-interface": "off"
- },
- "ignorePatterns": ["node_modules/", ".next/", "dist/"]
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "react/no-unescaped-entities": "off",
+    "@typescript-eslint/no-unused-vars": "off"
+  },
+  "ignorePatterns": ["node_modules/", ".next/", "dist/", "out/"]
 }

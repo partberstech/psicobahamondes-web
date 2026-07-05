@@ -6,15 +6,11 @@ import { motion } from 'framer-motion'
 type Modalidad = 'sesion-cero' | 'consulta-presencial' | 'consulta-telematica'
 
 const CALENDAR_LINKS = {
-  // Evento Sesión Cero (15 minutos) - Lun-Vie 19-21
-  'sesion-cero': 'https://cal.com/alejandro-rojas-verdugo-sd839u/sesion-cero',
-  // Evento Consulta Presencial (50 minutos) - Lun-Sab 9-14
-  'consulta-presencial': 'https://cal.com/alejandro-rojas-verdugo-sd839u/consulta-presencial',
-  // Evento Consulta Telemática (50 minutos) - Lun-Vie 15-18
-  'consulta-telematica': 'https://cal.com/alejandro-rojas-verdugo-sd839u/consulta-telematica',
+  'sesion-cero': 'alejandro-rojas-verdugo-sd839u/sesion-cero',
+  'consulta-presencial': 'alejandro-rojas-verdugo-sd839u/consulta-presencial',
+  'consulta-telematica': 'alejandro-rojas-verdugo-sd839u/consulta-telematica',
 }
 
-// Helper function to get event label from event type
 const getEventLabel = (modalidad: Modalidad): string => {
   switch (modalidad) {
     case 'sesion-cero':
@@ -30,39 +26,32 @@ const getEventLabel = (modalidad: Modalidad): string => {
 
 export default function CalEmbed() {
   const [modalidad, setModalidad] = useState<Modalidad>('sesion-cero')
-  const [calLoaded, setCalLoaded] = useState(false)
 
   useEffect(() => {
-    // Load Cal.com script
     if (typeof window === 'undefined') return
-    
-    const initCal = () => {
-      ;(window as any).Cal = (window as any).Cal || function() {
-        ((window as any).Cal.q = (window as any).Cal.q || []).push(arguments)
-      }
-      
-      ;(window as any).Cal('init', { origin: 'https://cal.com' })
-      ;(window as any).Cal('inline', {
-        elementOrSelector: '#cal-inline-container',
-        calLink: CALENDAR_LINKS[modalidad],
-      })
+
+    // 1. Definir Cal como cola inmediatamente (patrón oficial Cal.com)
+    ;(window as any).Cal = (window as any).Cal || function () {
+      ((window as any).Cal.q = (window as any).Cal.q || []).push(arguments)
     }
 
-    // Load script
-    const script = document.createElement('script')
-    script.src = 'https://cal.com/embed.js'
-    script.async = true
-    script.onload = initCal
-    
+    // 2. Configurar y colocar inline
+    ;(window as any).Cal('init', { origin: 'https://cal.com' })
+    ;(window as any).Cal('inline', {
+      elementOrSelector: '#cal-inline-container',
+      calLink: CALENDAR_LINKS[modalidad],
+    })
+
+    // 3. Cargar script (solo una vez)
     if (!document.querySelector('#cal-embed-script')) {
+      const script = document.createElement('script')
+      script.src = 'https://cal.com/embed.js'
+      script.async = true
       script.id = 'cal-embed-script'
       document.head.appendChild(script)
-    } else {
-      initCal()
     }
 
     return () => {
-      // Cleanup: remove cal inline on unmount
       const container = document.getElementById('cal-inline-container')
       if (container) container.innerHTML = ''
     }
