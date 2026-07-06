@@ -13,11 +13,12 @@ interface Brain3DProps {
   spanishNames?: Record<string, string>
 }
 
-const LOBE_COLORS: Record<string, number> = {
-  Frontal: 0x4A90D9, Parietal: 0x8B5CF6, Temporal: 0xEC4899,
-  Occipital: 0x10B981, Limbic: 0xF59E0B, Insular: 0xEF4444,
-  Subcortical: 0x6B8FA3, Cerebellum: 0x06B6D4, Brainstem: 0x8B9EAD,
-  Ventricular: 0x6BB5A4,
+const REGION_COLORS: Record<string, number> = {
+  prefrontal: 0x2563eb, motora: 0x6BA3A0, sensorial: 0xA0B4C8,
+  parietal_sup: 0x8B6F9E, temporal_sup: 0xC49A6C, occipital: 0xA06060,
+  cingulate_ant: 0x7C3AED, hipocampo: 0x059669, amigdala: 0xDC2626,
+  insula: 0x9B8EC4, cerebelo: 0x4A90A4, talamo: 0x5A7A8A,
+  basal_ganglia: 0x8A6A4A, tronco: 0x5A7A7A,
 }
 
 interface DKRegion { id: string; name: string; lobe: string; spanishId: string; files: string[]; isSubcortical?: boolean }
@@ -150,11 +151,12 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
     // Controls — wider zoom range
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
-    controls.dampingFactor = 0.08
+    controls.dampingFactor = 0.15
+    controls.rotateSpeed = 0.4
     controls.minDistance = 60
     controls.maxDistance = 400
     controls.autoRotate = true
-    controls.autoRotateSpeed = 0.8
+    controls.autoRotateSpeed = 0.3
     controls.target.set(0, 0, 0)
     controlsRef.current = controls
 
@@ -199,9 +201,9 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
     const loader = new OBJLoader()
     loadingRef.current = true
 
-    function createMat(lobe: string): THREE.MeshStandardMaterial {
+    function createMat(spanishId: string): THREE.MeshStandardMaterial {
       return new THREE.MeshStandardMaterial({
-        color: LOBE_COLORS[lobe] || 0x6B8FA3,
+        color: REGION_COLORS[spanishId] || 0x6B8FA3,
         roughness: 0.45,
         metalness: 0.05,
       })
@@ -222,7 +224,7 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
     let loadedFiles = 0
 
     DK_REGIONS.forEach((region) => {
-      const mat = createMat(region.lobe)
+      const mat = createMat(region.spanishId)
       const group = groups.get(region.spanishId)!
 
       region.files.forEach((fileName) => {

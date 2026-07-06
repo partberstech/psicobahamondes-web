@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import RorschachCanvas from './RorschachCanvas'
 
 const spring = [0.32, 0.72, 0, 1]
 
@@ -600,15 +601,10 @@ export default function RorschachTest() {
               </span>
             </div>
 
-            {/* Image — real Rorschach card */}
+            {/* Image — animated fractal inkblot */}
             <div className="mb-3 flex justify-center">
               <div className="relative" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.06)', background: '#fff' }}>
-                <img
-                  src={INKBLOTS[currentInkblot].image}
-                  alt={`Lámina de Rorschach ${currentInkblot + 1}`}
-                  style={{ width: '100%', maxWidth: '500px', height: 'auto', display: 'block' }}
-                  loading="lazy"
-                />
+                <RorschachCanvas seed={currentInkblot} width={400} height={400} />
               </div>
             </div>
 
