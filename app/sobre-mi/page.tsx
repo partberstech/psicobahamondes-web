@@ -1,8 +1,11 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
+import type { SocialPost } from '@/lib/social'
+import { platformMeta } from '@/lib/social'
 
 /* ── Spring easing (design system v3) ── */
 const spring = [0.32, 0.72, 0, 1]
@@ -100,6 +103,16 @@ const galleryImages = [
 ]
 
 export default function SobreMi() {
+  const [socialPosts, setSocialPosts] = useState<SocialPost[]>([])
+  const [socialLoading, setSocialLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/social')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => { setSocialPosts(d.posts); setSocialLoading(false) })
+      .catch(() => setSocialLoading(false))
+  }, [])
+
   return (
     <>
       {/* ═══════ HERO ═══════ */}
@@ -389,6 +402,92 @@ export default function SobreMi() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════ REDES SOCIALES ═══════ */}
+      <section className="section-block" style={{ background: '#ffffff' }}>
+        <div className="container-page">
+          <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
+            <span className="eyebrow inline-block mb-4">Redes</span>
+            <h2
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2rem,4.5vw,3.5rem)',
+                lineHeight: 0.95,
+                letterSpacing: '-0.025em',
+                fontWeight: 700,
+                color: 'var(--ink)',
+              }}
+            >
+              Actualidad
+            </h2>
+            <p className="mt-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--muted)' }}>
+              Publicaciones, videos y contenido que comparto en redes sociales.
+            </p>
+          </motion.div>
+
+          {socialLoading ? (
+            <div className="flex justify-center py-12" style={{ color: '#9ca3af' }}>
+              <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" opacity="0.3" />
+                <path d="M22 12a10 10 0 0 1-10 10" />
+              </svg>
+            </div>
+          ) : socialPosts.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {socialPosts.map((post, i) => {
+                const meta = platformMeta[post.network] || platformMeta['Twitter/X']
+                return (
+                  <motion.a
+                    key={post.id}
+                    href={post.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    {...fadeUpDelayed(i)}
+                    className="card card-hover block"
+                  >
+                    <div className="card-core flex flex-col h-full">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center"
+                          style={{ background: meta.bg }}
+                          dangerouslySetInnerHTML={{ __html: meta.svg }}
+                        />
+                        <span
+                          className="text-xs font-semibold"
+                          style={{ fontFamily: 'var(--font-display)', color: meta.color }}
+                        >
+                          {meta.label}
+                        </span>
+                        <span className="label ml-auto" style={{ color: '#9ca3af' }}>
+                          {post.date}
+                        </span>
+                      </div>
+                      <p
+                        className="text-sm leading-relaxed flex-1"
+                        style={{ fontFamily: 'var(--font-body)', color: 'var(--muted)' }}
+                      >
+                        {post.title}
+                      </p>
+                      <span
+                        className="label inline-flex items-center gap-2 mt-4"
+                        style={{ color: meta.color }}
+                      >
+                        Ver publicación <span>→</span>
+                      </span>
+                    </div>
+                  </motion.a>
+                )
+              })}
+            </div>
+          ) : (
+            <motion.div {...fadeUp} className="text-center py-12">
+              <p className="text-sm" style={{ fontFamily: 'var(--font-body)', color: '#9ca3af' }}>
+                Próximamente contenido en redes sociales.
+              </p>
+            </motion.div>
+          )}
         </div>
       </section>
 
