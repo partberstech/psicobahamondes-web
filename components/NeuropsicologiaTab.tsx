@@ -201,6 +201,10 @@ export default function NeuropsicologiaTab() {
   const [activeRegion, setActiveRegion] = useState<string | null>(null)
   const selectedRegion = activeRegion ? REGIONS_CATALOG.find(r => r.id === activeRegion) : null
 
+  const SPANISH_NAMES: Record<string, string> = Object.fromEntries(
+    REGIONS_CATALOG.map(r => [r.id, r.name])
+  )
+
   return (
     <div>
       {/* Header */}
@@ -222,104 +226,13 @@ export default function NeuropsicologiaTab() {
         </p>
       </motion.div>
 
-      {/* Explorador 3D + Detalle al costado */}
+      {/* Catálogo de regiones cerebrales (arriba) */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, ease: spring }}
-        className="mb-12"
-      >
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#eff6ff', color: '#2563eb' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" /><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
-            </svg>
-          </div>
-          <span className="label">Explorador 3D interactivo</span>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 items-start">
-          {/* Brain 3D — 2 columnas */}
-          <div className="md:col-span-2 flex items-center justify-center">
-            <Suspense fallback={
-              <div className="flex items-center justify-center" style={{ width: 500, height: 380 }}>
-                <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: '#e5e7eb', borderTopColor: '#2563eb' }} />
-              </div>
-            }>
-              <Brain3D width={500} height={380} activeRegionId={activeRegion} onRegionClick={(id) => setActiveRegion(id || null)} />
-            </Suspense>
-          </div>
-
-          {/* Detalle — 1 columna */}
-          <div className="min-h-[380px]">
-            <AnimatePresence mode="wait">
-              {selectedRegion ? (
-                <motion.div key={selectedRegion.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0 }} transition={{ duration: 0.25, ease: spring }}
-                  className="p-5 rounded-xl" style={{ background: '#f9fafb', border: `1px solid ${selectedRegion.color}20` }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-3 h-3 rounded-full shrink-0" style={{ background: selectedRegion.color }} />
-                    <div>
-                      <h4 className="text-sm font-bold" style={{ color: '#111827', fontFamily: 'var(--font-display)' }}>
-                        {selectedRegion.name}
-                      </h4>
-                      <span className="text-[0.65rem] font-medium" style={{ color: selectedRegion.color }}>
-                        Lóbulo {selectedRegion.lobe}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Función</span>
-                      <p className="text-xs mt-1" style={{ color: '#374151' }}>{selectedRegion.function}</p>
-                    </div>
-                    <div>
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Descripción</span>
-                      <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.desc}</p>
-                    </div>
-                    <div>
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Nota clínica</span>
-                      <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.clinical}</p>
-                    </div>
-                    <div>
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Conexiones</span>
-                      <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.connections}</p>
-                    </div>
-                    <div>
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Neurotransmisores</span>
-                      <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.neurotrasnsmisores}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  className="p-6 text-center flex items-center justify-center rounded-xl" style={{ minHeight: '380px', background: '#f9fafb', border: '1px solid rgba(0,0,0,0.04)' }}>
-                  <div>
-                    <div className="w-10 h-10 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: '#eff6ff' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
-                      </svg>
-                    </div>
-                    <p className="text-xs" style={{ color: '#9ca3af' }}>
-                      Selecciona una región del catálogo o del cerebro 3D para ver su información completa
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Catálogo de regiones cerebrales */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, ease: spring }}
-        className="mb-12"
+        className="mb-8"
       >
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#f0fdf4', color: '#059669' }}>
@@ -330,7 +243,7 @@ export default function NeuropsicologiaTab() {
           <span className="label">Catálogo de regiones cerebrales</span>
         </div>
         <p className="text-sm mb-6 max-w-lg" style={{ color: '#6b7280' }}>
-          Explora las {REGIONS_CATALOG.length} regiones principales del cerebro con información científica completa.
+          Explora las {REGIONS_CATALOG.length} regiones principales del cerebro con información científica completa. Toca una región para ver su detalle o explora el cerebro 3D abajo.
         </p>
 
         {/* Grid de regiones */}
@@ -359,6 +272,92 @@ export default function NeuropsicologiaTab() {
               </p>
             </button>
           ))}
+        </div>
+
+        {/* Detalle inline al seleccionar una región */}
+        <AnimatePresence mode="wait">
+          {selectedRegion && (
+            <motion.div
+              key={selectedRegion.id}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: spring }}
+              className="mt-6 p-5 rounded-xl"
+              style={{ background: '#f9fafb', border: `1px solid ${selectedRegion.color}20` }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 rounded-full shrink-0" style={{ background: selectedRegion.color }} />
+                <div>
+                  <h4 className="text-sm font-bold" style={{ color: '#111827', fontFamily: 'var(--font-display)' }}>
+                    {selectedRegion.name}
+                  </h4>
+                  <span className="text-[0.65rem] font-medium" style={{ color: selectedRegion.color }}>
+                    Lóbulo {selectedRegion.lobe}
+                  </span>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Función</span>
+                  <p className="text-xs mt-1" style={{ color: '#374151' }}>{selectedRegion.function}</p>
+                </div>
+                <div>
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Descripción</span>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.desc}</p>
+                </div>
+                <div>
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Nota clínica</span>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.clinical}</p>
+                </div>
+                <div>
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Conexiones</span>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.connections}</p>
+                </div>
+                <div className="md:col-span-2">
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wider" style={{ color: '#9ca3af' }}>Neurotransmisores</span>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: '#6b7280' }}>{selectedRegion.neurotrasnsmisores}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Explorador 3D (abajo) */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, ease: spring }}
+        className="mb-12"
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#eff6ff', color: '#2563eb' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" /><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
+            </svg>
+          </div>
+          <span className="label">Explorador 3D interactivo</span>
+        </div>
+        <p className="text-sm mb-4 max-w-lg" style={{ color: '#6b7280' }}>
+          Haz clic en cualquier región del cerebro 3D para ver su información en el catálogo de arriba.
+        </p>
+
+        <div className="flex items-center justify-center">
+          <Suspense fallback={
+            <div className="flex items-center justify-center" style={{ width: 500, height: 380 }}>
+              <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: '#e5e7eb', borderTopColor: '#2563eb' }} />
+            </div>
+          }>
+            <Brain3D
+              width={500}
+              height={400}
+              activeRegionId={activeRegion}
+              onRegionClick={(id) => { setActiveRegion(id || null); }}
+              spanishNames={SPANISH_NAMES}
+            />
+          </Suspense>
         </div>
       </motion.div>
 
