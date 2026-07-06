@@ -93,7 +93,7 @@ const TAB_COMPONENTS: Record<string, React.FC> = {
   luscher: LuscherTest,
 }
 
-export default function RecursosPage() {
+export default function TestPage() {
   const [activeTab, setActiveTab] = useState('eneagrama')
   const ActiveComponent = TAB_COMPONENTS[activeTab]
 
@@ -108,7 +108,7 @@ export default function RecursosPage() {
             transition={{ duration: 0.7, ease: spring }}
             className="max-w-2xl"
           >
-            <span className="eyebrow mb-5">Recursos</span>
+            <span className="eyebrow mb-5">Test</span>
             <h1 className="mb-5" style={{ color: '#111827' }}>
               Descubre tu proceso
             </h1>

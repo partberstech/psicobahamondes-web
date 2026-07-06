@@ -25,6 +25,21 @@ export default function BlogPostPage() {
       .catch(() => { setError(true); setLoading(false) })
   }, [slug])
 
+  // Set dynamic OG meta tags
+  useEffect(() => {
+    if (!post) return
+    const ogUrl = `/api/og?title=${encodeURIComponent(post.title)}&excerpt=${encodeURIComponent(post.excerpt)}&category=${encodeURIComponent(post.category)}&date=${encodeURIComponent(post.date)}`
+    const existing = document.querySelector('meta[property="og:image"]')
+    if (existing) existing.setAttribute('content', `${window.location.origin}${ogUrl}`)
+    else {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:image')
+      meta.setAttribute('content', `${window.location.origin}${ogUrl}`)
+      document.head.appendChild(meta)
+    }
+    document.title = `${post.title} | Psicobahamondes`
+  }, [post])
+
   if (loading) {
     return (
       <section className="section-block pt-32 min-h-[60vh] flex items-center justify-center">

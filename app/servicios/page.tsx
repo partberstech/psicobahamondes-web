@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useState } from 'react'
+import Image from 'next/image'
 
 const spring = [0.32, 0.72, 0, 1] as const
 
@@ -73,12 +75,14 @@ const modalidades = [
     titulo: 'Presencial',
     desc: 'Un espacio seguro, privado y de absoluto cuidado en Santiago. La cercanía del encuentro cara a cara para trabajar tu proceso con profundidad.',
     detalles: ['Sesiones de 50 minutos', 'Ambiente confidencial y acogedor', 'Enfoque personalizado'],
+    image: '/images/cardpresencial_servicios.jpeg',
   },
   {
     icon: IconGlobe,
     titulo: 'Online',
     desc: 'La misma profundidad y rigor clínico desde cualquier lugar del mundo. Ideal para quienes viajan o prefieren la comodidad de su hogar.',
     detalles: ['Sesiones por videollamada', 'Desde cualquier país', 'Misma calidad terapéutica'],
+    image: '/images/cardonline_servicios.jpeg',
   },
 ]
 
@@ -87,36 +91,81 @@ const metodologias = [
     icon: IconBrain,
     titulo: 'Neuropsicología',
     desc: 'Estudiamos el funcionamiento de tu cerebro para identificar patrones automáticos desde una base neurológica. Comprender cómo tus procesos cerebrales influyen en tus emociones y conductas.',
+    categoria: 'Neuropsicología',
   },
   {
     icon: IconStar,
     titulo: 'Eneagrama',
     desc: 'Un mapa clínico-espiritual para el diagnóstico de la neurosis humana. Al entender tus mecanismos de defensa, puedes hacer consciente el sufrimiento que generas y encontrar la salida.',
+    categoria: 'Eneagrama',
   },
   {
     icon: IconLeaf,
     titulo: 'Constelaciones Familiares',
     desc: 'Método fenomenológico que revela las dinámicas invisibles de tu historia familiar. Libera patrones repetitivos y reconcíliate con tu presente.',
+    categoria: 'Constelaciones Familiares',
+  },
+]
+
+const faqs = [
+  {
+    q: '¿Cuánto dura una sesión?',
+    r: '50 minutos aproximadamente. La primera sesión (Consulta 0) es de 15 minutos, sin costo y sin compromiso, para que podamos conocernos.',
+  },
+  {
+    q: '¿Cómo sé si necesito terapia presencial u online?',
+    r: 'Ambas modalidades ofrecen la misma profundidad terapéutica. Si estás en Santiago y prefieres el encuentro cara a cara, el espacio presencial es ideal. Si viajas frecuentemente o prefieres la comodidad de tu hogar, la modalidad online mantiene la misma calidad clínica.',
+  },
+  {
+    q: '¿Aceptas seguros médicos?',
+    r: 'Trabajo de forma particular. Al finalizar cada sesión entregaré la boleta correspondiente para que puedas solicitar el reembolso a tu aseguradora según tu plan de salud.',
+  },
+  {
+    q: '¿Cuál es el valor de la sesión?',
+    r: 'El valor de la sesión es de $40.000 (presencial y online). La Consulta 0 de 15 minutos es completamente gratuita.',
+  },
+  {
+    q: '¿Cómo funciona la modalidad online?',
+    r: 'Agendas tu sesión, te envío el link de videollamada por correo o WhatsApp, y nos conectamos a la hora acordada. Solo necesitas una conexión estable a internet y un espacio tranquilo.',
+  },
+  {
+    q: '¿Cuántas sesiones necesito?',
+    r: 'Cada proceso es único. Algunas personas encuentran avances significativos en pocas sesiones; otras prefieren un acompañamiento más extendido. Lo conversaremos en tu Consulta 0 y ajustaremos el plan según tus necesidades.',
   },
 ]
 
 export default function Servicios() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+
   return (
     <>
       {/* ═══════ HERO ═══════ */}
-      <section className="section-alt" style={{ paddingTop: 'clamp(120px, 16vh, 180px)', paddingBottom: 'clamp(80px, 12vh, 140px)' }}>
-        <div className="container-page">
+      <section className="relative overflow-hidden" style={{ minHeight: 'clamp(400px, 55vh, 560px)' }}>
+        <div className="absolute inset-0">
+          <Image
+            src="/images/hero_servicios.jpeg"
+            alt="Servicios psicológicos"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+          <div className="absolute inset-0" style={{
+            background: 'linear-gradient(135deg, rgba(17,24,39,0.8) 0%, rgba(17,24,39,0.5) 50%, rgba(17,24,39,0.2) 100%)',
+          }} />
+        </div>
+        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(120px, 16vh, 180px)', paddingBottom: 'clamp(80px, 12vh, 140px)' }}>
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
             className="max-w-3xl"
           >
-            <span className="eyebrow mb-5" style={{ display: 'inline-flex' }}>Servicios</span>
-            <h1 className="mb-6">
+            <span className="eyebrow mb-5" style={{ display: 'inline-flex', background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.3)' }}>Servicios</span>
+            <h1 className="mb-6" style={{ color: '#ffffff' }}>
               Un espacio terapéutico diferente
             </h1>
-            <p style={{ color: 'var(--muted)', maxWidth: '38rem', lineHeight: 1.7 }}>
+            <p style={{ color: 'rgba(255,255,255,0.75)', maxWidth: '38rem', lineHeight: 1.7 }}>
               Dos modalidades adaptadas a tu ritmo y estilo de vida, con un
               enfoque integrativo único que combina neuropsicología, Eneagrama
               y Constelaciones Familiares.
@@ -148,6 +197,16 @@ export default function Servicios() {
                   className="card card-hover card-glow"
                 >
                   <div className="card-core flex flex-col">
+                    {/* Card image */}
+                    <div className="relative w-full" style={{ aspectRatio: '16/9', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+                      <Image
+                        src={mod.image}
+                        alt={mod.titulo}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    </div>
                     <div
                       style={{
                         width: 48,
@@ -247,8 +306,89 @@ export default function Servicios() {
                     </div>
                     <h3 className="mb-3">{m.titulo}</h3>
                     <p style={{ color: 'var(--muted)', lineHeight: 1.7 }}>{m.desc}</p>
+                    <div className="flex flex-wrap items-center gap-3 mt-5">
+                      <Link
+                        href={`/blog?categoria=${encodeURIComponent(m.categoria)}`}
+                        className="btn btn-primary text-sm self-start"
+                      >
+                        Saber más
+                        <IconArrow />
+                      </Link>
+                      <Link
+                        href="/test"
+                        className="btn-outline text-sm self-start"
+                      >
+                        Hacer test
+                        <IconArrow />
+                      </Link>
+                    </div>
                   </div>
                 </motion.article>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════ FAQ ═══════ */}
+      <section className="section-block" style={{ background: '#ffffff' }}>
+        <div className="container-page max-w-3xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="eyebrow inline-block mb-4">FAQ</span>
+            <h2 className="mb-4">
+              Preguntas frecuentes
+            </h2>
+            <p style={{ color: 'var(--muted)', lineHeight: 1.7 }}>Respuestas a las dudas más comunes sobre el proceso terapéutico.</p>
+          </motion.div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, i) => {
+              const isOpen = openFaq === i
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: spring }}
+                  className="card card-hover overflow-hidden"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => setOpenFaq(isOpen ? null : i)}
+                >
+                  <div className="card-core" style={{ padding: 'clamp(16px, 2vw, 24px)' }}>
+                    <div className="flex items-center justify-between gap-4">
+                      <h3
+                        className="text-base font-semibold"
+                        style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)', lineHeight: 1.4 }}
+                      >
+                        {faq.q}
+                      </h3>
+                      <motion.div
+                        animate={{ rotate: isOpen ? 45 : 0 }}
+                        transition={{ duration: 0.3, ease: spring }}
+                        className="shrink-0"
+                        style={{ color: 'var(--brand)', width: 20, height: 20 }}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                          <path d="M12 5v14M5 12h14" />
+                        </svg>
+                      </motion.div>
+                    </div>
+                    <motion.div
+                      initial={false}
+                      animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+                      transition={{ duration: 0.3, ease: spring }}
+                      className="overflow-hidden"
+                    >
+                      <p
+                        className="mt-4 text-sm leading-relaxed"
+                        style={{ fontFamily: 'var(--font-body)', color: 'var(--muted)' }}
+                      >
+                        {faq.r}
+                      </p>
+                    </motion.div>
+                  </div>
+                </motion.div>
               )
             })}
           </div>

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import type { BlogPost } from '@/lib/notion'
 
 const fadeUp = {
@@ -19,10 +20,19 @@ const fadeUpDelayed = (i: number) => ({
   transition: { duration: 0.5, ease: [0.2, 0, 0, 1], delay: i * 0.12 },
 })
 
-export default function Blog() {
+export default function BlogPage() {
+  return (
+    <Suspense fallback={null}>
+      <Blog />
+    </Suspense>
+  )
+}
+
+function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
-  const [activa, setActiva] = useState('Todos')
+  const searchParams = useSearchParams()
+  const [activa, setActiva] = useState(searchParams.get('categoria') || 'Todos')
 
   useEffect(() => {
     fetch('/api/blog')
@@ -45,7 +55,7 @@ export default function Blog() {
             transition={{ duration: 0.6, ease: [0.2, 0, 0, 1] }}
             className="max-w-3xl"
           >
-            <span className="eyebrow mb-4">Blog</span>
+            <span className="eyebrow mb-4">Contenidos</span>
             <h1 className="mb-6" style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(3rem, 7vw, 5.5rem)',

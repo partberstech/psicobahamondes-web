@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import SearchModal from './SearchModal'
 
 const links = [
   { href: '/', label: 'Inicio' },
   { href: '/sobre-mi', label: 'Sobre mí' },
   { href: '/servicios', label: 'Servicios' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/recursos', label: 'Recursos' },
+  { href: '/blog', label: 'Contenidos' },
+  { href: '/test', label: 'Test' },
   { href: '/contacto', label: 'Contacto' },
 ]
 
@@ -80,6 +81,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <SearchModal />
             <Link
               href="/contacto"
               className="btn btn-primary ml-2"

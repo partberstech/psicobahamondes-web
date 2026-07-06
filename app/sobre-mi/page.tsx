@@ -97,9 +97,9 @@ const timeline = [
 ]
 
 const galleryImages = [
-  { src: '/images/psicologo-1.jpeg', alt: 'Pedro Bahamondes — sesión de trabajo', aspect: '3/4' },
-  { src: '/images/psicologo-2.jpeg', alt: 'Pedro Bahamondes — espacio terapéutico', aspect: '4/5' },
-  { src: '/images/psicologo-3.jpeg', alt: 'Pedro Bahamondes — consultorio', aspect: '3/4' },
+  { src: '/images/consultorio1_sobre-mi.jpeg', alt: 'Pedro Bahamondes — espacio terapéutico', aspect: '4/5' },
+  { src: '/images/consultorio2_sobre-mi.jpeg', alt: 'Pedro Bahamondes — consultorio', aspect: '3/4' },
+  { src: '/images/consultorio3_sobre-mi.jpeg', alt: 'Pedro Bahamondes — detalle del espacio', aspect: '1/1' },
 ]
 
 export default function SobreMi() {
@@ -116,15 +116,34 @@ export default function SobreMi() {
   return (
     <>
       {/* ═══════ HERO ═══════ */}
-      <section className="section-block" style={{ background: 'var(--surface)' }}>
-        <div className="container-page pt-24 md:pt-32 pb-16 md:pb-24">
+      <section className="section-block relative overflow-hidden" style={{ minHeight: 'clamp(400px, 60vh, 600px)' }}>
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/hero_sobre-mi.jpeg"
+            alt="Pedro Bahamondes"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(135deg, rgba(17,24,39,0.85) 0%, rgba(17,24,39,0.6) 50%, rgba(17,24,39,0.3) 100%)',
+            }}
+          />
+        </div>
+        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(120px, 18vh, 200px)', paddingBottom: 'clamp(60px, 10vh, 120px)' }}>
           <motion.div
             initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.7, ease: spring }}
             className="max-w-3xl"
           >
-            <span className="eyebrow mb-5 inline-block">Sobre mí</span>
+            <span className="eyebrow mb-5 inline-block" style={{ background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.3)' }}>
+              Sobre mí
+            </span>
             <h1
               className="mb-6"
               style={{
@@ -133,7 +152,7 @@ export default function SobreMi() {
                 lineHeight: 0.92,
                 letterSpacing: '-0.035em',
                 fontWeight: 800,
-                color: 'var(--ink)',
+                color: '#ffffff',
               }}
             >
               Pedro Bahamondes A.
@@ -144,7 +163,7 @@ export default function SobreMi() {
                 fontFamily: 'var(--font-body)',
                 fontSize: '1.0625rem',
                 lineHeight: 1.7,
-                color: 'var(--muted)',
+                color: 'rgba(255,255,255,0.75)',
               }}
             >
               Psicólogo con más de 15 años de experiencia clínica, integrando
@@ -239,26 +258,37 @@ export default function SobreMi() {
             >
               Mi consultorio
             </h2>
+            <p className="mt-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--muted)' }}>
+              Un espacio diseñado para la confianza, la calma y la profundidad del encuentro terapéutico.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {galleryImages.map((img, i) => (
-              <motion.div key={img.src} {...fadeUpDelayed(i)}>
-                <div className="card card-hover">
-                  <div className="card-core overflow-hidden" style={{ padding: 0 }}>
-                    <div className="relative w-full" style={{ aspectRatio: img.aspect }}>
-                      <Image
-                        src={img.src}
-                        alt={img.alt}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 100vw, 33vw"
-                      />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+            {galleryImages.map((img, i) => {
+              const isWide = i === 0 // first image wider on mobile
+              const spanDesktop = i === 0 ? 'md:col-span-2 md:row-span-2' : ''
+              return (
+                <motion.div
+                  key={img.src}
+                  {...fadeUpDelayed(i)}
+                  className={`${isWide ? 'col-span-2' : ''} ${spanDesktop}`}
+                >
+                  <div className="card card-hover h-full overflow-hidden group">
+                    <div className="card-core overflow-hidden" style={{ padding: 0, height: '100%' }}>
+                      <div className="relative w-full h-full" style={{ minHeight: isWide ? 'clamp(300px, 40vh, 500px)' : 'clamp(200px, 28vh, 360px)' }}>
+                        <Image
+                          src={img.src}
+                          alt={img.alt}
+                          fill
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </section>
