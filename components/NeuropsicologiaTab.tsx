@@ -241,7 +241,7 @@ export default function NeuropsicologiaTab() {
                 <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: '#e5e7eb', borderTopColor: '#2563eb' }} />
               </div>
             }>
-              <Brain3D width={500} height={380} />
+              <Brain3D width={500} height={380} activeRegionId={activeRegion} onRegionClick={(id) => setActiveRegion(id || null)} />
             </Suspense>
           </div>
 
