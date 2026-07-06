@@ -14,10 +14,10 @@ interface Brain3DProps {
 }
 
 const LOBE_COLORS: Record<string, number> = {
-  Frontal: 0x5BA4CF, Parietal: 0x9B7BB8, Temporal: 0xD4858A,
-  Occipital: 0x6DB8A0, Limbic: 0xD4A85A, Insular: 0xC89B9B,
-  Subcortical: 0x7BA3C4, Cerebellum: 0x7AB8A8, Brainstem: 0x8AADC4,
-  Ventricular: 0x8DC4B8,
+  Frontal: 0x4A90D9, Parietal: 0x8B5CF6, Temporal: 0xEC4899,
+  Occipital: 0x10B981, Limbic: 0xF59E0B, Insular: 0xEF4444,
+  Subcortical: 0x6B8FA3, Cerebellum: 0x06B6D4, Brainstem: 0x8B9EAD,
+  Ventricular: 0x6BB5A4,
 }
 
 interface DKRegion { id: string; name: string; lobe: string; spanishId: string; files: string[]; isSubcortical?: boolean }
@@ -130,10 +130,10 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
 
     // Scene
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0x0a0a0f)
+    scene.background = new THREE.Color(0xf8fafc)
     sceneRef.current = scene
 
-    // Camera — further back so full brain is visible
+    // Camera
     const aspect = container.clientWidth / container.clientHeight
     const camera = new THREE.PerspectiveCamera(35, aspect, 0.1, 1000)
     camera.position.set(0, 0, 180)
@@ -143,8 +143,7 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.0
+    renderer.toneMapping = THREE.NoToneMapping
     container.appendChild(renderer.domElement)
     rendererRef.current = renderer
 
@@ -160,11 +159,11 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
     controlsRef.current = controls
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5))
-    const dir = new THREE.DirectionalLight(0xffffff, 1.2)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7))
+    const dir = new THREE.DirectionalLight(0xffffff, 1.5)
     dir.position.set(50, 80, 60)
     scene.add(dir)
-    const back = new THREE.DirectionalLight(0x4488ff, 0.3)
+    const back = new THREE.DirectionalLight(0xaaccff, 0.4)
     back.position.set(-30, -20, -40)
     scene.add(back)
 
@@ -202,12 +201,9 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
 
     function createMat(lobe: string): THREE.MeshStandardMaterial {
       return new THREE.MeshStandardMaterial({
-        color: LOBE_COLORS[lobe] || 0x7BA3C4,
-        roughness: 0.4,
-        metalness: 0.1,
-        transparent: true,
-        opacity: 0.7,
-        side: THREE.DoubleSide,
+        color: LOBE_COLORS[lobe] || 0x6B8FA3,
+        roughness: 0.45,
+        metalness: 0.05,
       })
     }
 
@@ -295,17 +291,14 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
         const isActive = sid === activeId
         const isHovered = sid === hoveredId
         if (isActive) {
-          mat.emissive.setHex(0x4488ff)
-          mat.emissiveIntensity = 0.5 + 0.3 * Math.sin(Date.now() * 0.003)
-          mat.opacity = 1.0
+          mat.emissive.setHex(0x2563eb)
+          mat.emissiveIntensity = 0.4 + 0.25 * Math.sin(Date.now() * 0.003)
         } else if (isHovered) {
-          mat.emissive.setHex(0x88bbff)
-          mat.emissiveIntensity = 0.3
-          mat.opacity = 0.85
+          mat.emissive.setHex(0x60a5fa)
+          mat.emissiveIntensity = 0.25
         } else {
           mat.emissive.setHex(0x000000)
           mat.emissiveIntensity = 0
-          mat.opacity = 0.65
         }
       })
 
@@ -351,26 +344,26 @@ export default function Brain3D({ width = 500, height = 400, activeRegionId, onR
 
   return (
     <div className="relative" style={{ width, height }}>
-      <div ref={containerRef} className="w-full h-full rounded-xl overflow-hidden" />
+      <div ref={containerRef} className="w-full h-full rounded-xl overflow-hidden shadow-sm border border-slate-100" />
 
       {!loaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0f]/80 rounded-xl z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/90 rounded-xl z-10">
           <div className="text-center">
-            <div className="w-10 h-10 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-blue-300 text-sm font-medium">Cargando cerebro...</p>
-            <p className="text-gray-500 text-xs mt-1">{progress}%</p>
+            <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-slate-700 text-sm font-medium">Cargando cerebro...</p>
+            <p className="text-slate-400 text-xs mt-1">{progress}%</p>
           </div>
         </div>
       )}
 
       {hoveredName && loaded && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full border border-white/10 pointer-events-none z-10 whitespace-nowrap">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-medium px-3 py-1.5 rounded-full border border-slate-200 shadow-sm pointer-events-none z-10 whitespace-nowrap">
           {hoveredName}
         </div>
       )}
 
       {loaded && !hoveredName && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-gray-500 text-[10px] pointer-events-none z-10 opacity-60">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-slate-400 text-[10px] pointer-events-none z-10">
           Arrastra para rotar · Scroll para zoom · Click en una región
         </div>
       )}

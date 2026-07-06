@@ -346,13 +346,13 @@ export default function NeuropsicologiaTab() {
 
         <div className="flex items-center justify-center">
           <Suspense fallback={
-            <div className="flex items-center justify-center" style={{ width: 500, height: 380 }}>
+            <div className="flex items-center justify-center rounded-xl" style={{ width: '100%', maxWidth: 700, height: 460 }}>
               <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: '#e5e7eb', borderTopColor: '#2563eb' }} />
             </div>
           }>
             <Brain3D
-              width={500}
-              height={400}
+              width={700}
+              height={460}
               activeRegionId={activeRegion}
               onRegionClick={(id) => { setActiveRegion(id || null); }}
               spanishNames={SPANISH_NAMES}
