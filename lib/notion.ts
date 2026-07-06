@@ -81,7 +81,6 @@ export async function listPosts(): Promise<BlogPost[]> {
     method: 'POST',
     body: JSON.stringify({
       sorts: [{ property: 'Fecha', direction: 'descending' }],
-      filter: { property: 'Publicado', checkbox: { equals: true } },
     }),
   })
   if (!data?.results) return []
