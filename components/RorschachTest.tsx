@@ -533,6 +533,11 @@ export default function RorschachTest() {
             transition={{ duration: 0.5, ease: spring }}
           >
             <div className="mb-8 text-center">
+              <div className="flex justify-center mb-6">
+                <div className="rounded-2xl overflow-hidden" style={{ width: 200, height: 200, border: '1px solid rgba(0,0,0,0.06)' }}>
+                  <RorschachCanvas seed={0} width={200} height={200} />
+                </div>
+              </div>
               <span className="eyebrow mb-4">Test de Rorschach</span>
               <h2 className="text-3xl font-bold mt-4 mb-6" style={{ fontFamily: 'var(--font-display)', color: '#111827' }}>
                 Las 10 láminas originales
@@ -601,10 +606,15 @@ export default function RorschachTest() {
               </span>
             </div>
 
-            {/* Image — animated fractal inkblot */}
+            {/* Image — real Rorschach card */}
             <div className="mb-3 flex justify-center">
               <div className="relative" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.06)', background: '#fff' }}>
-                <RorschachCanvas seed={currentInkblot} width={400} height={400} />
+                <img
+                  src={INKBLOTS[currentInkblot].image}
+                  alt={`Lámina de Rorschach ${currentInkblot + 1}`}
+                  style={{ width: '100%', maxWidth: '500px', height: 'auto', display: 'block' }}
+                  loading="lazy"
+                />
               </div>
             </div>
 
