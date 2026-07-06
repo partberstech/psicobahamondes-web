@@ -534,8 +534,8 @@ export default function RorschachTest() {
           >
             <div className="mb-8 text-center">
               <div className="flex justify-center mb-6">
-                <div className="rounded-2xl overflow-hidden" style={{ width: 200, height: 200, border: '1px solid rgba(0,0,0,0.06)' }}>
-                  <RorschachCanvas seed={0} width={200} height={200} />
+                <div className="rounded-2xl overflow-hidden shadow-sm" style={{ width: 280, height: 280, border: '1px solid rgba(0,0,0,0.06)' }}>
+                  <RorschachCanvas seed={0} width={280} height={280} />
                 </div>
               </div>
               <span className="eyebrow mb-4">Test de Rorschach</span>
@@ -544,7 +544,7 @@ export default function RorschachTest() {
               </h2>
             </div>
 
-            <div className="space-y-4 text-left mb-10 max-w-md mx-auto">
+            <div className="space-y-4 text-left mb-10 max-w-md mx-auto p-6 rounded-xl" style={{ background: '#f9fafb', border: '1px solid rgba(0,0,0,0.04)' }}>
               <div className="flex gap-3 items-start">
                 <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" style={{ background: '#eff6ff', color: '#2563eb' }}>1</div>
                 <p className="text-sm leading-relaxed" style={{ color: '#4b5563' }}>
