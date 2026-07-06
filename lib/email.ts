@@ -1,5 +1,5 @@
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.EMAIL_FROM || 'agendamiento@psicobahamondes.cl'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'reservas@psicobahamondes.cl'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'contactopartnerstech@gmail.com'
 
 type BookingData = {
