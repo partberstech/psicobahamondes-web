@@ -107,8 +107,14 @@ const REGIONS_CATALOG = [
     desc: 'Conjunto de núcleos profundos (caudado, putamen, globo pálido, nucleus accumbens) que regulan el inicio y fin del movimiento, la formación de hábitos y el circuito de recompensa.',
     clinical: 'Parkinson (degeneración de dopaminas en sustancia negra), Huntington (degeneración del caudado), adicciones (sistema de recompensa).',
     connections: 'Corteza prefrontal (decisión), corteza motora (ejecución), tálamo (retroalimentación), amígdala (valor emocional), hipocampo (aprendizaje contextual).',
-    neurotrasnsmisores: 'Dopamina (circuito mesolímbico y nigroestriatal), GABA, acetilcolina, glutamato',
+    neurotrasnsmisores: 'Dopamina (circuito mesolímbico y nigroestriatal), GABA, acetilcolina, glutamato'
   },
+  { id: 'tronco', name: 'Tronco del Encéfalo', lobe: 'Subcortical', color: '#5a7a7a',
+    function: 'Funciones vitales: respiración, ritmo cardíaco, presión arterial, conciencia, sueño',
+    desc: 'Conecta el cerebro con la médula espinal. Controla funciones autonómicas esenciales para la vida: respiración, ritmo cardíaco, presión arterial y regulación del ciclo sueño-vigilia a través de la formación reticular.',
+    clinical: 'Daño en el tronco encefálico puede causar parálisis, coma, muerte cerebral o síndrome de enclaustramiento (locked-in syndrome). Es la región más crítica para la supervivencia inmediata.',
+    connections: 'Médula espinal (vías motoras/sensoriales), cerebelo (coordinación), tálamo (relevo sensorial), hipotálamo (regulación autonómica).',
+    neurotrasnsmisores: 'Noradrenalina (locus coeruleus), serotonina (núcleos del rafe), acetilcolina, dopamina' },
 ]
 
 // Quiz
