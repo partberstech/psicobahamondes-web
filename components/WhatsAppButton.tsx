@@ -19,9 +19,9 @@ export default function WhatsAppButton() {
       style={{
         width: 56,
         height: 56,
-        background: '#25D366',
+        background: '#2563eb',
         color: '#fff',
-        boxShadow: '0 4px 16px rgba(37,211,102,0.35)',
+        boxShadow: '0 4px 16px rgba(37,99,235,0.35)',
       }}
       aria-label="WhatsApp"
     >
