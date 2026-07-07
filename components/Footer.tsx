@@ -86,6 +86,13 @@ export default function Footer() {
           <span className="text-xs" style={{ color: '#6b7280' }}>
             © {new Date().getFullYear()} Psicobahamondes. Todos los derechos reservados.
           </span>
+          <Link
+            href="/politica-de-cookies"
+            className="text-xs transition-opacity hover:opacity-70"
+            style={{ color: '#6b7280' }}
+          >
+            Política de Cookies
+          </Link>
         </motion.div>
       </div>
     </footer>
