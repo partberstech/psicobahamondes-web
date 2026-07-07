@@ -14,27 +14,27 @@ const navLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/sobre-mi', label: 'Sobre mí' },
   { href: '/servicios', label: 'Servicios' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/recursos', label: 'Recursos' },
+  { href: '/blog', label: 'Contenidos' },
+  { href: '/test', label: 'Test' },
   { href: '/contacto', label: 'Contacto' },
 ]
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#f5f5f5', borderTop: '1px solid rgba(34,42,53,0.08)' }}>
+    <footer style={{ background: '#111827', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="container-page py-12 md:py-16">
         <div className="grid md:grid-cols-3 gap-10 md:gap-16">
           {/* Brand */}
           <motion.div {...fadeUp}>
             <h4
               className="text-base font-bold mb-2"
-              style={{ color: '#242424' }}
+              style={{ color: '#ffffff' }}
             >
               Psicobahamondes
             </h4>
             <p
               className="text-sm leading-relaxed"
-              style={{ color: '#898989' }}
+              style={{ color: '#9ca3af' }}
             >
               Ciencia para comprender, consciencia para sanar
             </p>
@@ -42,7 +42,7 @@ export default function Footer() {
 
           {/* Navigation */}
           <motion.div {...fadeUp}>
-            <h5 className="label mb-4" style={{ color: '#a3a3a3' }}>
+            <h5 className="label mb-4" style={{ color: '#6b7280' }}>
               Navegación
             </h5>
             <div className="flex flex-col gap-2">
@@ -50,8 +50,8 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium transition-opacity"
-                  style={{ color: '#666666' }}
+                  className="text-sm font-medium transition-opacity hover:opacity-70"
+                  style={{ color: '#d1d5db' }}
                 >
                   {link.label}
                 </Link>
@@ -61,29 +61,29 @@ export default function Footer() {
 
           {/* Contact */}
           <motion.div {...fadeUp}>
-            <h5 className="label mb-4" style={{ color: '#a3a3a3' }}>
+            <h5 className="label mb-4" style={{ color: '#6b7280' }}>
               Contacto
             </h5>
             <div
               className="flex flex-col gap-2 text-sm"
-              style={{ color: '#666666' }}
+              style={{ color: '#d1d5db' }}
             >
-              <span>contacto@psicobahamondes.cl</span>
-              <span>+56961599313</span>
+              <a href="mailto:contacto@psicobahamondes.cl" className="hover:underline">contacto@psicobahamondes.cl</a>
+              <a href="tel:+56961599313" className="hover:underline">+56961599313</a>
               <span>Edificio Plaza Bühler, 6to piso, Av. Guillermo Bühler 2005</span>
             </div>
           </motion.div>
         </div>
 
         {/* Divider */}
-        <div className="divider my-10" />
+        <div className="my-10" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
 
         {/* Bottom bar */}
         <motion.div
           {...fadeUp}
           className="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left"
         >
-          <span className="text-xs" style={{ color: '#a3a3a3' }}>
+          <span className="text-xs" style={{ color: '#6b7280' }}>
             © {new Date().getFullYear()} Psicobahamondes. Todos los derechos reservados.
           </span>
         </motion.div>
