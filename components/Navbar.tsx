@@ -50,19 +50,23 @@ export default function Navbar() {
               ? '0 4px 24px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)'
               : '0 2px 12px rgba(0,0,0,0.04)',
             transition: 'all 500ms cubic-bezier(0.32, 0.72, 0, 1)',
+            maxWidth: 'calc(100vw - 24px)',
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
           }}
         >
           {/* Logo */}
           <Link
             href="/"
-            className="text-sm font-bold tracking-tight px-4 py-2"
+            className="text-sm font-bold tracking-tight px-4 py-2 shrink-0"
             style={{ color: '#242424' }}
           >
             Psicobahamondes
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-0.5">
+          <div className="hidden md:flex items-center gap-0.5 shrink-0">
             {links.map((link) => (
               <Link
                 key={link.href}

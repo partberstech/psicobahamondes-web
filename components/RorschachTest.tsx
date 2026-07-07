@@ -685,7 +685,7 @@ export default function RorschachTest() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Teléfono (opcional)</label>
-                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+56 9 XXXX XXXX" className="input" />
+                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+56961599313" className="input" />
                   </div>
                 </div>
 

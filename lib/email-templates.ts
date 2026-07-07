@@ -37,7 +37,7 @@ const SESSION_ICONS: Record<string, string> = {
 
 const SESSION_MODES: Record<string, string> = {
   'sesion-cero': 'Online',
-  'consulta-presencial': 'Presencial · Santiago',
+  'consulta-presencial': 'Presencial · Edificio Plaza Bühler',
   'consulta-telematica': 'Online · Videollamada',
 }
 
@@ -78,7 +78,7 @@ function googleCalendarUrl(data: {
     dates: `${fmt(start)}/${fmt(end)}`,
     details: `Consulta con ${data.name} · ${label}`,
     location: data.sessionType === 'consulta-presencial'
-      ? 'Santiago, Chile'
+      ? 'Edificio Plaza Bühler, 6to piso, Av. Guillermo Bühler 2005, Santiago'
       : 'Online · Videollamada (el link se envía por separado)',
     sf: 'true',
     output: 'xml',
@@ -161,7 +161,7 @@ function baseWrapper(
                 <a href="${SITE_URL}" style="color:${BRAND};text-decoration:none">psicobahamondes.cl</a>
               </td>
               <td style="padding:0;text-align:right;font-size:13px;color:${MUTED};line-height:1.7">
-                Santiago, Chile<br />
+                Edificio Plaza Bühler, 6to piso<br />Av. Guillermo Bühler 2005, Santiago<br />
                 <a href="mailto:contacto@psicobahamondes.cl" style="color:${BRAND};text-decoration:none">contacto@psicobahamondes.cl</a>
               </td>
             </tr>

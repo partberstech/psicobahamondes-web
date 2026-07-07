@@ -69,8 +69,8 @@ export default function Footer() {
               style={{ color: '#666666' }}
             >
               <span>contacto@psicobahamondes.cl</span>
-              <span>+56 9 XXXX XXXX</span>
-              <span>Santiago, Chile</span>
+              <span>+56961599313</span>
+              <span>Edificio Plaza Bühler, 6to piso, Av. Guillermo Bühler 2005</span>
             </div>
           </motion.div>
         </div>
