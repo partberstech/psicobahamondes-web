@@ -258,7 +258,7 @@ export default function Home() {
               miedo al rechazo, tu necesidad de control o la herida de tu
               infancia.&rdquo;
             </p>
-            <span className="eyebrow">— Pedro Bahamondes A.</span>
+            <span className="eyebrow">— Pedro Bahamondes D.</span>
           </FadeIn>
         </div>
       </section>

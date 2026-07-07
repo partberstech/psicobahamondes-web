@@ -130,7 +130,7 @@ export default function SobreMi() {
           <div
             className="absolute inset-0"
             style={{
-              background: 'linear-gradient(135deg, rgba(17,24,39,0.85) 0%, rgba(17,24,39,0.6) 50%, rgba(17,24,39,0.3) 100%)',
+              background: 'linear-gradient(135deg, rgba(17,24,39,0.3) 0%, transparent 50%, rgba(17,24,39,0.15) 100%)',
             }}
           />
         </div>
@@ -139,7 +139,7 @@ export default function SobreMi() {
             initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.7, ease: spring }}
-            className="max-w-3xl"
+            className="max-w-2xl ml-auto text-right"
           >
             <span className="eyebrow mb-5 inline-block" style={{ background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.3)' }}>
               Sobre mí
@@ -155,7 +155,7 @@ export default function SobreMi() {
                 color: '#ffffff',
               }}
             >
-              Pedro Bahamondes A.
+              Pedro Bahamondes D.
             </h1>
             <p
               className="max-w-2xl"
@@ -226,8 +226,8 @@ export default function SobreMi() {
                 <div className="card-core overflow-hidden" style={{ padding: 0 }}>
                   <div className="relative w-full h-full">
                     <Image
-                      src="/images/psicologo-1.jpeg"
-                      alt="Pedro Bahamondes — Psicólogo Clínico"
+                      src="/images/filosofia_sobre-mi.png"
+                      alt="Pedro Bahamondes — Filosofía"
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 50vw"
