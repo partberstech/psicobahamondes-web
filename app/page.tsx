@@ -200,19 +200,18 @@ export default function Home() {
           />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, #f9fafb 0%, transparent 30%)' }} />
         </div>
-
-        <div className="container-page relative z-10 pt-20 md:pt-40 pb-16 md:pb-32">
+        <div className="container-page relative z-10 pt-28 md:pt-44 pb-16 md:pb-24">
           <FadeIn delay={0.1}>
             <span className="eyebrow mb-6">Psicología Clínica y Terapia Sistémica</span>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <h1 className="mb-6 max-w-3xl" style={{ color: '#111827' }}>
+            <h1 className="mb-5 max-w-3xl" style={{ color: '#111827' }}>
               Ciencia para comprender.<br />
               Consciencia para <span style={{ color: '#2563eb' }}>sanar</span>.
             </h1>
           </FadeIn>
           <FadeIn delay={0.35}>
-            <p className="text-base md:text-lg leading-relaxed max-w-xl mb-8 md:mb-10" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+            <p className="text-base md:text-lg leading-relaxed max-w-xl mb-7 md:mb-9" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
               Bienvenido a un espacio terapéutico donde todo el conocimiento y precisión de la <strong style={{ color: '#111827' }}>Neuropsicología</strong> se une a la profundidad del <strong style={{ color: '#111827' }}>Eneagrama</strong> y las <strong style={{ color: '#111827' }}>Constelaciones Familiares</strong>. Descubre el origen de tus bloqueos, comprende cómo funciona tu mente y sana desde la raíz para transformar tu vida.
             </p>
           </FadeIn>

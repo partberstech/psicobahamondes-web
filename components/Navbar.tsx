@@ -39,9 +39,9 @@ export default function Navbar() {
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: spring, delay: 0.3 }}
-        className="fixed z-50 left-1/2 -translate-x-1/2"
+        className="fixed z-50 left-0 right-0 flex justify-center px-3"
         style={{
-          top: scrolled ? '12px' : '20px',
+          top: scrolled ? '12px' : '16px',
           transition: 'top 500ms cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
@@ -65,7 +65,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="text-sm font-bold tracking-tight px-4 py-2 shrink-0"
+            className="text-sm font-bold tracking-tight px-4 py-2 shrink-0 text-center"
             style={{ color: '#242424' }}
           >
             Psicobahamondes
