@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
+import NewsletterForm from '@/components/NewsletterForm'
 
 const HeroCanvas = dynamic(() => import('@/components/HeroCanvas'), { ssr: false })
 
@@ -409,6 +410,10 @@ export default function Home() {
             <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-semibold" style={{ color: '#2563eb' }}>
               Explorar todos los artículos, videos y podcasts <IconArrow />
             </Link>
+          </FadeIn>
+
+          <FadeIn delay={0.2} className="max-w-md mx-auto mt-12">
+            <NewsletterForm />
           </FadeIn>
         </div>
       </section>

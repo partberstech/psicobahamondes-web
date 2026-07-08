@@ -46,7 +46,7 @@ export default function RorschachCanvas({
         }
 
         p.draw = () => {
-          t += 0.012
+          t += 0.025
           p.loadPixels()
 
           // Animated Julia set parameter — orbits slowly
