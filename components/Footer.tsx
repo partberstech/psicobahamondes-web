@@ -23,7 +23,7 @@ export default function Footer() {
   return (
     <footer style={{ background: '#111827', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="container-page py-12 md:py-16">
-        <div className="grid md:grid-cols-3 gap-10 md:gap-16">
+        <div className="grid md:grid-cols-3 gap-8 md:gap-16">
           {/* Brand */}
           <motion.div {...fadeUp}>
             <h4

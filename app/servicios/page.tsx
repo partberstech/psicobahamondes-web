@@ -162,7 +162,7 @@ export default function Servicios() {
             className="max-w-3xl"
           >
             <span className="eyebrow mb-5" style={{ display: 'inline-flex', background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.3)' }}>Servicios</span>
-            <h1 className="mb-6" style={{ color: '#ffffff' }}>
+            <h1 className="mb-4 md:mb-6" style={{ color: '#ffffff' }}>
               Un espacio terapéutico diferente
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.75)', maxWidth: '38rem', lineHeight: 1.7 }}>
@@ -187,7 +187,7 @@ export default function Servicios() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2" style={{ gap: '24px' }}>
+          <div className="grid md:grid-cols-2" style={{ gap: 'clamp(16px, 3vw, 24px)' }}>
             {modalidades.map((mod, i) => {
               const Icon = mod.icon
               return (
@@ -279,7 +279,7 @@ export default function Servicios() {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3" style={{ gap: '24px' }}>
+          <div className="grid md:grid-cols-3" style={{ gap: 'clamp(16px, 3vw, 24px)' }}>
             {metodologias.map((m, i) => {
               const Icon = m.icon
               return (
@@ -316,7 +316,7 @@ export default function Servicios() {
                       </Link>
                       <Link
                         href="/test"
-                        className="btn-outline text-sm self-start"
+                        className="btn btn-outline text-sm self-start"
                       >
                         Hacer test
                         <IconArrow />

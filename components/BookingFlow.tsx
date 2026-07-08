@@ -101,7 +101,7 @@ export default function BookingFlow() {
   return (
     <div className="w-full max-w-[880px] mx-auto">
       {/* ═══ Progress Bar ═══ */}
-      <div className="flex items-center justify-center gap-3 mb-12">
+      <div className="flex items-center justify-center gap-3 mb-8 md:mb-12">
         {([
           { key: 'select', label: 'Tipo' },
           { key: 'data', label: 'Datos' },
@@ -155,7 +155,7 @@ export default function BookingFlow() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
               {SESSION_TYPES.map((s) => {
                 const active = selected === s.id
                 return (

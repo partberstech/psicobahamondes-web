@@ -64,7 +64,7 @@ export default function Contacto() {
       {/* ═══════ INFO CARDS ═══════ */}
       <section className="section-block" style={{ background: '#f9fafb' }}>
         <div className="container-page">
-          <div className="grid sm:grid-cols-3 gap-6 max-w-3xl mx-auto text-center">
+          <div className="grid sm:grid-cols-3 gap-5 md:gap-6 max-w-3xl mx-auto text-center">
             {[
               { icon: '🔒', title: 'Confidencial', desc: 'Tus datos están protegidos bajo secreto profesional.' },
               { icon: '🎯', title: 'Sin compromiso', desc: 'La Sesión Cero es gratuita. Decide después si quieres continuar.' },

@@ -502,7 +502,7 @@ export default function LuscherTest() {
             </div>
 
             {/* Paleta */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-6">
               {COLORS.map((color) => {
                 const selected = selection.includes(color.id)
                 const selectedIdx = selection.indexOf(color.id)
@@ -554,7 +554,7 @@ export default function LuscherTest() {
                     Limpiar
                   </button>
                 </div>
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {selection.map((id, idx) => {
                     const color = getColorById(id)!
                     return (

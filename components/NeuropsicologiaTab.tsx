@@ -344,7 +344,7 @@ export default function NeuropsicologiaTab() {
           Haz clic en cualquier región del cerebro 3D para ver su información en el catálogo de arriba.
         </p>
 
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-full overflow-hidden">
           <Suspense fallback={
             <div className="flex items-center justify-center rounded-xl" style={{ width: '100%', maxWidth: 700, height: 460 }}>
               <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: '#e5e7eb', borderTopColor: '#2563eb' }} />

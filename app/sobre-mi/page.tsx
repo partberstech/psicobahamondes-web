@@ -139,16 +139,16 @@ export default function SobreMi() {
             initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.7, ease: spring }}
-            className="max-w-2xl ml-auto text-right"
+            className="max-w-2xl md:ml-auto md:text-right"
           >
             <span className="eyebrow mb-5 inline-block" style={{ background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.3)' }}>
               Sobre mí
             </span>
             <h1
-              className="mb-6"
+              className="mb-4 md:mb-6"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(3rem,7vw,5.5rem)',
+                fontSize: 'clamp(2.25rem,7vw,5.5rem)',
                 lineHeight: 0.92,
                 letterSpacing: '-0.035em',
                 fontWeight: 800,
@@ -177,7 +177,7 @@ export default function SobreMi() {
       {/* ═══════ BIO — 2-COL GRID + FEATURED IMAGE ═══════ */}
       <section className="section-block" style={{ background: '#ffffff' }}>
         <div className="container-page">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-20 items-center">
             <motion.div {...fadeUp} className="space-y-6">
               <span className="eyebrow inline-block">Mi filosofía</span>
               <h2
@@ -207,7 +207,7 @@ export default function SobreMi() {
                   Sanar es hacer consciente lo invisible y recuperar el volante de tu vida.
                 </p>
               </div>
-              <div className="flex gap-4 pt-2">
+              <div className="flex flex-wrap gap-4 pt-2">
                 <Link href="/servicios" className="btn btn-primary">
                   Ver servicios
                   <span className="btn-icon">

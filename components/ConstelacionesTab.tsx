@@ -74,15 +74,15 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: {
           <p className="text-sm" style={{ color: '#9ca3af', fontFamily: 'var(--font-body)' }}>{images[index].title}</p>
           <div className="flex gap-2">
             {index > 0 && (
-              <button onClick={onPrev} className="btn btn-outline" style={{ padding: '6px 16px', fontSize: '0.75rem' }}>← Anterior</button>
+              <button onClick={onPrev} className="btn btn-outline" style={{ padding: '8px 16px', fontSize: '0.75rem' }}>← Anterior</button>
             )}
             {index < images.length - 1 && (
-              <button onClick={onNext} className="btn btn-outline" style={{ padding: '6px 16px', fontSize: '0.75rem' }}>Siguiente →</button>
+              <button onClick={onNext} className="btn btn-outline" style={{ padding: '8px 16px', fontSize: '0.75rem' }}>Siguiente →</button>
             )}
           </div>
         </div>
       </div>
-      <button onClick={onClose} className="fixed top-6 right-6 text-white cursor-pointer" style={{ background: 'none', border: 'none', fontSize: '1.5rem' }}>✕</button>
+      <button onClick={onClose} className="fixed top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full text-white cursor-pointer" style={{ background: 'rgba(255,255,255,0.15)', border: 'none', fontSize: '1.5rem' }}>✕</button>
     </motion.div>
   )
 }
