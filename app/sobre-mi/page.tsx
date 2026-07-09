@@ -139,7 +139,7 @@ export default function SobreMi() {
             initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.7, ease: spring }}
-            className="max-w-2xl md:ml-auto md:text-right"
+            className="max-w-2xl md:ml-auto md:mr-0 md:text-right"
           >
             <span className="eyebrow mb-5 inline-block" style={{ background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.3)' }}>
               Sobre mí

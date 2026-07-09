@@ -1,5 +1,5 @@
 const NOTION_KEY = process.env.NOTION_API_KEY || ''
-const DB_ID = '395bedc4-2b9f-819e-ba58-e53db65b265c'
+const DB_ID = '397bedc4-2b9f-813f-9136-f598ec9f5cc2'
 
 export type BlogPost = {
   id: string
