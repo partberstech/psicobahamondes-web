@@ -55,34 +55,80 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(8px)' }}
+      style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)' }}
       onClick={onClose}
+      onKeyDown={(e: React.KeyboardEvent) => {
+        if (e.key === 'ArrowLeft') onPrev()
+        if (e.key === 'ArrowRight') onNext()
+        if (e.key === 'Escape') onClose()
+      }}
+      tabIndex={0}
     >
-      <div className="relative max-w-4xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
-        <motion.img
-          key={index}
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ duration: 0.3, ease: spring }}
-          src={images[index].src}
-          alt={images[index].alt}
-          className="w-full h-auto"
-          style={{ borderRadius: '12px' }}
-        />
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-sm" style={{ color: '#9ca3af', fontFamily: 'var(--font-body)' }}>{images[index].title}</p>
-          <div className="flex gap-2">
-            {index > 0 && (
-              <button onClick={onPrev} className="btn btn-outline" style={{ padding: '8px 16px', fontSize: '0.75rem' }}>← Anterior</button>
-            )}
-            {index < images.length - 1 && (
-              <button onClick={onNext} className="btn btn-outline" style={{ padding: '8px 16px', fontSize: '0.75rem' }}>Siguiente →</button>
-            )}
-          </div>
-        </div>
+      {/* Close button */}
+      <button onClick={onClose} className="fixed top-6 right-6 z-50 w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: '1.2rem' }}>✕</button>
+
+      {/* Counter */}
+      <div className="fixed top-6 left-6 z-50 text-xs font-medium" style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'var(--font-body)' }}>
+        {index + 1} / {images.length}
       </div>
-      <button onClick={onClose} className="fixed top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full text-white cursor-pointer" style={{ background: 'rgba(255,255,255,0.15)', border: 'none', fontSize: '1.5rem' }}>✕</button>
+
+      <div className="relative max-w-4xl w-full mx-4 flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
+        {/* Prev arrow */}
+        {index > 0 && (
+          <button
+            onClick={onPrev}
+            className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 cursor-pointer"
+            style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        )}
+
+        {/* Image */}
+        <div className="flex-1 min-w-0">
+          <motion.img
+            key={index}
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.92, opacity: 0 }}
+            transition={{ duration: 0.3, ease: spring }}
+            src={images[index].src}
+            alt={images[index].alt}
+            className="w-full h-auto max-h-[70vh] object-contain"
+            style={{ borderRadius: '12px' }}
+          />
+          <p className="text-sm mt-4 text-center" style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'var(--font-body)' }}>{images[index].title}</p>
+        </div>
+
+        {/* Next arrow */}
+        {index < images.length - 1 && (
+          <button
+            onClick={onNext}
+            className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 cursor-pointer"
+            style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Thumbnail dots */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-2">
+        {images.map((_, i) => (
+          <div
+            key={i}
+            className="w-2 h-2 rounded-full transition-all"
+            style={{
+              background: i === index ? '#fff' : 'rgba(255,255,255,0.3)',
+              transform: i === index ? 'scale(1.3)' : 'scale(1)',
+            }}
+          />
+        ))}
+      </div>
     </motion.div>
   )
 }

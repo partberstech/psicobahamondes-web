@@ -154,7 +154,7 @@ export default function Servicios() {
             background: 'linear-gradient(135deg, rgba(17,24,39,0.8) 0%, rgba(17,24,39,0.5) 50%, rgba(17,24,39,0.2) 100%)',
           }} />
         </div>
-        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(120px, 16vh, 180px)', paddingBottom: 'clamp(80px, 12vh, 140px)' }}>
+        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(140px, 20vh, 220px)', paddingBottom: 'clamp(80px, 12vh, 140px)' }}>
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}

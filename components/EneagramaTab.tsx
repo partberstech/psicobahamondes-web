@@ -9,48 +9,54 @@ import { TYPES } from './enneagrama-data'
 
 const spring = [0.32, 0.72, 0, 1]
 
-// Iconos SVG minimalistas
+// Iconos SVG premium con más detalle
 function IconBolt() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      <circle cx="12" cy="12" r="10" strokeDasharray="4 2" opacity="0.3" />
     </svg>
   )
 }
 
 function IconList() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+      <circle cx="3" cy="6" r="1" fill="currentColor" />
+      <circle cx="3" cy="12" r="1" fill="currentColor" />
+      <circle cx="3" cy="18" r="1" fill="currentColor" />
     </svg>
   )
 }
 
 function IconGrid() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <rect x="14" y="3" width="7" height="7" rx="1" />
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      <rect x="14" y="14" width="7" height="7" rx="1" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="2" />
+      <rect x="14" y="3" width="7" height="7" rx="2" />
+      <rect x="3" y="14" width="7" height="7" rx="2" />
+      <rect x="14" y="14" width="7" height="7" rx="2" />
+      <path d="M7 7l4 4M17 7l-4 4M7 17l4-4M17 17l-4-4" opacity="0.3" />
     </svg>
   )
 }
 
 function IconInfo() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
       <path d="M12 16v-4M12 8h.01" />
+      <path d="M8 12h8" opacity="0.3" />
     </svg>
   )
 }
 
 const SUB_TABS = [
-  { id: 'explorar', label: 'Explorar Tipos', desc: 'Conoce los 9 eneatipos', icon: IconInfo },
-  { id: 'rapido', label: 'Test Rápido', desc: '8 preguntas', icon: IconBolt },
-  { id: 'rheti', label: 'RHETI Completo', desc: '144 preguntas', icon: IconList },
-  { id: 'diagrama', label: 'Diagrama', desc: 'Explorador interactivo', icon: IconGrid },
+  { id: 'explorar', label: 'Explorar Tipos', desc: 'Conoce los 9 eneatipos', icon: IconInfo, gradient: 'from-blue-50 to-indigo-50' },
+  { id: 'rapido', label: 'Test Rápido', desc: '8 preguntas', icon: IconBolt, gradient: 'from-amber-50 to-orange-50' },
+  { id: 'rheti', label: 'RHETI Completo', desc: '144 preguntas', icon: IconList, gradient: 'from-emerald-50 to-teal-50' },
+  { id: 'diagrama', label: 'Diagrama', desc: 'Explorador interactivo', icon: IconGrid, gradient: 'from-purple-50 to-pink-50' },
 ]
 
 // Datos completos de los 9 tipos
@@ -186,32 +192,38 @@ export default function EneagramaTab() {
         </p>
       </motion.div>
 
-      {/* Sub-tabs */}
+      {/* Sub-tabs premium */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
         {SUB_TABS.map((tab) => {
           const isActive = subTab === tab.id
           const Icon = tab.icon
           return (
-            <button
+            <motion.button
               key={tab.id}
               onClick={() => { setSubTab(tab.id); setSelectedType(null) }}
               className="text-left transition-all"
               style={{
-                padding: '16px',
-                background: isActive ? '#eff6ff' : '#f9fafb',
-                border: isActive ? '1.5px solid #2563eb' : '1.5px solid rgba(0,0,0,0.06)',
-                borderRadius: '12px',
+                padding: '20px',
+                background: isActive ? '#ffffff' : '#f9fafb',
+                border: isActive ? '2px solid #2563eb' : '2px solid rgba(0,0,0,0.04)',
+                borderRadius: '16px',
                 cursor: 'pointer',
+                boxShadow: isActive ? '0 8px 24px rgba(37,99,235,0.12)' : '0 2px 8px rgba(0,0,0,0.02)',
               }}
+              whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(37,99,235,0.15)' }}
+              transition={{ duration: 0.2, ease: spring }}
             >
-              <div className="flex items-center gap-2 mb-1.5" style={{ color: isActive ? '#2563eb' : '#6b7280' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ 
+                background: isActive ? '#eff6ff' : '#f3f4f6',
+                color: isActive ? '#2563eb' : '#9ca3af'
+              }}>
                 <Icon />
-                <span className="text-sm font-semibold" style={{ fontFamily: 'var(--font-display)', color: isActive ? '#111827' : '#374151' }}>
-                  {tab.label}
-                </span>
               </div>
-              <span className="text-xs" style={{ color: '#9ca3af' }}>{tab.desc}</span>
-            </button>
+              <span className="block text-sm font-semibold mb-1" style={{ fontFamily: 'var(--font-display)', color: isActive ? '#111827' : '#374151' }}>
+                {tab.label}
+              </span>
+              <span className="block text-xs" style={{ color: '#9ca3af' }}>{tab.desc}</span>
+            </motion.button>
           )
         })}
       </div>
@@ -228,36 +240,43 @@ export default function EneagramaTab() {
           {subTab === 'explorar' && (
             <div>
               {selectedType === null ? (
-                /* Grid de tipos */
+                /* Grid de tipos premium */
                 <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
                   {TYPES_FULL.map((type) => (
                     <motion.button
                       key={type.id}
                       onClick={() => setSelectedType(type.id)}
-                      className="text-left p-5 transition-all hover:shadow-md"
+                      className="text-left p-6 transition-all"
                       style={{
                         background: '#ffffff',
                         border: '1px solid rgba(0,0,0,0.06)',
-                        borderRadius: '12px',
+                        borderRadius: '16px',
                         cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
                       }}
-                      whileHover={{ y: -2 }}
+                      whileHover={{ 
+                        y: -4, 
+                        boxShadow: '0 12px 32px rgba(0,0,0,0.08)',
+                        borderColor: type.centerColor,
+                      }}
+                      transition={{ duration: 0.2, ease: spring }}
                     >
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl">{type.emoji}</span>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-3xl">{type.emoji}</span>
                         <div>
                           <span className="block text-xs font-bold" style={{ color: '#111827' }}>Tipo {type.id}</span>
-                          <span className="block text-xs" style={{ color: '#6b7280' }}>{type.title}</span>
+                          <span className="block text-sm font-semibold" style={{ color: '#374151', fontFamily: 'var(--font-display)' }}>{type.title}</span>
                         </div>
                       </div>
-                      <span className="inline-block px-2 py-0.5 text-xs rounded" style={{ background: `${type.centerColor}15`, color: type.centerColor }}>
-                        {type.center}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block w-2 h-2 rounded-full" style={{ background: type.centerColor }} />
+                        <span className="text-xs" style={{ color: '#9ca3af' }}>{type.center}</span>
+                      </div>
                     </motion.button>
                   ))}
                 </div>
               ) : (
-                /* Detalle del tipo */
+                /* Detalle del tipo premium */
                 <div>
                   <button onClick={() => setSelectedType(null)} className="btn btn-ghost text-sm mb-6" style={{ color: '#2563eb' }}>
                     ← Volver a tipos
@@ -266,77 +285,123 @@ export default function EneagramaTab() {
                     const type = TYPES_FULL.find(t => t.id === selectedType)
                     if (!type) return null
                     return (
-                      <div className="max-w-2xl">
-                        <div className="flex items-center gap-4 mb-6">
-                          <span className="text-4xl">{type.emoji}</span>
+                      <div className="max-w-3xl">
+                        <div className="flex items-center gap-5 mb-8">
+                          <span className="text-5xl">{type.emoji}</span>
                           <div>
-                            <h3 className="text-2xl font-bold" style={{ color: '#111827' }}>Tipo {type.id}: {type.title}</h3>
-                            <span className="inline-block px-2 py-0.5 text-xs rounded mt-1" style={{ background: `${type.centerColor}15`, color: type.centerColor }}>
+                            <h3 className="text-3xl font-bold" style={{ color: '#111827', fontFamily: 'var(--font-display)' }}>Tipo {type.id}: {type.title}</h3>
+                            <span className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium rounded-full mt-2" style={{ background: `${type.centerColor}15`, color: type.centerColor }}>
+                              <span className="w-2 h-2 rounded-full" style={{ background: type.centerColor }} />
                               Centro {type.center}
                             </span>
                           </div>
                         </div>
 
-                        <p className="text-sm leading-relaxed mb-6" style={{ color: '#4b5563' }}>{type.overview}</p>
+                        <p className="text-base leading-relaxed mb-8" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>{type.overview}</p>
 
                         {/* Miedo y Deseo */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                          <div className="p-4 rounded-lg" style={{ background: '#fef2f2', border: '1px solid rgba(239,68,68,0.1)' }}>
-                            <span className="label mb-2 block" style={{ color: '#dc2626' }}>Miedo Central</span>
-                            <p className="text-xs" style={{ color: '#6b7280' }}>{type.coreFear}</p>
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                          <div className="p-5 rounded-xl" style={{ background: 'linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%)', border: '1px solid rgba(239,68,68,0.1)' }}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                              </svg>
+                              <span className="label" style={{ color: '#dc2626' }}>Miedo Central</span>
+                            </div>
+                            <p className="text-sm leading-relaxed" style={{ color: '#6b7280' }}>{type.coreFear}</p>
                           </div>
-                          <div className="p-4 rounded-lg" style={{ background: '#f0fdf4', border: '1px solid rgba(34,197,94,0.1)' }}>
-                            <span className="label mb-2 block" style={{ color: '#16a34a' }}>Deseo Central</span>
-                            <p className="text-xs" style={{ color: '#6b7280' }}>{type.coreDesire}</p>
+                          <div className="p-5 rounded-xl" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)', border: '1px solid rgba(34,197,94,0.1)' }}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                              </svg>
+                              <span className="label" style={{ color: '#16a34a' }}>Deseo Central</span>
+                            </div>
+                            <p className="text-sm leading-relaxed" style={{ color: '#6b7280' }}>{type.coreDesire}</p>
                           </div>
                         </div>
 
                         {/* Estrés y Crecimiento */}
-                        <div className="p-5 rounded-lg mb-6" style={{ background: '#f9fafb', border: '1px solid rgba(0,0,0,0.04)' }}>
-                          <span className="label mb-3 block">Estrés y Crecimiento</span>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <span className="text-xs font-semibold" style={{ color: '#dc2626' }}>Estrés → Tipo {type.stress.type}</span>
-                              <p className="text-xs mt-1" style={{ color: '#6b7280' }}>{type.stress.name}</p>
+                        <div className="p-6 rounded-xl mb-8" style={{ background: '#f9fafb', border: '1px solid rgba(0,0,0,0.04)' }}>
+                          <span className="label mb-4 block">Estrés y Crecimiento</span>
+                          <div className="grid grid-cols-2 gap-6">
+                            <div className="flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#fef2f2' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M10 9l-6 6 6 6" />
+                                  <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+                                </svg>
+                              </div>
+                              <div>
+                                <span className="text-sm font-semibold" style={{ color: '#dc2626' }}>Estrés → Tipo {type.stress.type}</span>
+                                <p className="text-sm mt-1" style={{ color: '#6b7280' }}>{type.stress.name}</p>
+                              </div>
                             </div>
-                            <div>
-                              <span className="text-xs font-semibold" style={{ color: '#16a34a' }}>Crecimiento → Tipo {type.growth.type}</span>
-                              <p className="text-xs mt-1" style={{ color: '#6b7280' }}>{type.growth.name}</p>
+                            <div className="flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#f0fdf4' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M14 9l6-6-6-6" />
+                                  <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
+                                </svg>
+                              </div>
+                              <div>
+                                <span className="text-sm font-semibold" style={{ color: '#16a34a' }}>Crecimiento → Tipo {type.growth.type}</span>
+                                <p className="text-sm mt-1" style={{ color: '#6b7280' }}>{type.growth.name}</p>
+                              </div>
                             </div>
                           </div>
                         </div>
 
                         {/* Alas */}
-                        <div className="p-5 rounded-lg mb-6" style={{ background: '#f9fafb', border: '1px solid rgba(0,0,0,0.04)' }}>
-                          <span className="label mb-3 block">Alas</span>
-                          <div className="space-y-2">
+                        <div className="p-6 rounded-xl mb-8" style={{ background: '#f9fafb', border: '1px solid rgba(0,0,0,0.04)' }}>
+                          <span className="label mb-4 block">Alas</span>
+                          <div className="space-y-3">
                             {type.wings.map((wing, i) => (
-                              <p key={i} className="text-xs" style={{ color: '#6b7280' }}>{wing}</p>
+                              <div key={i} className="flex items-center gap-3">
+                                <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#eff6ff' }}>
+                                  <span className="text-xs font-bold" style={{ color: '#2563eb' }}>{i + 1}</span>
+                                </div>
+                                <p className="text-sm" style={{ color: '#4b5563' }}>{wing}</p>
+                              </div>
                             ))}
                           </div>
                         </div>
 
                         {/* Fortalezas y Desafíos */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                          <div className="p-4 rounded-lg" style={{ background: '#f0f7ff', border: '1px solid rgba(0,0,0,0.04)' }}>
-                            <span className="label mb-3 block" style={{ color: '#2563eb' }}>Fortalezas</span>
-                            {type.strengths.map((s, i) => (
-                              <p key={i} className="text-xs mb-1" style={{ color: '#6b7280' }}>✦ {s}</p>
-                            ))}
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                          <div className="p-5 rounded-xl" style={{ background: 'linear-gradient(135deg, #f0f7ff 0%, #eff6ff 100%)', border: '1px solid rgba(37,99,235,0.1)' }}>
+                            <span className="label mb-4 block" style={{ color: '#2563eb' }}>Fortalezas</span>
+                            <div className="space-y-2">
+                              {type.strengths.map((s, i) => (
+                                <div key={i} className="flex items-center gap-2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20 6L9 17l-5-5" />
+                                  </svg>
+                                  <span className="text-sm" style={{ color: '#4b5563' }}>{s}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                          <div className="p-4 rounded-lg" style={{ background: '#fff7ed', border: '1px solid rgba(0,0,0,0.04)' }}>
-                            <span className="label mb-3 block" style={{ color: '#ea580c' }}>Desafíos</span>
-                            {type.challenges.map((c, i) => (
-                              <p key={i} className="text-xs mb-1" style={{ color: '#6b7280' }}>◆ {c}</p>
-                            ))}
+                          <div className="p-5 rounded-xl" style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%)', border: '1px solid rgba(234,88,12,0.1)' }}>
+                            <span className="label mb-4 block" style={{ color: '#ea580c' }}>Desafíos</span>
+                            <div className="space-y-2">
+                              {type.challenges.map((c, i) => (
+                                <div key={i} className="flex items-center gap-2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                  </svg>
+                                  <span className="text-sm" style={{ color: '#4b5563' }}>{c}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="text-center p-6" style={{ background: '#f9fafb', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.04)' }}>
-                          <p className="text-sm mb-3" style={{ color: '#6b7280' }}>
+                        <div className="text-center p-8" style={{ background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
+                          <p className="text-base mb-4" style={{ color: '#6b7280' }}>
                             ¿Te identificas con este tipo? Descúbrelo con el test.
                           </p>
-                          <button onClick={() => setSubTab('rapido')} className="btn btn-primary text-sm">
+                          <button onClick={() => setSubTab('rapido')} className="btn btn-primary">
                             Hacer test rápido
                           </button>
                         </div>

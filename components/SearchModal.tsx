@@ -113,9 +113,9 @@ export default function SearchModal() {
         aria-label="Buscar artículos"
         className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:opacity-60"
         style={{
-          background: 'rgba(255,255,255,0.06)',
-          color: 'rgba(255,255,255,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(0,0,0,0.04)',
+          color: '#374151',
+          border: '1px solid rgba(0,0,0,0.08)',
         }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -128,8 +128,8 @@ export default function SearchModal() {
             fontSize: 10,
             padding: '1px 6px',
             borderRadius: 4,
-            background: 'rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.3)',
+            background: 'rgba(0,0,0,0.06)',
+            color: '#9ca3af',
           }}
         >
           ⌘K
