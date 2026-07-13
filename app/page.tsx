@@ -145,10 +145,10 @@ function StaggerItem({ children, className = '' }: { children: React.ReactNode; 
    HERO ROTATING TEXT
    ══════════════════════════════════ */
 const heroRotatingTexts = [
-  '...repites las mismas historias familiares una y otra vez?',
-  '...la ansiedad y los bloqueos mentales frenan tu vida diaria?',
-  '...estás atrapado en reacciones emocionales que no puedes controlar?',
-  '...llevas cargas del pasado que no sabes cómo soltar?',
+  '¿Sientes que... repites las mismas historias familiares una y otra vez?',
+  '¿Sientes que... la ansiedad y los bloqueos mentales frenan tu vida diaria?',
+  '¿Sientes que... estás atrapado en reacciones emocionales que no puedes controlar?',
+  '¿Sientes que... llevas cargas del pasado que no sabes cómo soltar?',
 ]
 
 /* ══════════════════════════════════
@@ -222,13 +222,11 @@ export default function Home() {
             <span className="eyebrow mb-6">Psicología Clínica Integrativa y Sistémica</span>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <h1 className="mb-5 max-w-3xl" style={{ color: '#111827', fontSize: 'clamp(1.75rem, 4vw, 3rem)', lineHeight: 1.15, letterSpacing: '-0.02em', fontWeight: 700 }}>
-              ¿Sientes que...<br />
+            <h1 className="mb-6 max-w-3xl" style={{ color: '#111827' }}>
               <span
                 key={rotatingIndex}
                 className="inline-block"
                 style={{
-                  color: '#2563eb',
                   animation: 'fadeInUp 0.5s ease-out',
                 }}
               >
