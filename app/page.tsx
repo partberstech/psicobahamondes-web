@@ -151,6 +151,13 @@ const heroRotatingTexts = [
   '¿Sientes que... llevas cargas del pasado que no sabes cómo soltar?',
 ]
 
+const heroGradients = [
+  'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 30%, #4a7fb5 60%, #1e3a5f 100%)',
+  'linear-gradient(135deg, #2d1b4e 0%, #4a2d6e 30%, #6b4c8a 60%, #2d1b4e 100%)',
+  'linear-gradient(135deg, #5f1e1e 0%, #87442d 30%, #b5694a 60%, #5f1e1e 100%)',
+  'linear-gradient(135deg, #1a3a2e 0%, #2d5f4a 30%, #4a8a6b 60%, #1a3a2e 100%)',
+]
+
 /* ══════════════════════════════════
    DATA
    ══════════════════════════════════ */
@@ -206,41 +213,42 @@ export default function Home() {
   return (
     <>
       {/* ═══════ 1. HERO — La Primera Impresión ═══════ */}
-      <section className="section-block relative min-h-[100dvh] flex items-center overflow-hidden" style={{ background: '#f9fafb' }}>
-        <div className="absolute inset-0">
-          <Image
-            src="/images/hero_home.jpeg"
-            alt="Psicobahamondes"
-            fill
-            className="object-cover object-center"
-            style={{ opacity: 0.15 }}
-            priority
-          />
-        </div>
-        <div className="container-page relative z-10">
+      {/* Contenedor 1: Fondos animados + frases */}
+      <section
+        key={rotatingIndex}
+        className="relative min-h-[70vh] flex items-center justify-center overflow-hidden"
+        style={{
+          background: heroGradients[rotatingIndex],
+          animation: 'heroGradientFade 0.8s ease-out',
+          transition: 'background 0.8s ease',
+        }}
+      >
+        <div className="container-page relative z-10 text-center">
           <FadeIn delay={0.1}>
-            <span className="eyebrow mb-6">Psicología Clínica Integrativa y Sistémica</span>
+            <span className="eyebrow mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>Psicología Clínica Integrativa y Sistémica</span>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <h1 className="mb-6 max-w-3xl" style={{ color: '#111827' }}>
+            <h1 className="mb-6 max-w-4xl mx-auto" style={{ color: '#ffffff', fontWeight: 700, lineHeight: 1.2 }}>
               <span
                 key={rotatingIndex}
                 className="inline-block"
-                style={{
-                  animation: 'fadeInUp 0.5s ease-out',
-                }}
+                style={{ animation: 'fadeInUp 0.6s ease-out' }}
               >
                 {heroRotatingTexts[rotatingIndex]}
               </span>
             </h1>
           </FadeIn>
-          <FadeIn delay={0.35}>
-            <p className="text-base md:text-lg leading-relaxed max-w-xl mb-7 md:mb-9" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+        </div>
+      </section>
+
+      {/* Contenedor 2: Texto de apoyo + CTAs */}
+      <section className="section-block" style={{ background: '#ffffff' }}>
+        <div className="container-page">
+          <FadeIn className="max-w-2xl mx-auto text-center">
+            <p className="text-base md:text-lg leading-relaxed mb-9" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
               Sentirse así puede ser abrumador, pero no estás solo en esto. Te acompaño a descubrir la raíz de lo que te duele uniendo la ciencia para entender tu mente, y la consciencia (a través del Eneagrama y las Constelaciones) para sanar tu historia. Déjame ayudarte a encontrar esa pieza que falta para que recuperes tu tranquilidad.
             </p>
-          </FadeIn>
-          <FadeIn delay={0.45}>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 justify-center">
               <Link href="/contacto" className="btn btn-primary">
                 Agendar mi Sesión <span className="btn-icon"><IconArrow /></span>
               </Link>
