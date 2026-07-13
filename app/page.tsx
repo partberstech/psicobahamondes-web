@@ -199,16 +199,25 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setRotatingIndex((prev) => (prev + 1) % heroRotatingTexts.length)
-    }, 3500)
+    }, 5500)
     return () => clearInterval(interval)
   }, [])
 
   return (
     <>
       {/* ═══════ 1. HERO — La Primera Impresión ═══════ */}
-      <section className="relative min-h-[100dvh] flex items-center overflow-hidden" style={{ background: '#f9fafb' }}>
-        <HeroCanvas />
-        <div className="container-page relative z-10 pt-28 md:pt-44 pb-16 md:pb-24">
+      <section className="section-block relative min-h-[100dvh] flex items-center overflow-hidden" style={{ background: '#f9fafb' }}>
+        <div className="absolute inset-0">
+          <Image
+            src="/images/hero_home.jpeg"
+            alt="Psicobahamondes"
+            fill
+            className="object-cover object-center"
+            style={{ opacity: 0.15 }}
+            priority
+          />
+        </div>
+        <div className="container-page relative z-10">
           <FadeIn delay={0.1}>
             <span className="eyebrow mb-6">Psicología Clínica Integrativa y Sistémica</span>
           </FadeIn>
