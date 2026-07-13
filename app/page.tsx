@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -142,6 +142,16 @@ function StaggerItem({ children, className = '' }: { children: React.ReactNode; 
 }
 
 /* ══════════════════════════════════
+   HERO ROTATING TEXT
+   ══════════════════════════════════ */
+const heroRotatingTexts = [
+  '...repites las mismas historias familiares una y otra vez?',
+  '...la ansiedad y los bloqueos mentales frenan tu vida diaria?',
+  '...estás atrapado en reacciones emocionales que no puedes controlar?',
+  '...llevas cargas del pasado que no sabes cómo soltar?',
+]
+
+/* ══════════════════════════════════
    DATA
    ══════════════════════════════════ */
 const pasos = [
@@ -184,6 +194,15 @@ const serviciosCards = [
    PAGE
    ══════════════════════════════════ */
 export default function Home() {
+  const [rotatingIndex, setRotatingIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRotatingIndex((prev) => (prev + 1) % heroRotatingTexts.length)
+    }, 3500)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <>
       {/* ═══════ 1. HERO — La Primera Impresión ═══════ */}
@@ -202,28 +221,40 @@ export default function Home() {
         </div>
         <div className="container-page relative z-10 pt-28 md:pt-44 pb-16 md:pb-24">
           <FadeIn delay={0.1}>
-            <span className="eyebrow mb-6">Psicología Clínica y Terapia Sistémica</span>
+            <span className="eyebrow mb-6">Psicología Clínica Integrativa y Sistémica</span>
           </FadeIn>
           <FadeIn delay={0.2}>
             <h1 className="mb-5 max-w-3xl" style={{ color: '#111827' }}>
-              Ciencia para comprender.<br />
-              Consciencia para <span style={{ color: '#2563eb' }}>sanar</span>.
+              ¿Sientes que...<br />
+              <span
+                key={rotatingIndex}
+                className="inline-block"
+                style={{
+                  color: '#2563eb',
+                  animation: 'fadeInUp 0.5s ease-out',
+                }}
+              >
+                {heroRotatingTexts[rotatingIndex]}
+              </span>
             </h1>
           </FadeIn>
           <FadeIn delay={0.35}>
             <p className="text-base md:text-lg leading-relaxed max-w-xl mb-7 md:mb-9" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
-              Bienvenido a un espacio terapéutico donde todo el conocimiento y precisión de la <strong style={{ color: '#111827' }}>Neuropsicología</strong> se une a la profundidad del <strong style={{ color: '#111827' }}>Eneagrama</strong> y las <strong style={{ color: '#111827' }}>Constelaciones Familiares</strong>. Descubre el origen de tus bloqueos, comprende cómo funciona tu mente y sana desde la raíz para transformar tu vida.
+              Sentirse así puede ser abrumador, pero no estás solo en esto. Te acompaño a descubrir la raíz de lo que te duele uniendo la ciencia para entender tu mente, y la consciencia (a través del Eneagrama y las Constelaciones) para sanar tu historia. Déjame ayudarte a encontrar esa pieza que falta para que recuperes tu tranquilidad.
             </p>
           </FadeIn>
           <FadeIn delay={0.45}>
             <div className="flex flex-wrap gap-3">
               <Link href="/contacto" className="btn btn-primary">
-                Agendar mi Sesión Cero <span className="btn-icon"><IconArrow /></span>
+                Agendar mi Sesión <span className="btn-icon"><IconArrow /></span>
               </Link>
               <Link href="/test" className="btn btn-outline">
-                ¿No sabes por dónde empezar? Haz un Test
+                Hacer Test + Sesión Cero
               </Link>
             </div>
+            <p className="mt-3 text-xs" style={{ color: '#9ca3af' }}>
+              Terapia individual, Constelaciones o Eneagrama &nbsp;·&nbsp; Evalúa tu estado actual y analicémoslo sin costo
+            </p>
           </FadeIn>
         </div>
       </section>
