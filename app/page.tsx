@@ -208,23 +208,12 @@ export default function Home() {
       {/* ═══════ 1. HERO — La Primera Impresión ═══════ */}
       <section className="relative min-h-[100dvh] flex items-center overflow-hidden" style={{ background: '#f9fafb' }}>
         <HeroCanvas />
-        <div className="absolute right-0 top-0 bottom-0 w-1/2 hidden lg:block overflow-hidden">
-          <Image
-            src="/images/hero.png"
-            alt="Psicobahamondes"
-            fill
-            className="object-cover object-center"
-            style={{ opacity: 0.9 }}
-            priority
-          />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, #f9fafb 0%, transparent 30%)' }} />
-        </div>
         <div className="container-page relative z-10 pt-28 md:pt-44 pb-16 md:pb-24">
           <FadeIn delay={0.1}>
             <span className="eyebrow mb-6">Psicología Clínica Integrativa y Sistémica</span>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <h1 className="mb-5 max-w-3xl" style={{ color: '#111827' }}>
+            <h1 className="mb-5 max-w-3xl" style={{ color: '#111827', fontSize: 'clamp(1.75rem, 4vw, 3rem)', lineHeight: 1.15, letterSpacing: '-0.02em', fontWeight: 700 }}>
               ¿Sientes que...<br />
               <span
                 key={rotatingIndex}
@@ -252,9 +241,6 @@ export default function Home() {
                 Hacer Test + Sesión Cero
               </Link>
             </div>
-            <p className="mt-3 text-xs" style={{ color: '#9ca3af' }}>
-              Terapia individual, Constelaciones o Eneagrama &nbsp;·&nbsp; Evalúa tu estado actual y analicémoslo sin costo
-            </p>
           </FadeIn>
         </div>
       </section>
