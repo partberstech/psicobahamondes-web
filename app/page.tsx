@@ -242,7 +242,7 @@ export default function Home() {
       </section>
 
       {/* Contenedor 2: Texto de apoyo + CTAs */}
-      <section className="py-6 md:py-8" style={{ background: '#ffffff' }}>
+      <section className="pt-6 pb-3 md:pt-8 md:pb-4" style={{ background: '#ffffff' }}>
         <div className="container-page">
           <FadeIn className="max-w-2xl mx-auto text-center">
             <p className="text-base md:text-lg leading-relaxed mb-9" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
