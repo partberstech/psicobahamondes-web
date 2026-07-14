@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import TestRapido from './TestRapido'
-import TestRheti from './TestRheti'
+import EneagramaTestCompleto from './EneagramaTestCompleto'
 import EneagramaExplorador from './EneagramaExplorador'
 import { TYPES } from './enneagrama-data'
 
@@ -15,17 +14,6 @@ function IconBolt() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
       <circle cx="12" cy="12" r="10" strokeDasharray="4 2" opacity="0.3" />
-    </svg>
-  )
-}
-
-function IconList() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-      <circle cx="3" cy="6" r="1" fill="currentColor" />
-      <circle cx="3" cy="12" r="1" fill="currentColor" />
-      <circle cx="3" cy="18" r="1" fill="currentColor" />
     </svg>
   )
 }
@@ -54,8 +42,7 @@ function IconInfo() {
 
 const SUB_TABS = [
   { id: 'explorar', label: 'Explorar Tipos', desc: 'Conoce los 9 eneatipos', icon: IconInfo, gradient: 'from-blue-50 to-indigo-50' },
-  { id: 'rapido', label: 'Test Rápido', desc: '8 preguntas', icon: IconBolt, gradient: 'from-amber-50 to-orange-50' },
-  { id: 'rheti', label: 'RHETI Completo', desc: '144 preguntas', icon: IconList, gradient: 'from-emerald-50 to-teal-50' },
+  { id: 'test', label: 'Test Eneagrama', desc: '144 preguntas + reporte', icon: IconBolt, gradient: 'from-amber-50 to-orange-50' },
   { id: 'diagrama', label: 'Diagrama', desc: 'Explorador interactivo', icon: IconGrid, gradient: 'from-purple-50 to-pink-50' },
 ]
 
@@ -401,8 +388,8 @@ export default function EneagramaTab() {
                           <p className="text-base mb-4" style={{ color: '#6b7280' }}>
                             ¿Te identificas con este tipo? Descúbrelo con el test.
                           </p>
-                          <button onClick={() => setSubTab('rapido')} className="btn btn-primary">
-                            Hacer test rápido
+                          <button onClick={() => setSubTab('test')} className="btn btn-primary">
+                            Hacer test de Eneagrama
                           </button>
                         </div>
                       </div>
@@ -412,8 +399,7 @@ export default function EneagramaTab() {
               )}
             </div>
           )}
-          {subTab === 'rapido' && <TestRapido />}
-          {subTab === 'rheti' && <TestRheti />}
+          {subTab === 'test' && <EneagramaTestCompleto />}
           {subTab === 'diagrama' && <EneagramaExplorador />}
         </motion.div>
       </AnimatePresence>
