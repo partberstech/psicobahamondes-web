@@ -1,4 +1,5 @@
 // ─── Email Template — Eneagrama Report for Psychologist ───
+import { getProfileByType } from './eneagrama-profiles'
 
 const BRAND = '#2563eb'
 const BRAND_DARK = '#1d4ed8'
@@ -295,6 +296,32 @@ export function eneagramaReportTemplate(data: EneagramaTestData): string {
       </h3>
       ${wingsHtml}
     </div>
+
+    <!-- ═══ Full Report (~3000 chars) ═══ -->
+    ${(() => {
+      const profile = getProfileByType(data.tipoPredominante)
+      if (!profile) return ''
+      // Convert \n to <br> for HTML email
+      const formatted = profile.fullReport
+        .split('\n')
+        .map(line => {
+          if (line.startsWith('ANÁLISIS') || line.startsWith('DESCRIPCIÓN') || line.startsWith('MIEDO') || line.startsWith('DESEO') || line.startsWith('PATRONES') || line.startsWith('DINÁMICA') || line.startsWith('ALAS') || line.startsWith('ÁREAS') || line.startsWith('NOTE')) {
+            return `<strong style="color:${INK};font-size:14px;display:block;margin:20px 0 8px">${line}</strong>`
+          }
+          if (line.trim() === '') return '<br />'
+          return `<span style="display:block;font-size:13px;color:${MUTED};line-height:1.7;margin-bottom:2px">${line}</span>`
+        })
+        .join('')
+      return `
+      <div style="background:${BG};border:1px solid ${BORDER};border-radius:12px;padding:24px;margin-bottom:24px">
+        <h3 style="font-family:'Plus Jakarta Sans','Helvetica Neue',Arial,sans-serif;font-size:16px;font-weight:700;color:${INK};margin:0 0 16px;border-bottom:2px solid ${BRAND};padding-bottom:8px">
+          📋 Análisis Clínico Completo
+        </h3>
+        <div style="line-height:1.8">
+          ${formatted}
+        </div>
+      </div>`
+    })()}
 
     <!-- ═══ Note ═══ -->
     <div style="background:${SURFACE};border-radius:10px;padding:16px 18px;margin-bottom:24px;font-size:13px;color:${MUTED};line-height:1.6">

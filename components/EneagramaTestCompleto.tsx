@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TYPES, slideVariants } from './enneagrama-data'
 import { RHETI_144 } from './rheti-144'
+import { getProfileByType } from '@/lib/eneagrama-profiles'
 
 /* ═══════════════════════════════════════════════════════
    TYPES & CONSTANTS
@@ -668,6 +669,20 @@ function ResultsScreen({
             </div>
           </div>
         </div>
+
+        {/* ── Profile Summary (detallado, ~1000 chars) ── */}
+        {(() => {
+          const profile = getProfileByType(topTypeId)
+          if (!profile) return null
+          return (
+            <div className="p-6 md:p-8 mb-6" style={cardStyle}>
+              <h4 className="mb-4" style={labelStyle}>Tu perfil en profundidad</h4>
+              <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+                {profile.summary}
+              </p>
+            </div>
+          )
+        })()}
 
         {/* ── Email notification ── */}
         <div className="p-6 md:p-8 mb-6" style={{
