@@ -243,13 +243,12 @@ export default function SobreMi() {
                   boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
                 }}
               >
-                <video
-                  src="/filosofia_sobre-mi.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
+                <Image
+                  src="/images/filosofia_sobre-mi.jpeg"
+                  alt="Filosofía de Pedro Bahamondes"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </motion.div>
