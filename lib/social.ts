@@ -1,5 +1,5 @@
 const NOTION_KEY = process.env.NOTION_API_KEY || ''
-const SOCIAL_DB = '395bedc4-2b9f-8171-8d2e-f7addc7fff51'
+const SOCIAL_DB = '397bedc4-2b9f-81ed-a75b-cb4ad406c981'
 
 export type SocialPost = {
   id: string
