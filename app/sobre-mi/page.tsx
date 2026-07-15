@@ -220,18 +220,18 @@ export default function SobreMi() {
               </div>
             </motion.div>
 
-            {/* Featured image — Double-Bezel card */}
+            {/* Featured image — Video */}
             <motion.div {...scaleIn}>
               <div className="card card-hover" style={{ aspectRatio: '3/4' }}>
                 <div className="card-core overflow-hidden" style={{ padding: 0 }}>
                   <div className="relative w-full h-full">
-                    <Image
-                      src="/images/filosofia_sobre-mi.png"
-                      alt="Pedro Bahamondes — Filosofía"
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      priority
+                    <video
+                      src="/filosofia_sobre-mi.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </div>

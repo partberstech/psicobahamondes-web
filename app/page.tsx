@@ -145,10 +145,10 @@ function StaggerItem({ children, className = '' }: { children: React.ReactNode; 
    HERO ROTATING TEXT
    ══════════════════════════════════ */
 const heroRotatingTexts = [
-  '¿Sientes que... repites las mismas historias familiares una y otra vez?',
-  '¿Sientes que... la ansiedad y los bloqueos mentales frenan tu vida diaria?',
-  '¿Sientes que... estás atrapado en reacciones emocionales que no puedes controlar?',
-  '¿Sientes que... llevas cargas del pasado que no sabes cómo soltar?',
+  'Repetir las mismas historias familiares una y otra vez tiene una razón. ¿Descubrirla juntos?',
+  'La ansiedad y los bloqueos mentales no tienen por qué definir tu vida. Hay un camino distinto.',
+  'Reacciones emocionales que parecen escapar de tu control... ¿y si pudieras entender su origen?',
+  'Cargas del pasado que no logras soltar no son una sentencia. Son una invitación a sanar.',
 ]
 
 
