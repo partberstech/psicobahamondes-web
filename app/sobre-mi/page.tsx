@@ -175,7 +175,7 @@ export default function SobreMi() {
       </section>
 
       {/* ═══════ MI FILOSOFÍA — VIDEO FULL BLEED ═══════ */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-white">
+      <section className="section-block relative min-h-[90vh] overflow-hidden bg-white">
         {/* Video background */}
         <video
           src="/filosofia_sobre-mi.mp4"
