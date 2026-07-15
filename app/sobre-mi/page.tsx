@@ -175,7 +175,7 @@ export default function SobreMi() {
       </section>
 
       {/* ═══════ MI FILOSOFÍA — VIDEO FULL BLEED ═══════ */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-white">
         {/* Video background */}
         <video
           src="/filosofia_sobre-mi.mp4"
@@ -185,16 +185,16 @@ export default function SobreMi() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Dark overlay left for readability */}
+        {/* Subtle left gradient for text legibility — no dark overlay */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.15) 70%, transparent 100%)',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 35%, rgba(255,255,255,0.2) 60%, transparent 80%)',
           }}
         />
         <div className="container-page relative z-10">
-          <motion.div {...fadeUp} className="max-w-xl space-y-6">
-            <span className="eyebrow inline-block" style={{ color: 'rgba(255,255,255,0.7)' }}>Mi filosofía</span>
+          <motion.div {...fadeUp} className="max-w-lg space-y-6">
+            <span className="eyebrow inline-block" style={{ color: '#6b7280' }}>Mi filosofía</span>
             <h2
               className="mb-4"
               style={{
@@ -203,12 +203,12 @@ export default function SobreMi() {
                 lineHeight: 0.95,
                 letterSpacing: '-0.025em',
                 fontWeight: 700,
-                color: '#ffffff',
+                color: '#111827',
               }}
             >
               Ciencia para comprender, consciencia para sanar
             </h2>
-            <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.85)' }}>
+            <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: '#374151' }}>
               <p>
                 He volcado mi vocación en guiar procesos terapéuticos que transforman vidas.
                 A través de un enfoque especializado y una sólida formación académica,
@@ -216,7 +216,7 @@ export default function SobreMi() {
                 cerebro y las raíces de tu alma.
               </p>
               <p>
-                <strong style={{ color: '#ffffff' }}>El objetivo de la terapia no es cambiar tu esencia,</strong> sino
+                <strong style={{ color: '#111827' }}>El objetivo de la terapia no es cambiar tu esencia,</strong> sino
                 comprender y flexibilizar los patrones mecánicos que bloquean tu bienestar.
                 Cuando el automatismo toma el control, perdemos la capacidad de elegir.
                 Sanar es hacer consciente lo invisible y recuperar el volante de tu vida.
@@ -229,7 +229,7 @@ export default function SobreMi() {
                   <IconArrowRight />
                 </span>
               </Link>
-              <Link href="/contacto" className="btn btn-outline" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#ffffff' }}>
+              <Link href="/contacto" className="btn btn-outline">
                 Agendar cita
               </Link>
             </div>
