@@ -82,7 +82,7 @@ export default function TestPage() {
   return (
     <>
       {/* ═══════ HERO ═══════ */}
-      <section className="relative overflow-hidden" style={{ minHeight: 'clamp(320px, 45vh, 480px)' }}>
+      <section className="relative overflow-hidden" style={{ minHeight: 'clamp(420px, 60vh, 600px)' }}>
         <div className="absolute inset-0">
           <Image
             src="/images/Hero_Test.jpeg"
@@ -97,7 +97,7 @@ export default function TestPage() {
             background: 'linear-gradient(135deg, rgba(17,24,39,0.75) 0%, rgba(17,24,39,0.45) 50%, rgba(17,24,39,0.15) 100%)',
           }} />
         </div>
-        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(140px, 22vh, 240px)', paddingBottom: 'clamp(60px, 10vh, 100px)' }}>
+        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(160px, 26vh, 280px)', paddingBottom: 'clamp(60px, 10vh, 100px)' }}>
           <motion.div
             initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}

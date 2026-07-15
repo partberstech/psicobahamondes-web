@@ -33,7 +33,7 @@ export default function Contacto() {
   return (
     <>
       {/* ═══════ HERO ═══════ */}
-      <section className="relative overflow-hidden" style={{ minHeight: 'clamp(400px, 55vh, 560px)' }}>
+      <section className="relative overflow-hidden" style={{ minHeight: 'clamp(500px, 70vh, 700px)' }}>
         <div className="absolute inset-0">
           <Image
             src="/images/Hero_Contacto.jpeg"
@@ -48,7 +48,7 @@ export default function Contacto() {
             background: 'linear-gradient(135deg, rgba(17,24,39,0.75) 0%, rgba(17,24,39,0.45) 50%, rgba(17,24,39,0.15) 100%)',
           }} />
         </div>
-        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(180px, 28vh, 300px)', paddingBottom: 'clamp(80px, 12vh, 140px)' }}>
+        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(200px, 32vh, 340px)', paddingBottom: 'clamp(80px, 12vh, 140px)' }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
