@@ -208,7 +208,7 @@ export default function Home() {
   return (
     <>
       {/* ═══════ 1. HERO — La Primera Impresión (Video Background) ═══════ */}
-      <section className="section-block relative min-h-[70vh] overflow-hidden">
+      <section className="section-block relative min-h-[70vh] flex items-center overflow-hidden">
         {/* Video background */}
         <video
           autoPlay
@@ -229,7 +229,7 @@ export default function Home() {
         <div className="container-page relative z-10">
           <div className="max-w-2xl">
             <FadeIn delay={0.1}>
-              <span className="eyebrow mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>Psicología Clínica Integrativa y Sistémica</span>
+              <span className="eyebrow mb-6" style={{ color: '#60a5fa' }}>Psicología Clínica Integrativa y Sistémica</span>
             </FadeIn>
             <FadeIn delay={0.2}>
               <h1 className="mb-6 text-xl md:text-2xl font-bold" style={{ color: '#ffffff', lineHeight: 1.3 }}>
