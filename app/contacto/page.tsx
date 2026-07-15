@@ -39,7 +39,8 @@ export default function Contacto() {
             src="/images/Hero_Contacto.jpeg"
             alt="Contacto - Psicobahamondes"
             fill
-            className="object-cover object-top"
+            className="object-cover"
+            style={{ objectPosition: 'center 20%' }}
             sizes="100vw"
             priority
           />

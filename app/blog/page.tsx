@@ -69,7 +69,8 @@ function Blog() {
             src="/images/Hero_Contenidos.jpeg"
             alt="Contenidos - Psicobahamondes"
             fill
-            className="object-cover object-top"
+            className="object-cover"
+            style={{ objectPosition: 'center 20%' }}
             sizes="100vw"
             priority
           />
