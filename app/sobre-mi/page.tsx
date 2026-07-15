@@ -192,7 +192,7 @@ export default function SobreMi() {
             background: 'linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 30%, transparent 55%)',
           }}
         />
-        <div className="container-page relative z-10 !pl-0">
+        <div className="relative z-10 w-full" style={{ maxWidth: '1120px', paddingLeft: 'clamp(20px, 4vw, 48px)' }}>
           <motion.div {...fadeUp} className="max-w-lg space-y-6">
             <span className="eyebrow inline-block" style={{ color: '#6b7280' }}>Mi filosofía</span>
             <h2
