@@ -73,14 +73,14 @@ const modalidades = [
   {
     icon: IconLocation,
     titulo: 'Presencial',
-    desc: 'Un espacio seguro, privado y de absoluto cuidado en Santiago. La cercanía del encuentro cara a cara permite trabajar tu proceso con la profundidad y la calidez que solo la presencia puede ofrecer.',
-    detalles: ['Sesiones de 50 minutos', 'Consultorio en Santiago — ambiente confidencial y acogedor', 'Enfoque integrativo personalizado', 'Agenda flexible: mañanas y tardes'],
+    desc: 'Un espacio seguro, privado y de absoluto cuidado en Osorno. La cercanía del encuentro cara a cara permite trabajar tu proceso con la profundidad y la calidez que solo la presencia puede ofrecer.',
+    detalles: ['Sesiones de 50 minutos', 'Consultorio en Osorno — ambiente confidencial y acogedor', 'Enfoque integrativo personalizado', 'Agenda flexible: mañanas y tardes'],
     image: '/images/cardpresencial_servicios.jpeg',
   },
   {
     icon: IconGlobe,
     titulo: 'Online',
-    desc: 'La misma profundidad y rigor clínico desde cualquier lugar del mundo. Ideal para quienes viajan, viven fuera de Santiago o prefieren la comodidad de su hogar sin sacrificar calidad terapéutica.',
+    desc: 'La misma profundidad y rigor clínico desde cualquier lugar del mundo. Ideal para quienes viajan, viven fuera de Osorno o prefieren la comodidad de su hogar sin sacrificar calidad terapéutica.',
     detalles: ['Sesiones por videollamada segura', 'Desde cualquier país de habla hispana', 'Misma calidad clínica que presencial', 'Horarios adaptados a tu zona horaria'],
     image: '/images/cardonline_servicios.jpeg',
   },
@@ -117,7 +117,7 @@ const faqs = [
   },
   {
     q: '¿Cómo sé si necesito terapia presencial u online?',
-    r: 'Ambas modalidades ofrecen la misma profundidad terapéutica. Si estás en Santiago y prefieres el encuentro cara a cara, el espacio presencial es ideal. Si viajas frecuentemente o prefieres la comodidad de tu hogar, la modalidad online mantiene la misma calidad clínica.',
+    r: 'Ambas modalidades ofrecen la misma profundidad terapéutica. Si estás en Osorno y prefieres el encuentro cara a cara, el espacio presencial es ideal. Si viajas frecuentemente o prefieres la comodidad de tu hogar, la modalidad online mantiene la misma calidad clínica.',
   },
   {
     q: '¿Aceptas seguros médicos?',

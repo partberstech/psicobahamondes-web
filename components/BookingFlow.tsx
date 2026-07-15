@@ -36,7 +36,7 @@ const SESSION_TYPES: SessionType[] = [
     titulo: 'Consulta Presencial',
     duracion: '50 min',
     precio: 'Fonasa · Isapre · Particular',
-    descripcion: 'Sesión presencial en Santiago. Trabajamos juntos con toda la atención.',
+    descripcion: 'Sesión presencial en Osorno. Trabajamos juntos con toda la atención.',
     schedule: 'Lun–Sáb · 09:00 a 14:00',
     icono: '📍',
     color: '#059669',

@@ -177,17 +177,17 @@ const pasos = [
 const serviciosCards = [
   {
     titulo: 'Psicoterapia Integrativa',
-    desc: 'Trabajo profundo individual. Uniendo la evidencia neuropsicológica con el autodescubrimiento.',
+    desc: 'Trabajo profundo individual que integra la evidencia neuropsicológica con el autodescubrimiento. Cada sesión está diseñada para que comprendas los mecanismos de tu mente y recuperes la capacidad de elegir.',
     href: '/servicios',
   },
   {
     titulo: 'Constelaciones Familiares',
-    desc: 'Sesiones enfocadas en destrabar dinámicas inconscientes heredadas de tu sistema familiar.',
+    desc: 'Un método fenomenológico que visibiliza las dinámicas invisibles de tu sistema familiar — lealtades, exclusiones y vínculos rotos — para liberar lo que no te pertenece y recuperar tu fuerza vital.',
     href: '/servicios',
   },
   {
     titulo: 'Eneagrama Aplicado',
-    desc: 'Descubre tu tipo de personalidad y obtén un mapa claro para salir de tus automatismos.',
+    desc: 'El test RETH identifica tu tipo de personalidad entre los 9 eneatipos y revela los mecanismos de defensa automáticos que generan sufrimiento. Es un mapa clínico para salir de tus automatismos.',
     href: '/servicios',
   },
 ]
@@ -208,7 +208,7 @@ export default function Home() {
   return (
     <>
       {/* ═══════ 1. HERO — La Primera Impresión (Video Background) ═══════ */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[70vh] flex items-end md:items-center overflow-hidden">
         {/* Video background */}
         <video
           autoPlay
@@ -222,12 +222,12 @@ export default function Home() {
         <div
           className="absolute inset-0 z-[1]"
           style={{
-            background: 'linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)',
+            background: 'linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 35%, transparent 65%)',
           }}
         />
         {/* Text content on left */}
-        <div className="container-page relative z-10 py-20 md:py-28">
-          <div className="max-w-xl">
+        <div className="relative z-10 w-full" style={{ maxWidth: '1120px', paddingLeft: 'clamp(20px, 4vw, 48px)', paddingRight: 'clamp(20px, 4vw, 48px)' }}>
+          <div className="max-w-2xl pb-16 md:pb-0">
             <FadeIn delay={0.1}>
               <span className="eyebrow mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>Psicología Clínica Integrativa y Sistémica</span>
             </FadeIn>
@@ -272,7 +272,7 @@ export default function Home() {
             <span className="eyebrow mb-4">Empieza por conocerte</span>
             <h2 className="mb-6">¿Sientes que repites patrones pero no sabes por qué?</h2>
             <p className="text-base leading-relaxed" style={{ color: '#6b7280', fontFamily: 'var(--font-body)' }}>
-              El primer paso para cualquier transformación es saber dónde estamos. He preparado herramientas prácticas para ayudarte a dar esa primera mirada hacia tu interior.
+              El primer paso para cualquier transformación es saber dónde estamos. He preparado tres herramientas clínicas — Eneagrama, Constelaciones Familiares y evaluación neuropsicológica — para ayudarte a obtener una radiografía honesta de tus patrones, tus vínculos y tu mundo interior.
             </p>
           </FadeIn>
 
@@ -310,7 +310,7 @@ export default function Home() {
             <span className="eyebrow mb-4">Metodología</span>
             <h2 className="mb-6">Un enfoque integral: Tu mente y tu historia no están separadas</h2>
             <p className="text-base leading-relaxed" style={{ color: '#6b7280', fontFamily: 'var(--font-body)' }}>
-              Para lograr un bienestar real, no basta con tratar los síntomas; necesitamos mirar al ser humano en su totalidad. Mi metodología de trabajo se sostiene en dos grandes pilares que se complementan:
+              Para lograr un bienestar real, no basta con tratar los síntomas; necesitamos mirar al ser humano en su totalidad. Mi metodología integra la rigurosidad de la ciencia neurológica con la profundidad de los sistemas familiares y la sabiduría del Eneagrama. Son dos pilares que se potencian entre sí:
             </p>
           </FadeIn>
 
@@ -359,7 +359,7 @@ export default function Home() {
             <span className="eyebrow mb-4">Servicios</span>
             <h2 className="mb-4">¿Cómo puedo acompañarte en tu proceso?</h2>
             <p className="text-base leading-relaxed" style={{ color: '#6b7280', fontFamily: 'var(--font-body)' }}>
-              Distintas modalidades de trabajo, un mismo objetivo: tu bienestar integral.
+              Cada persona necesita un acompañamiento distinto. Ofrezco psicoterapia integrativa individual, trabajo con Constelaciones Familiares, y aplicación clínica del Eneagrama — presencial en Osorno o online desde cualquier lugar.
             </p>
           </FadeIn>
 
@@ -394,7 +394,7 @@ export default function Home() {
             <span className="eyebrow mb-4">Contenidos</span>
             <h2 className="mb-4">Recursos para expandir tu consciencia</h2>
             <p className="text-base leading-relaxed" style={{ color: '#6b7280', fontFamily: 'var(--font-body)' }}>
-              El proceso de sanación continúa fuera de la consulta. Explora material gratuito diseñado para acompañar tu crecimiento personal.
+              El proceso de sanación continúa fuera de la consulta. Explora artículos, videos y reflexiones sobre neuropsicología, Eneagrama, Constelaciones Familiares y bienestar emocional — material gratuito diseñado para acompañar tu crecimiento personal.
             </p>
           </FadeIn>
 
@@ -407,7 +407,7 @@ export default function Home() {
                   </div>
                   <h3 className="mb-3">Videos</h3>
                   <p className="text-sm leading-relaxed flex-1" style={{ color: '#6b7280', fontFamily: 'var(--font-body)' }}>
-                    Contenido audiovisual sobre neuropsicología, Eneagrama y bienestar emocional.
+                    Videos cortos y dinámicos sobre neuropsicología, Eneagrama, Constelaciones y herramientas prácticas de regulación emocional.
                   </p>
                 </div>
               </motion.div>
@@ -421,7 +421,7 @@ export default function Home() {
                   </div>
                   <h3 className="mb-3">Artículos</h3>
                   <p className="text-sm leading-relaxed flex-1" style={{ color: '#6b7280', fontFamily: 'var(--font-body)' }}>
-                    Artículos profundos que exploran las dinámicas de la mente y el sistema familiar.
+                    Análisis profundos sobre las dinámicas de la mente, los patrones de personalidad y las heridas transgeneracionales que afectan tu vida cotidiana.
                   </p>
                 </div>
               </motion.div>
@@ -435,7 +435,7 @@ export default function Home() {
                   </div>
                   <h3 className="mb-3">Podcasts</h3>
                   <p className="text-sm leading-relaxed flex-1" style={{ color: '#6b7280', fontFamily: 'var(--font-body)' }}>
-                    Conversaciones y episodios para acompañar tu proceso de autodescubrimiento.
+                    Episodios y conversaciones donde exploro herramientas clínicas, historias de proceso terapéutico y reflexiones para acompañar tu camino de autodescubrimiento.
                   </p>
                 </div>
               </motion.div>

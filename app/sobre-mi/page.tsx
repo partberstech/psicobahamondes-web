@@ -189,10 +189,10 @@ export default function SobreMi() {
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 30%, transparent 55%)',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 35%, rgba(255,255,255,0.15) 60%, transparent 75%)',
           }}
         />
-        <div className="relative z-10 w-full" style={{ maxWidth: '1120px', paddingLeft: 'clamp(20px, 4vw, 48px)' }}>
+        <div className="container-page relative z-10">
           <motion.div {...fadeUp} className="max-w-lg space-y-6">
             <span className="eyebrow inline-block" style={{ color: '#6b7280' }}>Mi filosofía</span>
             <h2

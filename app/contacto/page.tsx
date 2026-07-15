@@ -39,7 +39,7 @@ export default function Contacto() {
             src="/images/Hero_Contacto.jpeg"
             alt="Contacto - Psicobahamondes"
             fill
-            className="object-cover"
+            className="object-cover object-top"
             sizes="100vw"
             priority
           />
@@ -79,7 +79,7 @@ export default function Contacto() {
                 color: 'rgba(255,255,255,0.8)',
               }}
             >
-              Elegí la modalidad que prefieras — presencial en Santiago u online desde
+              Elegí la modalidad que prefieras — presencial en Osorno u online desde
               cualquier lugar — completá tus datos y agendá tu sesión en el horario que
               mejor te acomode. La primera consulta es gratuita y sin compromiso.
             </p>

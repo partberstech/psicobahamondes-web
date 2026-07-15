@@ -88,7 +88,7 @@ export default function TestPage() {
             src="/images/Hero_Test.jpeg"
             alt="Test psicológicos - Psicobahamondes"
             fill
-            className="object-cover"
+            className="object-cover object-top"
             sizes="100vw"
             priority
           />
