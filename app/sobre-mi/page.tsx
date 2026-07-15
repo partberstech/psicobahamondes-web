@@ -175,7 +175,7 @@ export default function SobreMi() {
       </section>
 
       {/* ═══════ MI FILOSOFÍA — VIDEO FULL BLEED ═══════ */}
-      <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-white">
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-white">
         {/* Video background */}
         <video
           src="/filosofia_sobre-mi.mp4"
@@ -185,21 +185,21 @@ export default function SobreMi() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Subtle left gradient for text legibility — no dark overlay */}
+        {/* Subtle left gradient for text legibility */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 35%, rgba(255,255,255,0.2) 60%, transparent 80%)',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.5) 25%, transparent 50%)',
           }}
         />
-        <div className="container-page relative z-10">
-          <motion.div {...fadeUp} className="max-w-lg space-y-6">
+        <div className="container-page relative z-10 pl-0 md:pl-8">
+          <motion.div {...fadeUp} className="max-w-md space-y-6">
             <span className="eyebrow inline-block" style={{ color: '#6b7280' }}>Mi filosofía</span>
             <h2
               className="mb-4"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2rem,4.5vw,3.5rem)',
+                fontSize: 'clamp(1.75rem,4vw,3rem)',
                 lineHeight: 0.95,
                 letterSpacing: '-0.025em',
                 fontWeight: 700,
@@ -208,7 +208,7 @@ export default function SobreMi() {
             >
               Ciencia para comprender, consciencia para sanar
             </h2>
-            <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: '#374151' }}>
+            <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', lineHeight: 1.7, color: '#374151' }}>
               <p>
                 He volcado mi vocación en guiar procesos terapéuticos que transforman vidas.
                 A través de un enfoque especializado y una sólida formación académica,
@@ -259,32 +259,27 @@ export default function SobreMi() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {galleryImages.map((img, i) => {
-              const isWide = i === 0 // first image wider on mobile
-              const spanDesktop = i === 0 ? 'md:col-span-2 md:row-span-2' : ''
-              return (
-                <motion.div
-                  key={img.src}
-                  {...fadeUpDelayed(i)}
-                  className={`${isWide ? 'col-span-2' : ''} ${spanDesktop}`}
-                >
-                  <div className="card card-hover h-full overflow-hidden group">
-                    <div className="card-core overflow-hidden" style={{ padding: 0, height: '100%' }}>
-                      <div className="relative w-full h-full" style={{ minHeight: isWide ? 'clamp(300px, 40vh, 500px)' : 'clamp(200px, 28vh, 360px)' }}>
-                        <Image
-                          src={img.src}
-                          alt={img.alt}
-                          fill
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                        />
-                      </div>
+          <div className="grid grid-cols-3 gap-4 md:gap-5">
+            {galleryImages.map((img, i) => (
+              <motion.div
+                key={img.src}
+                {...fadeUpDelayed(i)}
+              >
+                <div className="card card-hover h-full overflow-hidden group">
+                  <div className="card-core overflow-hidden" style={{ padding: 0, height: '100%' }}>
+                    <div className="relative w-full" style={{ aspectRatio: '4/3' }}>
+                      <Image
+                        src={img.src}
+                        alt={img.alt}
+                        fill
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
                     </div>
                   </div>
-                </motion.div>
-              )
-            })}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
