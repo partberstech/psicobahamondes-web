@@ -74,17 +74,17 @@ const valores = [
   {
     icon: <IconGraduation />,
     titulo: 'Formación',
-    desc: 'Más de 15 años de formación continua en neuropsicología clínica, Eneagrama y Constelaciones Familiares, con especialización en integración terapéutica.',
+    desc: 'Más de 15 años de formación continua en neuropsicología clínica, Eneagrama y Constelaciones Familiares. Cada herramienta ha sido elegida por su capacidad real de generar transformación, no por tendencia.',
   },
   {
     icon: <IconHands />,
     titulo: 'Acompañamiento',
-    desc: 'Cada proceso es único. Diseño un plan terapéutico adaptado a tus necesidades específicas, tu historia personal y tus objetivos de bienestar.',
+    desc: 'No trabajo con protocolsos genéricos. Diseño un plan terapéutico adaptado a tu historia personal, tus necesidades específicas y tus objetivos de bienestar. Cada proceso es tan único como la persona que lo vive.',
   },
   {
     icon: <IconRefresh />,
-    titulo: 'Visión',
-    desc: 'La combinación de ciencia y sabiduría ancestral permite abordar todas las dimensiones del ser humano: neurológica, emocional, relacional y sistémica.',
+    titulo: 'Integración',
+    desc: 'La combinación de ciencia y sabiduría ancestral permite abordar todas las dimensiones del ser humano: neurológica, emocional, relacional y sistémica. Un enfoque completo para un bienestar real.',
   },
 ]
 
@@ -221,6 +221,13 @@ export default function SobreMi() {
                 Cuando el automatismo toma el control, perdemos la capacidad de elegir.
                 Sanar es hacer consciente lo invisible y recuperar el volante de tu vida.
               </p>
+              <p style={{ color: '#4b5563', fontSize: '0.9375rem' }}>
+                Mi trabajo integra tres herramientas complementarias: la neuropsicología
+                para entender los mecanismos cerebrales, el Eneagrama para mapear los
+                patrones de personalidad, y las Constelaciones Familiares para sanar las
+                heridas que vienen del sistema familiar. Juntas, ofrecen una mirada completa
+                de lo que eres y de lo que puedes llegar a ser.
+              </p>
             </div>
             <div className="flex flex-wrap gap-4 pt-2">
               <Link href="/servicios" className="btn btn-primary">
@@ -255,7 +262,10 @@ export default function SobreMi() {
               Mi consultorio
             </h2>
             <p className="mt-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--muted)' }}>
-              Un espacio diseñado para la confianza, la calma y la profundidad del encuentro terapéutico.
+              Un espacio diseñado para la confianza, la calma y la profundidad del
+              encuentro terapéutico. Cada detalle está pensado para que te sientas
+              seguro, cómodo y libre de expresarte sin filtros. Porque sanar requiere
+              un lugar donde la vulnerabilidad sea bienvenida.
             </p>
           </motion.div>
 
@@ -361,6 +371,10 @@ export default function SobreMi() {
             >
               Formación y experiencia
             </h2>
+            <p className="mt-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--muted)' }}>
+              Más de 15 años de formación continua y práctica clínica, orientados
+              siempre a integrar las herramientas más efectivas para cada persona.
+            </p>
           </motion.div>
 
           <div className="relative">
@@ -444,7 +458,10 @@ export default function SobreMi() {
               Actualidad
             </h2>
             <p className="mt-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--muted)' }}>
-              Publicaciones, videos y contenido que comparto en redes sociales.
+              Comparto regularmente contenido en redes sociales: reflexiones sobre
+              neuropsicología, dinámicas del Eneagrama, herramientas prácticas de
+              bienestar emocional y videos cortos diseñados para ayudarte a
+              comprenderte mejor. Sígueme para estar al día.
             </p>
           </motion.div>
 

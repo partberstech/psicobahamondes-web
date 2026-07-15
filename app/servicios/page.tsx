@@ -73,15 +73,15 @@ const modalidades = [
   {
     icon: IconLocation,
     titulo: 'Presencial',
-    desc: 'Un espacio seguro, privado y de absoluto cuidado en Santiago. La cercanía del encuentro cara a cara para trabajar tu proceso con profundidad.',
-    detalles: ['Sesiones de 50 minutos', 'Ambiente confidencial y acogedor', 'Enfoque personalizado'],
+    desc: 'Un espacio seguro, privado y de absoluto cuidado en Santiago. La cercanía del encuentro cara a cara permite trabajar tu proceso con la profundidad y la calidez que solo la presencia puede ofrecer.',
+    detalles: ['Sesiones de 50 minutos', 'Consultorio en Santiago — ambiente confidencial y acogedor', 'Enfoque integrativo personalizado', 'Agenda flexible: mañanas y tardes'],
     image: '/images/cardpresencial_servicios.jpeg',
   },
   {
     icon: IconGlobe,
     titulo: 'Online',
-    desc: 'La misma profundidad y rigor clínico desde cualquier lugar del mundo. Ideal para quienes viajan o prefieren la comodidad de su hogar.',
-    detalles: ['Sesiones por videollamada', 'Desde cualquier país', 'Misma calidad terapéutica'],
+    desc: 'La misma profundidad y rigor clínico desde cualquier lugar del mundo. Ideal para quienes viajan, viven fuera de Santiago o prefieren la comodidad de su hogar sin sacrificar calidad terapéutica.',
+    detalles: ['Sesiones por videollamada segura', 'Desde cualquier país de habla hispana', 'Misma calidad clínica que presencial', 'Horarios adaptados a tu zona horaria'],
     image: '/images/cardonline_servicios.jpeg',
   },
 ]
@@ -90,20 +90,23 @@ const metodologias = [
   {
     icon: IconBrain,
     titulo: 'Neuropsicología',
-    desc: 'Estudiamos el funcionamiento de tu cerebro para identificar patrones automáticos desde una base neurológica. Comprender cómo tus procesos cerebrales influyen en tus emociones y conductas.',
+    desc: 'Estudiamos el funcionamiento de tu cerebro para identificar patrones automáticos desde una base neurológica. Evaluamos tus procesos cognitivos — memoria, atención, funciones ejecutivas — para comprender cómo tu sistema nervioso influye en tus emociones, conductas y en la forma en que interpretas la realidad.',
     categoria: 'Neuropsicología',
+    testButton: false,
   },
   {
     icon: IconStar,
     titulo: 'Eneagrama',
-    desc: 'Un mapa clínico-espiritual para el diagnóstico de la neurosis humana. Al entender tus mecanismos de defensa, puedes hacer consciente el sufrimiento que generas y encontrar la salida.',
+    desc: 'Un mapa clínico-espiritual para el diagnóstico de la neurosis humana. A través del test RETH (Riso-Hudson), identificamos tu tipo de personalidad y tus mecanismos de defensa, permitiéndote hacer consciente el sufrimiento que generas y encontrar la salida.',
     categoria: 'Eneagrama',
+    testButton: true,
   },
   {
     icon: IconLeaf,
     titulo: 'Constelaciones Familiares',
-    desc: 'Método fenomenológico que revela las dinámicas invisibles de tu historia familiar. Libera patrones repetitivos y reconcíliate con tu presente.',
+    desc: 'Método fenomenológico que revela las dinámicas invisibles de tu historia familiar. A través de la representación espacial, identificamos lealtades inconscientes, exclusiones y rupturas en el sistema familiar que se repiten en tu vida actual.',
     categoria: 'Constelaciones Familiares',
+    testButton: false,
   },
 ]
 
@@ -314,13 +317,15 @@ export default function Servicios() {
                         Saber más
                         <IconArrow />
                       </Link>
-                      <Link
-                        href="/test"
-                        className="btn btn-outline text-sm self-start"
-                      >
-                        Hacer test
-                        <IconArrow />
-                      </Link>
+                      {m.testButton && (
+                        <Link
+                          href="/test"
+                          className="btn btn-outline text-sm self-start"
+                        >
+                          Hacer test
+                          <IconArrow />
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </motion.article>

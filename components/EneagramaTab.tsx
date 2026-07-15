@@ -169,13 +169,63 @@ export default function EneagramaTab() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: spring }}
-        className="max-w-2xl mb-10"
+        className="max-w-2xl mb-8"
       >
         <h2 className="mb-4" style={{ color: '#111827' }}>Eneagrama</h2>
         <p className="text-base leading-relaxed" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
           Un mapa de la personalidad con nueve patrones fundamentales. No es una
           etiqueta — es una herramienta para comprender tus mecanismos automáticos
           y recuperar la libertad de elegir.
+        </p>
+      </motion.div>
+
+      {/* ── Test RETH — Metodología ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: spring, delay: 0.05 }}
+        className="mb-10 max-w-3xl"
+        style={{
+          padding: '24px 28px',
+          background: 'linear-gradient(135deg, #eff6ff 0%, #f0f7ff 100%)',
+          borderRadius: '16px',
+          border: '1px solid rgba(37,99,235,0.1)',
+        }}
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#dbeafe', color: '#2563eb' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
+          </div>
+          <span className="text-sm font-bold" style={{ fontFamily: 'var(--font-display)', color: '#111827' }}>
+            ¿Qué es el test RETH?
+          </span>
+        </div>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+          El <strong>RETH</strong> (Riso-Hudson Enneagram Type System) es un instrumento de evaluación clínica de 144 preguntas diseñado por Don Riso y Russ Hudson, los investigadores que sistematizaron el Eneagrama moderno. A diferencia de otros tests que solo identifican tu tipo base, el RETH mide <strong>cuatro niveles de desarrollo</strong> dentro de cada eneatipo — desde la versión más sana hasta la más disfuncional — lo que permite un diagnóstico mucho más preciso.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+          El test cruza tres centros de inteligencia: <strong>Instintivo</strong> (supervivencia, energía vital), <strong>Emocional</strong> (relaciones, imagen, sentimientos) y <strong>Mental</strong> (seguridad, análisis, planes). Cada persona opera predominantemente desde uno de estos centros, y el RETH determina no solo tu tipo sino también <strong>cuál de los tres centros está más activado</strong> en tu sistema nervioso.
+        </p>
+        <div className="grid grid-cols-3 gap-3 mt-4">
+          {[
+            { center: 'Instintivo', color: '#2563eb', desc: 'Energía, supervivencia, acción. Impulsos, necesidades básicas, relación con el cuerpo.' },
+            { center: 'Emocional', color: '#8b5cf6', desc: 'Sentimientos, relaciones, imagen. Búsqueda de reconocimiento, vínculos, identidad social.' },
+            { center: 'Mental', color: '#059669', desc: 'Pensamiento, seguridad, análisis. Planificación, previsión, necesidad de anticipar el futuro.' },
+          ].map((c) => (
+            <div key={c.center} className="p-3 rounded-xl" style={{ background: `${c.color}08`, border: `1px solid ${c.color}15` }}>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ background: c.color }} />
+                <span className="text-xs font-bold" style={{ color: c.color }}>Centro {c.center}</span>
+              </div>
+              <p className="text-[0.7rem] leading-relaxed" style={{ color: '#6b7280' }}>{c.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs mt-4 leading-relaxed" style={{ color: '#9ca3af', fontFamily: 'var(--font-body)' }}>
+          El resultado incluye tu tipo base, tipo en estrés, tipo en crecimiento, alas predominantes y nivel de desarrollo. Este mapa completo es lo que usamos en sesión para diseñar tu proceso terapéutico de forma personalizada.
         </p>
       </motion.div>
 

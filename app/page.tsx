@@ -489,7 +489,7 @@ export default function Home() {
                 <div className="card" style={{ padding: '5px', background: 'rgba(255,255,255,0.05)' }}>
                   <div className="overflow-hidden" style={{ borderRadius: 'calc(1.5rem - 5px)' }}>
                     <Image
-                      src="/images/hero.png"
+                      src="/images/Hero_Contacto.jpeg"
                       alt="Pedro Bahamondes - Psicólogo"
                       width={500}
                       height={600}

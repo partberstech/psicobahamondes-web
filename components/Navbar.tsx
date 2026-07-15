@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import SearchModal from './SearchModal'
 
 const links = [
   { href: '/', label: 'Inicio' },
@@ -91,7 +90,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <SearchModal />
             <Link
               href="/contacto"
               className="btn btn-primary ml-2"

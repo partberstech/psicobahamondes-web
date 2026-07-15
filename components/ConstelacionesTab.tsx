@@ -174,13 +174,66 @@ export default function ConstelacionesTab() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: spring }}
-        className="max-w-2xl mb-10"
+        className="max-w-2xl mb-6"
       >
         <h2 className="mb-4" style={{ color: '#111827' }}>Constelaciones Familiares</h2>
         <p className="text-base leading-relaxed" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
           Un enfoque terapéutico que revela las dinámicas invisibles de tu historia
           familiar. Los patrones que repites no son casualidad — son lealtades
           sistémicas que puedes sanar.
+        </p>
+      </motion.div>
+
+      {/* ── Metodología — Qué es y cómo funciona ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: spring, delay: 0.05 }}
+        className="mb-10 max-w-3xl"
+        style={{
+          padding: '24px 28px',
+          background: 'linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%)',
+          borderRadius: '16px',
+          border: '1px solid rgba(139,92,246,0.1)',
+        }}
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#ede9fe', color: '#8b5cf6' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="5" cy="5" r="2" /><circle cx="19" cy="7" r="2" /><circle cx="12" cy="12" r="2" />
+              <path d="M7 5l5 7M17 7l-5 5" />
+            </svg>
+          </div>
+          <span className="text-sm font-bold" style={{ fontFamily: 'var(--font-display)', color: '#111827' }}>
+            ¿Qué son las Constelaciones Familiares?
+          </span>
+        </div>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+          Las Constelaciones Familiares son un método terapéutico desarrollado por <strong>Bert Hellinger</strong> que trabaja con la <strong>inteligencia del sistema familiar</strong>. A diferencia de la terapia conversacional, aquí lo que ocurre es una <strong>representación espacial</strong>: el paciente elige representantes (personas o elementos) y los ubica en un espacio, creando un "mapa vivo" de las dinámicas familiares.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+          Lo extraordinario de este método es que los representantes, sin conocer la historia familiar, comienzan a <strong>experimentar sensaciones, emociones y posiciones</strong> que corresponden exactamente a las personas que representan. Esto revela lo que Hellinger llama <strong>"órdenes del amor"</strong> — principios invisibles que gobiernan la cohesión del sistema familiar. Cuando estos órdenes se rompen (exclusiones, deudas impagas, secrets), aparecen patrones repetitivos: enfermedades, bloqueos, relaciones disfuncionales.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+          {[
+            { title: 'El procedimiento', items: ['Se plantea un tema o problemática', 'Se eligen representantes para los miembros clave', 'El facilitador observa y guía los movimientos', 'Emergen dinámicas ocultas del sistema', 'Se trabaja la reconciliación y el orden'] },
+            { title: 'Qué revela', items: ['Lealtades invisibles entre generaciones', 'Vínculos rotos o exclusiones', 'Deudas afectivas no resueltas', 'Destino compartido entre miembros', 'Patrones repetitivos inconscientes'] },
+          ].map((block) => (
+            <div key={block.title} className="p-4 rounded-xl" style={{ background: '#ffffff', border: '1px solid rgba(139,92,246,0.08)' }}>
+              <span className="text-xs font-bold mb-2 block" style={{ color: '#8b5cf6' }}>{block.title}</span>
+              <div className="space-y-1.5">
+                {block.items.map((item, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
+                    <span className="text-xs" style={{ color: '#4b5563' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs mt-4 leading-relaxed" style={{ color: '#9ca3af', fontFamily: 'var(--font-body)' }}>
+          En nuestro enfoque, las Constelaciones Familiares se integran con la Neuropsicología y el Eneagrama: primero identificamos el patrón (Eneagrama), luego comprendemos su base neurológica (Neuropsicología) y finalmente trabajamos su origen sistémico (Constelaciones).
         </p>
       </motion.div>
 

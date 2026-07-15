@@ -212,7 +212,7 @@ export default function NeuropsicologiaTab() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: spring }}
-        className="relative max-w-2xl mb-10 overflow-hidden"
+        className="relative max-w-2xl mb-6 overflow-hidden"
         style={{ padding: '40px 0' }}
       >
         <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none select-none" style={{ opacity: 0.04 }}>
@@ -223,6 +223,56 @@ export default function NeuropsicologiaTab() {
           La neuropsicología estudia la relación entre el cerebro y el comportamiento.
           Comprender tus procesos cognitivos — memoria, atención, funciones ejecutivas —
           te da las claves para entender por qué piensas, sientes y actúas de cierta manera.
+        </p>
+      </motion.div>
+
+      {/* ── Metodología — Cómo aplicamos la neuropsicología ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: spring, delay: 0.05 }}
+        className="mb-10 max-w-3xl"
+        style={{
+          padding: '24px 28px',
+          background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)',
+          borderRadius: '16px',
+          border: '1px solid rgba(5,150,105,0.1)',
+        }}
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#d1fae5', color: '#059669' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a5 5 0 0 1 4.5 2.8A4 4 0 0 1 20 8.5a4.5 4.5 0 0 1-.8 8A3.5 3.5 0 0 1 16 20H8a3.5 3.5 0 0 1-3.2-3.5 4.5 4.5 0 0 1-.8-8A4 4 0 0 1 7.5 4.8 5 5 0 0 1 12 2z" />
+            </svg>
+          </div>
+          <span className="text-sm font-bold" style={{ fontFamily: 'var(--font-display)', color: '#111827' }}>
+            ¿Cómo aplicamos la Neuropsicología?
+          </span>
+        </div>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+          La neuropsicología clínica estudia cómo las estructuras cerebrales — corteza prefrontal, amígdala, hipocampo, corteza cingulada — determinan nuestra forma de pensar, sentir y actuar. En terapia, esto no es teoría: es una <strong>herramienta de diagnóstico y cambio</strong>. Cuando identificamos qué circuitos cerebrales están hiperactivados (ansiedad, hipervigilancia) o hipoactivados (dificultad de concentración, desregulación emocional), podemos diseñar intervenciones concretas.
+        </p>
+        <p className="text-sm leading-relaxed mb-3" style={{ color: '#4b5563', fontFamily: 'var(--font-body)' }}>
+          Nos enfocamos en las regiones más relevantes para el proceso terapéutico: la <strong>corteza prefrontal</strong> (funciones ejecutivas, control de impulsos), la <strong>amígdala</strong> (procesamiento del miedo y la ansiedad), el <strong>hipocampo</strong> (memoria y aprendizaje) y la <strong>corteza cingulada anterior</strong> (regulación emocional). Cada una de estas regiones tiene un papel específico en cómo experimentamos el mundo, y comprender su funcionamiento permite diseñar estrategias de cambio basadas en evidencia neurológica.
+        </p>
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          {[
+            { region: 'Corteza Prefrontal', color: '#2563eb', role: 'Planificación, control de impulsos, toma de decisiones. Es el "director ejecutivo" del cerebro.' },
+            { region: 'Amígdala', color: '#dc2626', role: 'Procesamiento emocional: miedo, ansiedad, detección de amenazas. Tu alarma interna.' },
+            { region: 'Hipocampo', color: '#059669', role: 'Consolidación de la memoria, aprendizaje. Vulnerable al estrés crónico, fuerte con meditación y ejercicio.' },
+            { region: 'Corteza Cingulada', color: '#7c3aed', role: 'Conecta emoción y cognición. Detección de errores, regulación del dolor emocional.' },
+          ].map((r) => (
+            <div key={r.region} className="p-3 rounded-xl" style={{ background: `${r.color}06`, border: `1px solid ${r.color}12` }}>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ background: r.color }} />
+                <span className="text-xs font-bold" style={{ color: r.color }}>{r.region}</span>
+              </div>
+              <p className="text-[0.7rem] leading-relaxed" style={{ color: '#6b7280' }}>{r.role}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs mt-4 leading-relaxed" style={{ color: '#9ca3af', fontFamily: 'var(--font-body)' }}>
+          La neuroplasticidad — la capacidad del cerebro de reorganizarse toda la vida — es nuestra aliada. No estás destinado a repetir los mismos patrones: tus circuitos cerebrales pueden cambiar con las herramientas adecuadas.
         </p>
       </motion.div>
 
