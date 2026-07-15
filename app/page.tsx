@@ -151,12 +151,7 @@ const heroRotatingTexts = [
   '¿Sientes que... llevas cargas del pasado que no sabes cómo soltar?',
 ]
 
-const heroGradients = [
-  'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 30%, #4a7fb5 60%, #1e3a5f 100%)',
-  'linear-gradient(135deg, #2d1b4e 0%, #4a2d6e 30%, #6b4c8a 60%, #2d1b4e 100%)',
-  'linear-gradient(135deg, #5f1e1e 0%, #87442d 30%, #b5694a 60%, #5f1e1e 100%)',
-  'linear-gradient(135deg, #1a3a2e 0%, #2d5f4a 30%, #4a8a6b 60%, #1a3a2e 100%)',
-]
+
 
 /* ══════════════════════════════════
    DATA
@@ -212,32 +207,42 @@ export default function Home() {
 
   return (
     <>
-      {/* ═══════ 1. HERO — La Primera Impresión ═══════ */}
-      {/* Contenedor 1: Fondos animados + frases */}
-      <section
-        key={rotatingIndex}
-        className="relative min-h-[70vh] flex items-center justify-center overflow-hidden"
-        style={{
-          background: heroGradients[rotatingIndex],
-          animation: 'heroGradientFade 0.8s ease-out',
-          transition: 'background 0.8s ease',
-        }}
-      >
-        <div className="container-page relative z-10 text-center">
-          <FadeIn delay={0.1}>
-            <span className="eyebrow mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>Psicología Clínica Integrativa y Sistémica</span>
-          </FadeIn>
-          <FadeIn delay={0.2}>
-            <h1 className="mb-6 max-w-4xl mx-auto" style={{ color: '#ffffff', fontWeight: 700, lineHeight: 1.2 }}>
-              <span
-                key={rotatingIndex}
-                className="inline-block"
-                style={{ animation: 'fadeInUp 0.6s ease-out' }}
-              >
-                {heroRotatingTexts[rotatingIndex]}
-              </span>
-            </h1>
-          </FadeIn>
+      {/* ═══════ 1. HERO — La Primera Impresión (Video Background) ═══════ */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+        {/* Video background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          src="/Hero_inicio.mp4"
+        />
+        {/* Dark gradient overlay on left side for readability */}
+        <div
+          className="absolute inset-0 z-[1]"
+          style={{
+            background: 'linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)',
+          }}
+        />
+        {/* Text content on left */}
+        <div className="container-page relative z-10 py-20 md:py-28">
+          <div className="max-w-xl">
+            <FadeIn delay={0.1}>
+              <span className="eyebrow mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>Psicología Clínica Integrativa y Sistémica</span>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <h1 className="mb-6 text-xl md:text-2xl font-bold" style={{ color: '#ffffff', lineHeight: 1.3 }}>
+                <span
+                  key={rotatingIndex}
+                  className="inline-block"
+                  style={{ animation: 'fadeInUp 0.6s ease-out' }}
+                >
+                  {heroRotatingTexts[rotatingIndex]}
+                </span>
+              </h1>
+            </FadeIn>
+          </div>
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TYPES, slideVariants } from './enneagrama-data'
 import { RHETI_144 } from './rheti-144'
@@ -410,6 +410,7 @@ function ResultsScreen({
 }) {
   const [emailSent, setEmailSent] = useState<boolean | null>(null)
   const [sending, setSending] = useState(false)
+  const [booked, setBooked] = useState(false)
 
   // Compute sorted scores
   const sorted = useMemo(() => {
@@ -472,6 +473,31 @@ function ResultsScreen({
       setSending(false)
     }
   }, [formData, scores, topTypeId, wingType, topType.center])
+
+  // Store test data in sessionStorage so the booking page can reference it
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('eneagrama_test_data', JSON.stringify({
+        nombre: formData.nombre,
+        email: formData.email,
+        telefono: formData.telefono,
+        scores,
+        tipoPredominante: topTypeId,
+        ala: wingType,
+        centro: topType.center,
+      }))
+    } catch { /* sessionStorage unavailable */ }
+  }, [formData, scores, topTypeId, wingType, topType.center])
+
+  // Auto-send report if user returned from booking (?booked=true)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('booked') === 'true') {
+      setBooked(true)
+      sendReport()
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <motion.div
@@ -670,6 +696,211 @@ function ResultsScreen({
           </div>
         </div>
 
+        {/* ═══════════════════════════════════════════════
+           INFOGRAPHICS — Visual charts & diagrams
+           ═══════════════════════════════════════════════ */}
+
+        {/* ── Full 9-Type Horizontal Bar Chart ── */}
+        <div className="p-6 md:p-8 mb-6" style={cardStyle}>
+          <h4 className="mb-5" style={labelStyle}>Todos tus tipos — puntuación completa</h4>
+          <div className="space-y-2.5">
+            {sorted.map(({ id, score }) => {
+              const t = TYPES_FULL.find(x => x.id === id)
+              if (!t) return null
+              const pct = totalAnswered > 0 ? Math.round((score / totalAnswered) * 100) : 0
+              const isTop = id === topTypeId
+              const centerColor = centerColorMap[t.center] || '#2563eb'
+              return (
+                <div key={id} className="flex items-center gap-2.5">
+                  <span className="text-sm w-6 text-center shrink-0">{t.emoji}</span>
+                  <span className="text-xs w-20 shrink-0" style={{ color: isTop ? C.accent : C.secondary, fontWeight: isTop ? 700 : 500 }}>
+                    Tipo {id}
+                  </span>
+                  <div className="flex-1 h-4 relative overflow-hidden" style={{ background: 'rgba(0,0,0,0.04)', borderRadius: 4 }}>
+                    <motion.div
+                      className="h-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.max(pct, 1)}%` }}
+                      transition={{ duration: 0.8, delay: 0.05 * (id - 1), ease: [0.2, 0, 0, 1] }}
+                      style={{
+                        background: isTop
+                          ? `linear-gradient(90deg, ${C.accent}, ${centerColor})`
+                          : `${centerColor}30`,
+                        borderRadius: 4,
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs w-10 text-right tabular-nums" style={{ color: isTop ? C.accent : C.muted, fontWeight: 600 }}>
+                    {pct}%
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* ── Radar / Spider Chart — Top 3 Types ── */}
+        {(() => {
+          const top3 = sorted.slice(0, 3)
+          if (top3.length < 3) return null
+          const maxScore = top3[0]?.score || 1
+          const rcx = 150, rcy = 150, maxR = 110
+          const vertices = top3.map((item, i) => {
+            const angle = (i * 120 - 90) * (Math.PI / 180)
+            const intensity = maxScore > 0 ? item.score / maxScore : 0
+            const r = maxR * Math.max(intensity, 0.15)
+            return {
+              x: rcx + r * Math.cos(angle),
+              y: rcy + r * Math.sin(angle),
+              lx: rcx + (maxR + 32) * Math.cos(angle),
+              ly: rcy + (maxR + 32) * Math.sin(angle),
+              type: item,
+            }
+          })
+          const polyPts = vertices.map(v => `${v.x},${v.y}`).join(' ')
+          const findType = (id: number) => TYPES_FULL.find(x => x.id === id)
+          return (
+            <div className="p-6 md:p-8 mb-6" style={cardStyle}>
+              <h4 className="mb-5" style={labelStyle}>Tus 3 tipos principales</h4>
+              <div className="flex justify-center">
+                <svg viewBox="0 0 300 300" width="100%" style={{ maxWidth: 320 }}>
+                  {/* Concentric guide rings */}
+                  {[0.33, 0.66, 1].map((scale, i) => (
+                    <circle key={i} cx={rcx} cy={rcy} r={maxR * scale} fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth={1} strokeDasharray={i < 2 ? '4 3' : undefined} />
+                  ))}
+                  {/* Axis lines from center to each vertex */}
+                  {vertices.map((v, i) => (
+                    <line key={i} x1={rcx} y1={rcy} x2={v.x} y2={v.y} stroke="rgba(0,0,0,0.07)" strokeWidth={1} />
+                  ))}
+                  {/* Filled polygon */}
+                  <polygon
+                    points={polyPts}
+                    fill="rgba(0,153,255,0.10)"
+                    stroke={C.accent}
+                    strokeWidth={2}
+                    strokeLinejoin="round"
+                  />
+                  {/* Vertex dots */}
+                  {vertices.map((v, i) => (
+                    <circle key={i} cx={v.x} cy={v.y} r={5} fill={C.accent} stroke="#fff" strokeWidth={2} />
+                  ))}
+                  {/* Labels outside each vertex */}
+                  {vertices.map((v, i) => {
+                    const type = findType(v.type.id)
+                    const pct = totalAnswered > 0 ? Math.round((v.type.score / totalAnswered) * 100) : 0
+                    return (
+                      <g key={i}>
+                        <text x={v.lx} y={v.ly - 7} textAnchor="middle" dominantBaseline="middle"
+                          style={{ fontSize: 13, fontWeight: 600, fill: C.text }}>
+                          {type?.emoji} Tipo {v.type.id}
+                        </text>
+                        <text x={v.lx} y={v.ly + 8} textAnchor="middle" dominantBaseline="middle"
+                          style={{ fontSize: 11, fill: C.muted, fontWeight: 500 }}>
+                          {pct}%
+                        </text>
+                      </g>
+                    )
+                  })}
+                  {/* Center dot */}
+                  <circle cx={rcx} cy={rcy} r={2} fill={C.muted} />
+                </svg>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── Enneagram Circle Diagram ── */}
+        {(() => {
+          const svgSize = 400
+          const ecx = svgSize / 2, ecy = svgSize / 2, er = 140
+          const typePos: Record<number, { x: number; y: number }> = {}
+          for (let tp = 1; tp <= 9; tp++) {
+            const pos = tp % 9
+            const angle = (pos * 40 - 90) * (Math.PI / 180)
+            typePos[tp] = { x: ecx + er * Math.cos(angle), y: ecy + er * Math.sin(angle) }
+          }
+          // Triangle: 3-6-9
+          const triPts = [3, 6, 9].map(t => `${typePos[t].x},${typePos[t].y}`).join(' ')
+          // Hexad: 1-4-2-8-5-7-1
+          const hexPath = [1, 4, 2, 8, 5, 7, 1].map((t, i) => `${i === 0 ? 'M' : 'L'}${typePos[t].x},${typePos[t].y}`).join(' ')
+          const findType = (id: number) => TYPES_FULL.find(x => x.id === id)
+          const topPct = totalAnswered > 0 ? Math.round((scores[topTypeId] / totalAnswered) * 100) : 0
+          return (
+            <div className="p-6 md:p-8 mb-6" style={cardStyle}>
+              <h4 className="mb-5" style={labelStyle}>Tu eneagrama</h4>
+              <div className="flex justify-center">
+                <svg viewBox={`0 0 ${svgSize} ${svgSize}`} width="100%" style={{ maxWidth: 380 }}>
+                  {/* Outer circle */}
+                  <circle cx={ecx} cy={ecy} r={er} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth={1.5} />
+                  {/* Triangle (3-6-9) */}
+                  <polygon points={triPts} fill="none" stroke="rgba(0,153,255,0.20)" strokeWidth={1.5} strokeLinejoin="round" />
+                  {/* Hexad (1-4-2-8-5-7) */}
+                  <path d={hexPath} fill="none" stroke="rgba(139,92,246,0.18)" strokeWidth={1.5} strokeLinejoin="round" />
+                  {/* Type dots, labels, and scores */}
+                  {Array.from({ length: 9 }, (_, i) => i + 1).map(tp => {
+                    const pos = typePos[tp]
+                    const isTop = tp === topTypeId
+                    const typeData = findType(tp)
+                    const centerColor = centerColorMap[typeData?.center || ''] || '#2563eb'
+                    // Outward label position
+                    const labelR = er + 22
+                    const pos2 = tp % 9
+                    const angle = (pos2 * 40 - 90) * (Math.PI / 180)
+                    const lx = ecx + labelR * Math.cos(angle)
+                    const ly = ecy + labelR * Math.sin(angle)
+                    return (
+                      <g key={tp}>
+                        {/* Glow behind highlighted type */}
+                        {isTop && (
+                          <circle cx={pos.x} cy={pos.y} r={22} fill={centerColor} opacity={0.10} />
+                        )}
+                        {/* Dot */}
+                        <circle
+                          cx={pos.x} cy={pos.y}
+                          r={isTop ? 10 : 5}
+                          fill={isTop ? centerColor : '#d1d5db'}
+                          stroke={isTop ? '#fff' : 'none'}
+                          strokeWidth={isTop ? 3 : 0}
+                        />
+                        {/* Label (type number or emoji+name for top) */}
+                        {isTop ? (
+                          <>
+                            <text x={lx} y={ly - 5} textAnchor="middle" dominantBaseline="middle"
+                              style={{ fontSize: 13, fontWeight: 700, fill: centerColor }}>
+                              {typeData?.emoji} Tipo {tp}
+                            </text>
+                            <text x={lx} y={ly + 10} textAnchor="middle" dominantBaseline="middle"
+                              style={{ fontSize: 10, fontWeight: 600, fill: C.muted }}>
+                              {topPct}%
+                            </text>
+                          </>
+                        ) : (
+                          <text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle"
+                            style={{ fontSize: 11, fontWeight: 500, fill: '#9ca3af' }}>
+                            {tp}
+                          </text>
+                        )}
+                      </g>
+                    )
+                  })}
+                  {/* Center label */}
+                  <text x={ecx} y={ecy - 6} textAnchor="middle" dominantBaseline="middle"
+                    style={{ fontSize: 10, fontWeight: 600, fill: C.muted, textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>
+                    {findType(topTypeId)?.center}
+                  </text>
+                  <text x={ecx} y={ecy + 8} textAnchor="middle" dominantBaseline="middle"
+                    style={{ fontSize: 9, fill: C.muted }}>
+                    Centro
+                  </text>
+                </svg>
+              </div>
+              <p className="text-center text-xs mt-3" style={{ color: C.muted }}>
+                Los 9 tipos ordenados en el círculo clásico del eneagrama. Tu tipo predominante está resaltado.
+              </p>
+            </div>
+          )
+        })()}
+
         {/* ── Profile Summary (detallado, ~1000 chars) ── */}
         {(() => {
           const profile = getProfileByType(topTypeId)
@@ -684,70 +915,50 @@ function ResultsScreen({
           )
         })()}
 
-        {/* ── Email notification ── */}
-        <div className="p-6 md:p-8 mb-6" style={{
-          ...cardStyle,
-          background: '#f5f5f5',
-          border: '1px solid #0099ff',
-        }}>
-          <span className="text-3xl block mb-3 text-center">📧</span>
-          <h4 className="text-base mb-2 text-center" style={{ color: C.text, fontWeight: 500 }}>
-            Reporte para tu psicólogo
-          </h4>
-          <p className="text-sm leading-relaxed mb-4 max-w-md mx-auto text-center" style={{ color: C.secondary }}>
-            Se enviará un reporte completo a Pedro Bahamondes para su análisis durante tu sesión cero.
-          </p>
-          {emailSent === null ? (
-            <div className="flex justify-center">
-              <button
-                onClick={sendReport}
-                disabled={sending}
-                className="px-6 py-3 rounded-sm text-sm font-medium text-white cursor-pointer transition-opacity"
-                style={{
-                  background: C.accent,
-                  border: 'none',
-                  opacity: sending ? 0.6 : 1,
-                }}
-                onMouseEnter={e => { if (!sending) e.currentTarget.style.opacity = '0.85' }}
-                onMouseLeave={e => { if (!sending) e.currentTarget.style.opacity = '1' }}
-              >
-                {sending ? 'Enviando...' : 'Enviar reporte al psicólogo'}
-              </button>
-            </div>
-          ) : emailSent ? (
-            <p className="text-sm text-center" style={{ color: '#16a34a', fontWeight: 500 }}>
-              ✅ Reporte enviado correctamente
-            </p>
-          ) : (
-            <p className="text-sm text-center" style={{ color: '#dc2626' }}>
-              No se pudo enviar. Intenta de nuevo o contacta directamente.
-            </p>
-          )}
-        </div>
-
-        {/* ── Session zero CTA ── */}
+        {/* ── Unified: Book session + Send report ── */}
         <div className="p-6 md:p-8 mb-6 text-center" style={{
           ...cardStyle,
           background: '#f5f5f5',
           border: '1px solid #0099ff',
         }}>
-          <span className="text-3xl block mb-3">🎯</span>
+          <span className="text-3xl block mb-3">📧</span>
           <h4 className="text-base mb-2" style={{ color: C.text, fontWeight: 500 }}>
-            Este es tu resumen
+            Agenda tu Sesión Cero y envía tu reporte al psicólogo
           </h4>
-          <p className="text-sm leading-relaxed mb-4 max-w-sm mx-auto" style={{ color: C.secondary }}>
-            El análisis completo se compartirá en tu sesión cero. Allí podrás explorar en profundidad
-            tu perfil, tus alas, flechas de crecimiento y cómo aplicar este conocimiento en tu vida.
+          <p className="text-sm leading-relaxed mb-4 max-w-md mx-auto" style={{ color: C.secondary }}>
+            Tu reporte será enviado al psicólogo solo cuando agendes tu sesión cero.
           </p>
-          <a
-            href="/contacto"
-            className="inline-block px-6 py-3 rounded-sm text-sm font-medium text-white no-underline transition-opacity"
-            style={{ background: C.accent }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
-          >
-            Agendar Sesión Cero
-          </a>
+
+          {booked ? (
+            /* ── Already booked: show send status ── */
+            emailSent === null ? (
+              <p className="text-sm" style={{ color: C.secondary }}>Enviando reporte...</p>
+            ) : emailSent ? (
+              <p className="text-sm font-medium" style={{ color: '#16a34a' }}>
+                ✅ Sesión agendada y reporte enviado correctamente
+              </p>
+            ) : (
+              <p className="text-sm" style={{ color: '#dc2626' }}>
+                Sesión agendada. No se pudo enviar el reporte. Contacta directamente.
+              </p>
+            )
+          ) : (
+            /* ── Not booked yet: show booking CTA ── */
+            <>
+              <a
+                href="/contacto?from-eneagrama=true"
+                className="inline-block px-6 py-3 rounded-sm text-sm font-medium text-white no-underline transition-opacity"
+                style={{ background: C.accent }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+              >
+                Agendar Sesión Cero + Enviar Reporte
+              </a>
+              <p className="text-xs mt-3" style={{ color: C.muted }}>
+                El reporte se enviará automáticamente después de agendar.
+              </p>
+            </>
+          )}
         </div>
 
         {/* ── Reset ── */}
