@@ -174,70 +174,66 @@ export default function SobreMi() {
         </div>
       </section>
 
-      {/* ═══════ BIO — 2-COL GRID + FEATURED IMAGE ═══════ */}
-      <section className="section-block" style={{ background: '#ffffff' }}>
-        <div className="container-page">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-20 items-center">
-            <motion.div {...fadeUp} className="space-y-6">
-              <span className="eyebrow inline-block">Mi filosofía</span>
-              <h2
-                className="mb-4"
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(2rem,4.5vw,3.5rem)',
-                  lineHeight: 0.95,
-                  letterSpacing: '-0.025em',
-                  fontWeight: 700,
-                  color: 'var(--ink)',
-                }}
-              >
-                Ciencia para comprender, consciencia para sanar
-              </h2>
-              <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'var(--muted)' }}>
-                <p>
-                  He volcado mi vocación en guiar procesos terapéuticos que transforman vidas.
-                  A través de un enfoque especializado y una sólida formación académica,
-                  propongo un espacio diferente: un puente exacto entre la ciencia de tu
-                  cerebro y las raíces de tu alma.
-                </p>
-                <p>
-                  <strong style={{ color: 'var(--ink)' }}>El objetivo de la terapia no es cambiar tu esencia,</strong> sino
-                  comprender y flexibilizar los patrones mecánicos que bloquean tu bienestar.
-                  Cuando el automatismo toma el control, perdemos la capacidad de elegir.
-                  Sanar es hacer consciente lo invisible y recuperar el volante de tu vida.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link href="/servicios" className="btn btn-primary">
-                  Ver servicios
-                  <span className="btn-icon">
-                    <IconArrowRight />
-                  </span>
-                </Link>
-                <Link href="/contacto" className="btn btn-outline">
-                  Agendar cita
-                </Link>
-              </div>
-            </motion.div>
-
-            {/* Featured image — Video */}
-            <motion.div {...scaleIn}>
-              <div className="card card-hover" style={{ aspectRatio: '3/4' }}>
-                <div className="card-core overflow-hidden" style={{ padding: 0 }}>
-                  <div className="relative w-full h-full">
-                    <video
-                      src="/filosofia_sobre-mi.mp4"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+      {/* ═══════ MI FILOSOFÍA — VIDEO FULL BLEED ═══════ */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+        {/* Video background */}
+        <video
+          src="/filosofia_sobre-mi.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark overlay left for readability */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.15) 70%, transparent 100%)',
+          }}
+        />
+        <div className="container-page relative z-10">
+          <motion.div {...fadeUp} className="max-w-xl space-y-6">
+            <span className="eyebrow inline-block" style={{ color: 'rgba(255,255,255,0.7)' }}>Mi filosofía</span>
+            <h2
+              className="mb-4"
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2rem,4.5vw,3.5rem)',
+                lineHeight: 0.95,
+                letterSpacing: '-0.025em',
+                fontWeight: 700,
+                color: '#ffffff',
+              }}
+            >
+              Ciencia para comprender, consciencia para sanar
+            </h2>
+            <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.85)' }}>
+              <p>
+                He volcado mi vocación en guiar procesos terapéuticos que transforman vidas.
+                A través de un enfoque especializado y una sólida formación académica,
+                propongo un espacio diferente: un puente exacto entre la ciencia de tu
+                cerebro y las raíces de tu alma.
+              </p>
+              <p>
+                <strong style={{ color: '#ffffff' }}>El objetivo de la terapia no es cambiar tu esencia,</strong> sino
+                comprender y flexibilizar los patrones mecánicos que bloquean tu bienestar.
+                Cuando el automatismo toma el control, perdemos la capacidad de elegir.
+                Sanar es hacer consciente lo invisible y recuperar el volante de tu vida.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Link href="/servicios" className="btn btn-primary">
+                Ver servicios
+                <span className="btn-icon">
+                  <IconArrowRight />
+                </span>
+              </Link>
+              <Link href="/contacto" className="btn btn-outline" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#ffffff' }}>
+                Agendar cita
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
