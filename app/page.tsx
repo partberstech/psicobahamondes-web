@@ -208,7 +208,7 @@ export default function Home() {
   return (
     <>
       {/* ═══════ 1. HERO — La Primera Impresión (Video Background) ═══════ */}
-      <section className="relative min-h-[70vh] flex items-end md:items-center overflow-hidden">
+      <section className="section-block relative min-h-[70vh] overflow-hidden">
         {/* Video background */}
         <video
           autoPlay
@@ -226,8 +226,8 @@ export default function Home() {
           }}
         />
         {/* Text content on left */}
-        <div className="relative z-10 w-full" style={{ maxWidth: '1120px', paddingLeft: 'clamp(20px, 4vw, 48px)', paddingRight: 'clamp(20px, 4vw, 48px)' }}>
-          <div className="max-w-2xl pb-16 md:pb-0">
+        <div className="container-page relative z-10">
+          <div className="max-w-2xl">
             <FadeIn delay={0.1}>
               <span className="eyebrow mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>Psicología Clínica Integrativa y Sistémica</span>
             </FadeIn>
