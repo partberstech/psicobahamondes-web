@@ -174,73 +174,86 @@ export default function SobreMi() {
         </div>
       </section>
 
-      {/* ═══════ MI FILOSOFÍA — VIDEO FULL BLEED ═══════ */}
-      <section className="section-block relative min-h-[90vh] overflow-hidden bg-white">
-        {/* Video background */}
-        <video
-          src="/filosofia_sobre-mi.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        {/* Subtle left gradient for text legibility */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 35%, rgba(255,255,255,0.15) 60%, transparent 75%)',
-          }}
-        />
-        <div className="container-page relative z-10">
-          <motion.div {...fadeUp} className="max-w-lg space-y-6">
-            <span className="eyebrow inline-block" style={{ color: '#6b7280' }}>Mi filosofía</span>
-            <h2
-              className="mb-4"
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(1.75rem,4vw,3rem)',
-                lineHeight: 0.95,
-                letterSpacing: '-0.025em',
-                fontWeight: 700,
-                color: '#111827',
-              }}
+      {/* ═══════ MI FILOSOFÍA — SPLIT LAYOUT ═══════ */}
+      <section className="section-block bg-white">
+        <div className="container-page">
+          <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+            {/* Texto — izquierda */}
+            <motion.div {...fadeUp} className="space-y-6">
+              <span className="eyebrow inline-block" style={{ color: '#6b7280' }}>Mi filosofía</span>
+              <h2
+                className="mb-4"
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.75rem,4vw,3rem)',
+                  lineHeight: 0.95,
+                  letterSpacing: '-0.025em',
+                  fontWeight: 700,
+                  color: '#111827',
+                }}
+              >
+                Ciencia para comprender, consciencia para sanar
+              </h2>
+              <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', lineHeight: 1.7, color: '#374151' }}>
+                <p>
+                  He volcado mi vocación en guiar procesos terapéuticos que transforman vidas.
+                  A través de un enfoque especializado y una sólida formación académica,
+                  propongo un espacio diferente: un puente exacto entre la ciencia de tu
+                  cerebro y las raíces de tu alma.
+                </p>
+                <p>
+                  <strong style={{ color: '#111827' }}>El objetivo de la terapia no es cambiar tu esencia,</strong> sino
+                  comprender y flexibilizar los patrones mecánicos que bloquean tu bienestar.
+                  Cuando el automatismo toma el control, perdemos la capacidad de elegir.
+                  Sanar es hacer consciente lo invisible y recuperar el volante de tu vida.
+                </p>
+                <p style={{ color: '#4b5563', fontSize: '0.9375rem' }}>
+                  Mi trabajo integra tres herramientas complementarias: la neuropsicología
+                  para entender los mecanismos cerebrales, el Eneagrama para mapear los
+                  patrones de personalidad, y las Constelaciones Familiares para sanar las
+                  heridas que vienen del sistema familiar. Juntas, ofrecen una mirada completa
+                  de lo que eres y de lo que puedes llegar a ser.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-2">
+                <Link href="/servicios" className="btn btn-primary">
+                  Ver servicios
+                  <span className="btn-icon">
+                    <IconArrowRight />
+                  </span>
+                </Link>
+                <Link href="/contacto" className="btn btn-outline">
+                  Agendar cita
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Video — derecha, más pequeño con bordes redondeados */}
+            <motion.div
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.15 }}
+              className="relative"
             >
-              Ciencia para comprender, consciencia para sanar
-            </h2>
-            <div className="space-y-4" style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', lineHeight: 1.7, color: '#374151' }}>
-              <p>
-                He volcado mi vocación en guiar procesos terapéuticos que transforman vidas.
-                A través de un enfoque especializado y una sólida formación académica,
-                propongo un espacio diferente: un puente exacto entre la ciencia de tu
-                cerebro y las raíces de tu alma.
-              </p>
-              <p>
-                <strong style={{ color: '#111827' }}>El objetivo de la terapia no es cambiar tu esencia,</strong> sino
-                comprender y flexibilizar los patrones mecánicos que bloquean tu bienestar.
-                Cuando el automatismo toma el control, perdemos la capacidad de elegir.
-                Sanar es hacer consciente lo invisible y recuperar el volante de tu vida.
-              </p>
-              <p style={{ color: '#4b5563', fontSize: '0.9375rem' }}>
-                Mi trabajo integra tres herramientas complementarias: la neuropsicología
-                para entender los mecanismos cerebrales, el Eneagrama para mapear los
-                patrones de personalidad, y las Constelaciones Familiares para sanar las
-                heridas que vienen del sistema familiar. Juntas, ofrecen una mirada completa
-                de lo que eres y de lo que puedes llegar a ser.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Link href="/servicios" className="btn btn-primary">
-                Ver servicios
-                <span className="btn-icon">
-                  <IconArrowRight />
-                </span>
-              </Link>
-              <Link href="/contacto" className="btn btn-outline">
-                Agendar cita
-              </Link>
-            </div>
-          </motion.div>
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  borderRadius: '20px',
+                  aspectRatio: '3/4',
+                  maxHeight: '520px',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
+                }}
+              >
+                <video
+                  src="/filosofia_sobre-mi.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
