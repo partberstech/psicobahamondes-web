@@ -56,6 +56,18 @@ export async function POST(request: NextRequest) {
       sendAdminNotification(bookingData),
     ])
 
+    // Create Google Calendar event (fire-and-forget)
+    import('@/lib/google-calendar').then(({ createBookingEvent }) =>
+      createBookingEvent({
+        summary: `${config.label} — ${name}`,
+        description: `Consulta agendada desde la web\n\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\nTipo: ${config.label}`,
+        date,
+        time,
+        durationMinutes: config.slotMinutes,
+        attendeeEmail: email,
+      }).catch((err) => console.error('[booking] calendar event error:', err))
+    ).catch(() => { /* Google Calendar not configured */ })
+
     if (!savedToDb) {
       // No DB — email is the only record; wait for it
       const results = await emailPromises

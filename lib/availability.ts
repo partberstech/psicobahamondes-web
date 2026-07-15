@@ -95,3 +95,36 @@ export function getSlotsFromConfig(
 
   return slots
 }
+
+/**
+ * Fetch busy times from Google Calendar for a specific date
+ * and return as a Set of "HH:MM" strings that conflict with slots.
+ */
+export async function getBusyTimesForDate(dateStr: string): Promise<Set<string>> {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_REFRESH_TOKEN) {
+    return new Set() // No Google configured — all slots available
+  }
+
+  try {
+    const { getBusyTimes } = await import('./google-calendar')
+    const dayStart = `${dateStr}T00:00:00-04:00`
+    const dayEnd = `${dateStr}T23:59:59-04:00`
+    const busy = await getBusyTimes(dayStart, dayEnd)
+
+    // Convert busy intervals to set of conflicting HH:MM times
+    const busyTimes = new Set<string>()
+    for (const b of busy) {
+      const bStart = new Date(b.start)
+      const bEnd = new Date(b.end)
+      // Mark every minute in the busy range
+      const startMin = bStart.getHours() * 60 + bStart.getMinutes()
+      const endMin = bEnd.getHours() * 60 + bEnd.getMinutes()
+      for (let m = startMin; m < endMin; m++) {
+        busyTimes.add(formatTime(m))
+      }
+    }
+    return busyTimes
+  } catch {
+    return new Set() // Fallback — don't block slots on API error
+  }
+}
