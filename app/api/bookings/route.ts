@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create Google Calendar event + get Meet link (with timeout)
+    // Create Google Calendar event + get Meet link (fire-and-forget, don't block emails)
     let meetLink: string | null = null
     try {
       const { createBookingEvent } = await import('@/lib/google-calendar')
@@ -63,16 +63,28 @@ export async function POST(request: NextRequest) {
         sessionType,
       })
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Calendar timeout')), 10000)
+        setTimeout(() => reject(new Error('Calendar timeout')), 8000)
       )
-      const calResult = await Promise.race([calPromise, timeoutPromise])
-      meetLink = calResult.meetLink || null
-    } catch (err) {
-      console.error('[booking] calendar event error:', err)
+      // Race but don't block — catch silently
+      Promise.race([calPromise, timeoutPromise])
+        .then((result) => {
+          meetLink = result.meetLink || null
+          // If we got a Meet link, send a follow-up email with it
+          if (meetLink) {
+            const withLink = { name, email, phone, sessionType, date, time, meetLink }
+            Promise.all([
+              sendConfirmationEmail(withLink),
+              sendAdminNotification(withLink),
+            ]).catch(() => {})
+          }
+        })
+        .catch(() => {})
+    } catch {
+      // Google Calendar not configured
     }
 
-    // Send ONE confirmation email with Meet link (if available)
-    const bookingData = { name, email, phone, sessionType, date, time, meetLink: meetLink || undefined }
+    // Send confirmation emails FIRST (must complete before response)
+    const bookingData = { name, email, phone, sessionType, date, time }
 
     if (!savedToDb) {
       // No DB — email is the only record; must wait
@@ -92,11 +104,11 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // DB saved — fire-and-forget email
-    Promise.all([
+    // DB saved — await emails before responding
+    await Promise.all([
       sendConfirmationEmail(bookingData),
       sendAdminNotification(bookingData),
-    ]).catch((err) => console.error('[booking] email error:', err))
+    ])
 
     return NextResponse.json({
       success: true,
