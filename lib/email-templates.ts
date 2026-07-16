@@ -197,6 +197,7 @@ export function confirmationTemplate(data: {
   sessionType: string
   date: string
   time: string
+  meetLink?: string
 }): string {
   const label = getSessionLabel(data.sessionType)
   const color = SESSION_COLORS[data.sessionType] || BRAND
@@ -262,11 +263,24 @@ export function confirmationTemplate(data: {
       <strong style="color:${INK_SOFT}">📍 Importante:</strong><br />
       ${data.sessionType === 'consulta-presencial'
         ? 'La dirección exacta de la consulta presencial se confirma vía WhatsApp o email 24 horas antes de tu hora agendada.'
-        : data.sessionType === 'sesion-cero'
-          ? 'Te contactaré al email registrado minutos antes de la Sesión Cero para coordinar el inicio.'
-          : 'El link de videollamada se enviará a tu correo 30 minutos antes de la consulta.'
+        : data.meetLink
+          ? 'Tu enlace de videollamada está listo. Haz clic en el botón de abajo para unirte el día de tu consulta.'
+          : data.sessionType === 'sesion-cero'
+            ? 'Te contactaré al email registrado minutos antes de la Sesión Cero para coordinar el inicio.'
+            : 'El link de videollamada se enviará a tu correo 30 minutos antes de la consulta.'
       }
     </div>
+
+    ${data.meetLink ? `
+    <!-- ═══ Google Meet Link ═══ -->
+    <a href="${data.meetLink}" target="_blank" rel="noopener"
+      style="display:block;text-align:center;background:#7c3aed;color:#ffffff;text-decoration:none;font-family:'Plus Jakarta Sans','Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:600;padding:14px 24px;border-radius:12px;margin:16px 0 12px">
+      <span style="margin-right:8px">🎥</span> Unirme a Google Meet
+    </a>
+    <p style="font-size:12px;color:${MUTED_LIGHT};text-align:center;margin:0 0 8px">
+      Enlace: ${data.meetLink}
+    </p>
+    ` : ''}
 
     <!-- ═══ Google Calendar ═══ -->
     <a href="${gcalUrl}" target="_blank" rel="noopener"
@@ -293,6 +307,7 @@ export function adminNotificationTemplate(data: {
   sessionType: string
   date: string
   time: string
+  meetLink?: string
 }): string {
   const label = getSessionLabel(data.sessionType)
   const icon = SESSION_ICONS[data.sessionType] || '📅'
@@ -332,6 +347,7 @@ export function adminNotificationTemplate(data: {
       ${detailRow('Tipo', label)}
       ${detailRow('Fecha', data.date)}
       ${detailRow('Horario', `${data.time} hrs`)}
+      ${data.meetLink ? detailRow('Google Meet', `<a href="${data.meetLink}" style="color:${BRAND};text-decoration:none;font-weight:600">${data.meetLink}</a>`, BRAND) : ''}
     </table>
   `
 

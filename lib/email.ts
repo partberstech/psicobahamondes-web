@@ -17,6 +17,7 @@ export type BookingData = {
   sessionType: string
   date: string
   time: string
+  meetLink?: string
 }
 
 type EmailOptions = {

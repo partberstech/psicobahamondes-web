@@ -49,24 +49,30 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Always send emails
-    const bookingData = { name, email, phone, sessionType, date, time }
-    const emailPromises = Promise.all([
-      sendConfirmationEmail(bookingData),
-      sendAdminNotification(bookingData),
-    ])
-
-    // Create Google Calendar event (fire-and-forget)
-    import('@/lib/google-calendar').then(({ createBookingEvent }) =>
-      createBookingEvent({
+    // Create Google Calendar event + get Meet link (online sessions)
+    let meetLink: string | null = null
+    try {
+      const { createBookingEvent } = await import('@/lib/google-calendar')
+      const calResult = await createBookingEvent({
         summary: `${config.label} — ${name}`,
         description: `Consulta agendada desde la web\n\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\nTipo: ${config.label}`,
         date,
         time,
         durationMinutes: config.slotMinutes,
         attendeeEmail: email,
-      }).catch((err) => console.error('[booking] calendar event error:', err))
-    ).catch(() => { /* Google Calendar not configured */ })
+        sessionType,
+      })
+      meetLink = calResult.meetLink || null
+    } catch (err) {
+      console.error('[booking] calendar event error:', err)
+    }
+
+    // Send emails with Meet link (online sessions)
+    const bookingData = { name, email, phone, sessionType, date, time, meetLink: meetLink || undefined }
+    const emailPromises = Promise.all([
+      sendConfirmationEmail(bookingData),
+      sendAdminNotification(bookingData),
+    ])
 
     if (!savedToDb) {
       // No DB — email is the only record; wait for it

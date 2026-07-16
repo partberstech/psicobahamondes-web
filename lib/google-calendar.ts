@@ -31,6 +31,7 @@ export async function getBusyTimes(start: string, end: string) {
 
 /**
  * Create a Google Calendar event for a booking.
+ * For online sessions (sesion-cero, consulta-telematica), generates a Google Meet link.
  */
 export async function createBookingEvent(params: {
   summary: string
@@ -39,8 +40,9 @@ export async function createBookingEvent(params: {
   time: string // HH:MM
   durationMinutes: number
   attendeeEmail?: string
+  sessionType?: string
 }) {
-  const { summary, description, date, time, durationMinutes, attendeeEmail } = params
+  const { summary, description, date, time, durationMinutes, attendeeEmail, sessionType } = params
 
   const startDateTime = `${date}T${time}:00`
   const [h, m] = time.split(':').map(Number)
@@ -49,11 +51,23 @@ export async function createBookingEvent(params: {
   const endM = endMinutes % 60
   const endDateTime = `${date}T${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}:00`
 
+  const isOnline = sessionType === 'sesion-cero' || sessionType === 'consulta-telematica'
+
   const event: any = {
     summary,
     description,
     start: { dateTime: startDateTime, timeZone: 'America/Santiago' },
     end: { dateTime: endDateTime, timeZone: 'America/Santiago' },
+  }
+
+  // Generate Google Meet link for online sessions
+  if (isOnline) {
+    event.conferenceData = {
+      createRequest: {
+        requestId: `booking-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        conferenceSolutionKey: { type: 'hangoutsMeet' },
+      },
+    }
   }
 
   if (attendeeEmail) {
@@ -63,7 +77,17 @@ export async function createBookingEvent(params: {
   const res = await calendar.events.insert({
     calendarId: 'primary',
     requestBody: event,
+    conferenceDataVersion: isOnline ? 1 : undefined,
+    sendUpdates: 'all',
   })
 
-  return { id: res.data.id, htmlLink: res.data.htmlLink }
+  const meetLink = res.data.conferenceData?.entryPoints?.find(
+    (ep: any) => ep.entryPointType === 'video'
+  )?.uri || null
+
+  return {
+    id: res.data.id,
+    htmlLink: res.data.htmlLink,
+    meetLink,
+  }
 }
