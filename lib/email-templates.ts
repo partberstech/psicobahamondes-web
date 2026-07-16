@@ -271,6 +271,15 @@ export function confirmationTemplate(data: {
       }
     </div>
 
+    ${data.sessionType !== 'sesion-cero' ? `
+    <!-- ═══ Datos para compra de bono ═══ -->
+    <div style="background:#f0f9ff;border-radius:10px;padding:16px 18px;margin:0 0 20px;font-size:13px;color:${MUTED};line-height:1.6;border:1px solid #bae6fd">
+      <strong style="color:${INK_SOFT}">📋 Datos para comprar el bono del profesional:</strong><br />
+      <strong>Nombre:</strong> Pedro Bahamondes Diaz<br />
+      <strong>RUT:</strong> 15.894.901-6
+    </div>
+    ` : ''}
+
     ${data.meetLink ? `
     <!-- ═══ Google Meet Link ═══ -->
     <a href="${data.meetLink}" target="_blank" rel="noopener"

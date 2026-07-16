@@ -74,7 +74,7 @@ const modalidades = [
     icon: IconLocation,
     titulo: 'Presencial',
     desc: 'Un espacio seguro, privado y de absoluto cuidado en Osorno. La cercanía del encuentro cara a cara permite trabajar tu proceso con la profundidad y la calidez que solo la presencia puede ofrecer.',
-    detalles: ['Sesiones de 50 minutos', 'Consultorio en Osorno — ambiente confidencial y acogedor', 'Enfoque integrativo personalizado', 'Agenda flexible: mañanas y tardes'],
+    detalles: ['Sesiones de 45 minutos', 'Consultorio en Osorno — ambiente confidencial y acogedor', 'Enfoque integrativo personalizado', 'Agenda flexible: mañanas y tardes'],
     image: '/images/cardpresencial_servicios.jpeg',
   },
   {
@@ -113,19 +113,19 @@ const metodologias = [
 const faqs = [
   {
     q: '¿Cuánto dura una sesión?',
-    r: '50 minutos aproximadamente. La primera sesión (Consulta 0) es de 15 minutos, sin costo y sin compromiso, para que podamos conocernos.',
+    r: '45 minutos aproximadamente. La primera sesión (Consulta 0) es de 15 minutos, sin costo y sin compromiso, para que podamos conocernos.',
   },
   {
     q: '¿Cómo sé si necesito terapia presencial u online?',
     r: 'Ambas modalidades ofrecen la misma profundidad terapéutica. Si estás en Osorno y prefieres el encuentro cara a cara, el espacio presencial es ideal. Si viajas frecuentemente o prefieres la comodidad de tu hogar, la modalidad online mantiene la misma calidad clínica.',
   },
   {
-    q: '¿Aceptas seguros médicos?',
-    r: 'Trabajo de forma particular. Al finalizar cada sesión entregaré la boleta correspondiente para que puedas solicitar el reembolso a tu aseguradora según tu plan de salud.',
+    q: '¿Atiendes por FONASA?',
+    r: 'Sí, atiendo por FONASA y el bono lo puedes comprar directamente desde su sitio web.',
   },
   {
     q: '¿Cuál es el valor de la sesión?',
-    r: 'El valor de la sesión es de $40.000 (presencial y online). La Consulta 0 de 15 minutos es completamente gratuita.',
+    r: 'Para pacientes FONASA debes adquirir tu bono por el sitio web y el valor dependerá de tu categorización en el sistema.',
   },
   {
     q: '¿Cómo funciona la modalidad online?',
