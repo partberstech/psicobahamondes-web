@@ -78,9 +78,9 @@ export async function POST(request: NextRequest) {
             ]).catch(() => {})
           }
         })
-        .catch(() => {})
-    } catch {
-      // Google Calendar not configured
+        .catch((err) => console.error('[booking] calendar/meet error:', err?.message || err))
+    } catch (err) {
+      console.error('[booking] calendar import error:', err)
     }
 
     // Send confirmation emails FIRST (must complete before response)
