@@ -49,11 +49,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create Google Calendar event + get Meet link (online sessions)
-    let meetLink: string | null = null
-    try {
-      const { createBookingEvent } = await import('@/lib/google-calendar')
-      const calResult = await createBookingEvent({
+    // Send confirmation emails (fire-and-forget)
+    const bookingData = { name, email, phone, sessionType, date, time }
+    const emailPromises = Promise.all([
+      sendConfirmationEmail(bookingData),
+      sendAdminNotification(bookingData),
+    ])
+
+    // Create Google Calendar event + Meet link (fire-and-forget, don't block response)
+    import('@/lib/google-calendar').then(({ createBookingEvent }) =>
+      createBookingEvent({
         summary: `${config.label} — ${name}`,
         description: `Consulta agendada desde la web\n\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\nTipo: ${config.label}`,
         date,
@@ -61,18 +66,17 @@ export async function POST(request: NextRequest) {
         durationMinutes: config.slotMinutes,
         attendeeEmail: email,
         sessionType,
-      })
-      meetLink = calResult.meetLink || null
-    } catch (err) {
-      console.error('[booking] calendar event error:', err)
-    }
-
-    // Send emails with Meet link (online sessions)
-    const bookingData = { name, email, phone, sessionType, date, time, meetLink: meetLink || undefined }
-    const emailPromises = Promise.all([
-      sendConfirmationEmail(bookingData),
-      sendAdminNotification(bookingData),
-    ])
+      }).then((result) => {
+        // If we got a Meet link, send a second email with it
+        if (result.meetLink) {
+          const withLink = { ...bookingData, meetLink: result.meetLink }
+          Promise.all([
+            sendConfirmationEmail(withLink),
+            sendAdminNotification(withLink),
+          ]).catch((err) => console.error('[booking] meet link email error:', err))
+        }
+      }).catch((err) => console.error('[booking] calendar event error:', err))
+    ).catch(() => { /* Google Calendar not configured */ })
 
     if (!savedToDb) {
       // No DB — email is the only record; wait for it
