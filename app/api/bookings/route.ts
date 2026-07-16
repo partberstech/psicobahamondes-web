@@ -49,16 +49,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Send confirmation emails (fire-and-forget)
-    const bookingData = { name, email, phone, sessionType, date, time }
-    const emailPromises = Promise.all([
-      sendConfirmationEmail(bookingData),
-      sendAdminNotification(bookingData),
-    ])
-
-    // Create Google Calendar event + Meet link (fire-and-forget, don't block response)
-    import('@/lib/google-calendar').then(({ createBookingEvent }) =>
-      createBookingEvent({
+    // Create Google Calendar event + get Meet link (with timeout)
+    let meetLink: string | null = null
+    try {
+      const { createBookingEvent } = await import('@/lib/google-calendar')
+      const calPromise = createBookingEvent({
         summary: `${config.label} — ${name}`,
         description: `Consulta agendada desde la web\n\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\nTipo: ${config.label}`,
         date,
@@ -66,21 +61,25 @@ export async function POST(request: NextRequest) {
         durationMinutes: config.slotMinutes,
         attendeeEmail: email,
         sessionType,
-      }).then((result) => {
-        // If we got a Meet link, send a second email with it
-        if (result.meetLink) {
-          const withLink = { ...bookingData, meetLink: result.meetLink }
-          Promise.all([
-            sendConfirmationEmail(withLink),
-            sendAdminNotification(withLink),
-          ]).catch((err) => console.error('[booking] meet link email error:', err))
-        }
-      }).catch((err) => console.error('[booking] calendar event error:', err))
-    ).catch(() => { /* Google Calendar not configured */ })
+      })
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Calendar timeout')), 10000)
+      )
+      const calResult = await Promise.race([calPromise, timeoutPromise])
+      meetLink = calResult.meetLink || null
+    } catch (err) {
+      console.error('[booking] calendar event error:', err)
+    }
+
+    // Send ONE confirmation email with Meet link (if available)
+    const bookingData = { name, email, phone, sessionType, date, time, meetLink: meetLink || undefined }
 
     if (!savedToDb) {
-      // No DB — email is the only record; wait for it
-      const results = await emailPromises
+      // No DB — email is the only record; must wait
+      const results = await Promise.all([
+        sendConfirmationEmail(bookingData),
+        sendAdminNotification(bookingData),
+      ])
       if (!results.some(Boolean)) {
         return NextResponse.json({
           error: 'No pudimos procesar tu agendamiento. Escríbenos directamente a contacto@psicobahamondes.cl',
@@ -93,8 +92,11 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Fire-and-forget emails when DB saved
-    emailPromises.catch((err) => console.error('[booking] email error:', err))
+    // DB saved — fire-and-forget email
+    Promise.all([
+      sendConfirmationEmail(bookingData),
+      sendAdminNotification(bookingData),
+    ]).catch((err) => console.error('[booking] email error:', err))
 
     return NextResponse.json({
       success: true,
