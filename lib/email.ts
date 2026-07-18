@@ -7,9 +7,13 @@ import {
 } from './email-templates'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Reservas Psicobahamondes <noreply@psicobahamondes.cl>'
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'psicobahamondes@gmail.com'
-const ADMIN_EMAIL_2 = 'contactopartnerstech@gmail.com'
+
+// Resend requires the domain's actual verified address in the from field
+const FROM_RAW = process.env.EMAIL_FROM || 'reservas@psicobahamondes.cl'
+const FROM_EMAIL = `Reservas Psicobahamondes <${FROM_RAW}>`
+
+// Always notify BOTH admin addresses regardless of env overrides
+const ADMIN_EMAILS = ['psicobahamondes@gmail.com', 'contactopartnerstech@gmail.com']
 
 export type BookingData = {
   name: string
@@ -36,6 +40,7 @@ async function sendResend(options: EmailOptions): Promise<boolean> {
   }
 
   try {
+    const to = Array.isArray(options.to) ? options.to : [options.to]
     const resp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -44,7 +49,7 @@ async function sendResend(options: EmailOptions): Promise<boolean> {
       },
       body: JSON.stringify({
         from: FROM_EMAIL,
-        to: Array.isArray(options.to) ? options.to : [options.to],
+        to,
         subject: options.subject,
         html: options.html,
       }),
@@ -66,7 +71,6 @@ async function sendResend(options: EmailOptions): Promise<boolean> {
 
 export async function sendConfirmationEmail(data: BookingData): Promise<boolean> {
   const label = getSessionLabel(data.sessionType)
-
   return sendResend({
     to: data.email,
     subject: `Confirmación — ${label} — Psicobahamondes`,
@@ -74,15 +78,13 @@ export async function sendConfirmationEmail(data: BookingData): Promise<boolean>
   })
 }
 
-// ─── Notificación a los administradores (ambos correos) ───
+// ─── Notificación a AMBOS administradores (psicobahamondes + contactopartnerstech) ───
 
 export async function sendAdminNotification(data: BookingData): Promise<boolean> {
   if (!RESEND_API_KEY) return false
-
   const label = getSessionLabel(data.sessionType)
-
   return sendResend({
-    to: [ADMIN_EMAIL, ADMIN_EMAIL_2],
+    to: ADMIN_EMAILS,
     subject: `🔔 Nueva reserva: ${data.name} — ${label}`,
     html: adminNotificationTemplate(data),
   })
@@ -92,7 +94,6 @@ export async function sendAdminNotification(data: BookingData): Promise<boolean>
 
 export async function sendReminderEmail(data: BookingData): Promise<boolean> {
   const label = getSessionLabel(data.sessionType)
-
   return sendResend({
     to: data.email,
     subject: `⏰ Recordatorio: ${label} — Psicobahamondes`,
@@ -110,15 +111,13 @@ export async function sendCancellationEmail(data: BookingData): Promise<boolean>
   })
 }
 
-// ─── Notificación de cancelación al admin ───
+// ─── Notificación de cancelación a ambos admins ───
 
 export async function sendAdminCancellationNotice(data: BookingData): Promise<boolean> {
   if (!RESEND_API_KEY) return false
-
   const label = getSessionLabel(data.sessionType)
-
   return sendResend({
-    to: [ADMIN_EMAIL, ADMIN_EMAIL_2],
+    to: ADMIN_EMAILS,
     subject: `❌ Cancelación: ${data.name} — ${label}`,
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px">
@@ -137,7 +136,7 @@ export async function sendAdminCancellationNotice(data: BookingData): Promise<bo
   })
 }
 
-// ─── Email con reporte PDF adjunto (sesión cero desde test) ───
+// ─── Email con reporte PDF adjunto a ambos admins ───
 
 export async function sendReportWithPdf(
   to: string[],

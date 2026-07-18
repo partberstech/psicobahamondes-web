@@ -3,9 +3,10 @@ import { eneagramaReportTemplate, type EneagramaTestData } from '@/lib/eneagrama
 import { getProfileByType } from '@/lib/eneagrama-profiles'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Reservas Psicobahamondes <noreply@psicobahamondes.cl>'
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'psicobahamondes@gmail.com'
-const ADMIN_EMAIL_2 = 'contactopartnerstech@gmail.com'
+const FROM_RAW = process.env.EMAIL_FROM || 'reservas@psicobahamondes.cl'
+const FROM_EMAIL = `Reservas Psicobahamondes <${FROM_RAW}>`
+// Always notify BOTH admin emails
+const ADMIN_EMAILS = ['psicobahamondes@gmail.com', 'contactopartnerstech@gmail.com']
 
 export async function POST(request: Request) {
   try {
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: FROM_EMAIL,
-        to: [ADMIN_EMAIL, ADMIN_EMAIL_2],
+        to: ADMIN_EMAILS,
         subject: `Nuevo test de Eneagrama — ${data.nombre}`,
         html,
         attachments: [
@@ -351,11 +352,5 @@ async function generatePdfBase64(data: EneagramaTestData): Promise<string> {
   page.drawText('Psicobahamondes · Pedro Bahamondes · Psicólogo Clínico · psicobahamondes.cl', { x: MARGIN, y, size: 7, font: helvetica, color: MUTED_LIGHT })
 
   const pdfBytes = await doc.save()
-  // Convert to base64
-  let binary = ''
-  const bytes = new Uint8Array(pdfBytes)
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i])
-  }
-  return btoa(binary)
+  return Buffer.from(pdfBytes).toString('base64')
 }

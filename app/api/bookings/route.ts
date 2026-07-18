@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         const pdfBase64 = await generatePdfBase64(eneagramaData)
         const html = eneagramaReportTemplate(eneagramaData)
         reportSent = await sendReportWithPdf(
-          [process.env.ADMIN_EMAIL || 'psicobahamondes@gmail.com', 'contactopartnerstech@gmail.com'],
+          ['psicobahamondes@gmail.com', 'contactopartnerstech@gmail.com'],
           { nombre: eneagramaData.nombre, email: eneagramaData.email, sessionType },
           html,
           pdfBase64,
@@ -465,10 +465,5 @@ async function generatePdfBase64(data: Record<string, any>): Promise<string> {
   page.drawText('Psicobahamondes · Pedro Bahamondes · Psicólogo Clínico · psicobahamondes.cl', { x: MARGIN, y, size: 7, font: helvetica, color: MUTED_LIGHT })
 
   const pdfBytes = await doc.save()
-  let binary = ''
-  const bytes = new Uint8Array(pdfBytes)
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i])
-  }
-  return btoa(binary)
+  return Buffer.from(pdfBytes).toString('base64')
 }
