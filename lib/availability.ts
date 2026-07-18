@@ -5,6 +5,12 @@ export type TimeSlot = {
 
 export type SessionType = 'sesion-cero' | 'consulta-presencial' | 'consulta-telematica'
 
+/** A busy period in minutes from midnight (America/Santiago local time) */
+export type BusyRange = {
+  start: number
+  end: number
+}
+
 export const SESSION_CONFIG: Record<SessionType, {
   label: string
   days: number[]
@@ -47,13 +53,57 @@ function formatTime(minutes: number): string {
 }
 
 /**
- * Generate slots purely from config — no DB dependency.
- * Optionally accepts a set of booked times to mark some as taken.
+ * Get the UTC offset string for America/Santiago on a given date.
+ * Returns e.g. "-03:00" (DST) or "-04:00" (standard).
+ */
+function getSantiagoOffset(dateStr: string): string {
+  const date = new Date(dateStr + 'T12:00:00Z')
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Santiago',
+    timeZoneName: 'longOffset',
+  }).formatToParts(date)
+  const tzPart = parts.find(p => p.type === 'timeZoneName')
+  if (tzPart?.value) {
+    const match = tzPart.value.match(/GMT([+-]\d{2}:\d{2})/)
+    if (match) return match[1]
+  }
+  return '-04:00' // fallback seguro
+}
+
+/**
+ * Convert an ISO timestamp to minutes-from-midnight in America/Santiago.
+ */
+function toSantiagoMinutes(isoString: string): number {
+  const date = new Date(isoString)
+  const parts = new Intl.DateTimeFormat('en', {
+    timeZone: 'America/Santiago',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+  const h = parseInt(parts.find(p => p.type === 'hour')?.value || '0', 10)
+  const m = parseInt(parts.find(p => p.type === 'minute')?.value || '0', 10)
+  return h * 60 + m
+}
+
+/**
+ * Check if a slot [slotStart, slotEnd] overlaps any busy range.
+ */
+function hasSlotOverlap(slotStart: number, slotEnd: number, busyRanges: BusyRange[]): boolean {
+  return busyRanges.some(b => slotStart < b.end && slotEnd > b.start)
+}
+
+/**
+ * Generate slots purely from config.
+ *
+ * @param bookedTimes  Exact "HH:MM" start times already booked in the DB.
+ * @param busyRanges   Time ranges (in Santiago minutes) from Google Calendar that overlap.
  */
 export function getSlotsFromConfig(
   sessionType: SessionType,
   dateStr: string,
-  bookedTimes?: Set<string>
+  bookedTimes?: Set<string>,
+  busyRanges?: BusyRange[],
 ): TimeSlot[] {
   const dt = new Date(dateStr + 'T12:00:00')
   const dayOfWeek = dt.getDay()
@@ -79,17 +129,18 @@ export function getSlotsFromConfig(
 
   while (current + slotLen <= endMinutes) {
     const time = formatTime(current)
+    const slotEnd = current + slotLen
 
-    if (isToday && current + slotLen <= nowMinutes) {
+    if (isToday && slotEnd <= nowMinutes) {
       current += slotLen
       continue
     }
 
-    slots.push({
-      time,
-      available: !bookedTimes?.has(time),
-    })
+    // Check both sources of unavailability
+    const exactBusy = bookedTimes?.has(time) ?? false        // DB-match on exact HH:MM start
+    const rangeBusy = busyRanges ? hasSlotOverlap(current, slotEnd, busyRanges) : false  // Calendar overlap
 
+    slots.push({ time, available: !exactBusy && !rangeBusy })
     current += slotLen
   }
 
@@ -98,33 +149,25 @@ export function getSlotsFromConfig(
 
 /**
  * Fetch busy times from Google Calendar for a specific date
- * and return as a Set of "HH:MM" strings that conflict with slots.
+ * and return as BusyRange[] (minutes from midnight in America/Santiago).
  */
-export async function getBusyTimesForDate(dateStr: string): Promise<Set<string>> {
+export async function getBusyTimesForDate(dateStr: string): Promise<BusyRange[]> {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_REFRESH_TOKEN) {
-    return new Set() // No Google configured — all slots available
+    return [] // No Google configured — all slots available
   }
 
   try {
     const { getBusyTimes } = await import('./google-calendar')
-    const dayStart = `${dateStr}T00:00:00-04:00`
-    const dayEnd = `${dateStr}T23:59:59-04:00`
+    const offset = getSantiagoOffset(dateStr)
+    const dayStart = `${dateStr}T00:00:00${offset}`
+    const dayEnd = `${dateStr}T23:59:59${offset}`
     const busy = await getBusyTimes(dayStart, dayEnd)
 
-    // Convert busy intervals to set of conflicting HH:MM times
-    const busyTimes = new Set<string>()
-    for (const b of busy) {
-      const bStart = new Date(b.start)
-      const bEnd = new Date(b.end)
-      // Mark every minute in the busy range
-      const startMin = bStart.getHours() * 60 + bStart.getMinutes()
-      const endMin = bEnd.getHours() * 60 + bEnd.getMinutes()
-      for (let m = startMin; m < endMin; m++) {
-        busyTimes.add(formatTime(m))
-      }
-    }
-    return busyTimes
+    return busy.map(b => ({
+      start: toSantiagoMinutes(b.start),
+      end: toSantiagoMinutes(b.end),
+    }))
   } catch {
-    return new Set() // Fallback — don't block slots on API error
+    return [] // Fallback — don't block slots on API error
   }
 }

@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
 async function generatePdfBase64(data: EneagramaTestData): Promise<string> {
   // eval('require') bypasses webpack bundling — this runs runtime-only on Node.js
-  const { PDFDocument, StandardFonts, rgb }: typeof import('pdf-lib') = eval('require("pdf-lib")')
+  const { PDFDocument, StandardFonts, rgb }: any = eval('require("pdf-lib")')
 
   const font = 'Helvetica' as any // StandardFonts enum value
   const bold = 'Helvetica-Bold' as any

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendConfirmationEmail, sendAdminNotification, sendReportWithPdf } from '@/lib/email'
-import { getSlotsFromConfig, getBusyTimesForDate, SESSION_CONFIG, type SessionType } from '@/lib/availability'
+import { getSlotsFromConfig, getBusyTimesForDate, SESSION_CONFIG, type SessionType, type BusyRange } from '@/lib/availability'
 import { getDb, migrate, queryBookedTimes, saveContact } from '@/lib/db'
 import { v4 as uuid } from 'uuid'
 import { eneagramaReportTemplate } from '@/lib/eneagrama-email'
@@ -28,15 +28,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Configuración de horario no encontrada' }, { status: 400 })
     }
 
-    // Validate slot time against config AND existing bookings/Calendar events
-    const [bookedFromDb, busyFromCalendar] = await Promise.all([
+    // ── Validate slot against DB bookings + Google Calendar ──
+    const [bookedFromDb, busyRanges] = await Promise.all([
       queryBookedTimes(date, sessionType as SessionType),
       getBusyTimesForDate(date),
     ])
-    const allBooked = new Set<string>()
-    bookedFromDb.forEach(t => allBooked.add(t))
-    busyFromCalendar.forEach(t => allBooked.add(t))
-    const validSlots = getSlotsFromConfig(sessionType as SessionType, date, allBooked)
+    const validSlots = getSlotsFromConfig(sessionType as SessionType, date, bookedFromDb, busyRanges)
     const matching = validSlots.find((s) => s.time === time)
     if (!matching) {
       return NextResponse.json({ error: 'Horario no disponible para esta fecha' }, { status: 400 })
@@ -45,7 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Este horario ya está reservado. Por favor elige otro.' }, { status: 409 })
     }
 
-    // Try DB save (fails silently — email is the fallback)
+    // ── Save to DB ──
     let dbId = uuid()
     let savedToDb = false
     if (process.env.TURSO_DATABASE_URL) {
@@ -59,7 +56,6 @@ export async function POST(request: NextRequest) {
         })
         savedToDb = true
 
-        // Save contact to contacts DB
         await saveContact({
           name, email, phone, source: sessionType, bookingId: dbId,
         })
@@ -68,7 +64,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create Google Calendar event + get Meet link (fire-and-forget, don't block emails)
+    // ── Create Google Calendar event (blocking with 8s timeout to capture Meet link) ──
     let meetLink: string | null = null
     try {
       const { createBookingEvent } = await import('@/lib/google-calendar')
@@ -84,26 +80,15 @@ export async function POST(request: NextRequest) {
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Calendar timeout')), 8000)
       )
-      // Race but don't block — catch silently
-      Promise.race([calPromise, timeoutPromise])
-        .then((result) => {
-          meetLink = result.meetLink || null
-          // If we got a Meet link, send a follow-up email with it
-          if (meetLink) {
-            const withLink = { name, email, phone, sessionType, date, time, meetLink }
-            Promise.all([
-              sendConfirmationEmail(withLink),
-              sendAdminNotification(withLink),
-            ]).catch(() => {})
-          }
-        })
-        .catch((err) => console.error('[booking] calendar/meet error:', err?.message || err))
-    } catch (err) {
-      console.error('[booking] calendar import error:', err)
+      const result = await Promise.race([calPromise, timeoutPromise])
+      meetLink = result.meetLink || null
+    } catch (err: any) {
+      console.error('[booking] calendar/meet error:', err?.message || err)
+      // Continue — emails still sent without Meet link
     }
 
-    // Send confirmation emails FIRST
-    const bookingData = { name, email, phone, sessionType, date, time }
+    // ── Send confirmation emails (ONE delivery with meetLink if available) ──
+    const bookingData = { name, email, phone, sessionType, date, time, ...(meetLink ? { meetLink } : {}) }
 
     if (!savedToDb) {
       const results = await Promise.all([
@@ -173,15 +158,11 @@ export async function GET() {
   }
 }
 
-// ─── PDF generation (inline to avoid webpack bundling of pdf-lib) ───
+// ─── PDF generation (dynamic import avoids webpack bundling) ───
 
 async function generatePdfBase64(data: Record<string, any>): Promise<string> {
-  // eval('require') bypasses webpack bundling — this runs runtime-only on Node.js
-  const { PDFDocument, StandardFonts, rgb }: typeof import('pdf-lib') = eval('require("pdf-lib")')
-
-  const font = 'Helvetica' as any
-  const bold = 'Helvetica-Bold' as any
-  const italic = 'Helvetica-Oblique' as any
+  // eval('require') bypasses webpack bundling — this runs at runtime on Node.js
+  const { PDFDocument, StandardFonts, rgb }: any = eval('require("pdf-lib")')
 
   const doc = await PDFDocument.create()
   const helvetica = await doc.embedFont(StandardFonts.Helvetica)
@@ -291,20 +272,17 @@ async function generatePdfBase64(data: Record<string, any>): Promise<string> {
   const topType = TYPES_FULL.find(t => t.id === data.tipoPredominante) || TYPES_FULL[0]
   const wingLabel = data.ala ? `${data.tipoPredominante}w${data.ala}` : 'No detectada'
 
-  // Section title helper
   function sectionTitle(text: string): void {
     page.drawRectangle({ x: MARGIN, y: y - 2, width: CONTENT_W, height: 22, color: BRAND_LIGHT })
     page.drawText(text, { x: MARGIN + 12, y: y + 4, size: 11, font: helveticaBold, color: BRAND })
     y -= 32
   }
 
-  // ── Primary type ──
   sectionTitle(`TIPO PREDOMINANTE: ${topType.title} (Tipo ${data.tipoPredominante})`)
   y -= 4
   page.drawText(`Centro: ${topType.center} · Ala: ${wingLabel}`, { x: MARGIN, y, size: 10, font: helveticaItalic, color: MUTED })
   y -= 20
 
-  // ── Bar chart ──
   sectionTitle('DISTRIBUCIÓN DE PUNTUACIONES')
   const barStartX = MARGIN + 60
   const barMaxW = CONTENT_W - 100
@@ -327,7 +305,6 @@ async function generatePdfBase64(data: Record<string, any>): Promise<string> {
 
   y -= 10
 
-  // ── Fear & Desire ──
   sectionTitle('ANÁLISIS DEL TIPO')
   const colW = (CONTENT_W - 12) / 2
 
@@ -343,7 +320,6 @@ async function generatePdfBase64(data: Record<string, any>): Promise<string> {
 
   y -= 60
 
-  // ── Strengths & Challenges ──
   page.drawRectangle({ x: MARGIN, y: y - 72, width: colW, height: 68, color: hexToRgb('#f0f7ff') })
   page.drawRectangle({ x: MARGIN, y: y - 72, width: colW, height: 68, borderColor: hexToRgb('#93c5fd'), borderWidth: 1 })
   page.drawText('FORTALEZAS', { x: MARGIN + 10, y: y - 14, size: 8, font: helveticaBold, color: hexToRgb('#2563eb') })
@@ -360,7 +336,6 @@ async function generatePdfBase64(data: Record<string, any>): Promise<string> {
 
   y -= 80
 
-  // ── Stress & Growth ──
   page.drawRectangle({ x: MARGIN, y: y - 44, width: colW, height: 40, color: hexToRgb('#fdf4f0') })
   page.drawRectangle({ x: MARGIN, y: y - 44, width: colW, height: 40, borderColor: BORDER, borderWidth: 1 })
   page.drawText(`ESTRÉS → Tipo ${topType.stress.type}`, { x: MARGIN + 10, y: y - 14, size: 8, font: helveticaBold, color: RED })
