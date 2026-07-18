@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendConfirmationEmail, sendAdminNotification } from '@/lib/email'
-import { getSlotsFromConfig, SESSION_CONFIG, type SessionType } from '@/lib/availability'
-import { getDb, migrate } from '@/lib/db'
+import { getSlotsFromConfig, getBusyTimesForDate, SESSION_CONFIG, type SessionType } from '@/lib/availability'
+import { getDb, migrate, queryBookedTimes } from '@/lib/db'
 import { v4 as uuid } from 'uuid'
 
 export async function POST(request: NextRequest) {
@@ -24,11 +24,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Configuración de horario no encontrada' }, { status: 400 })
     }
 
-    // Validate slot time against config
-    const validSlots = getSlotsFromConfig(sessionType as SessionType, date)
+    // Validate slot time against config AND existing bookings/Calendar events
+    const [bookedFromDb, busyFromCalendar] = await Promise.all([
+      queryBookedTimes(date, sessionType as SessionType),
+      getBusyTimesForDate(date),
+    ])
+    const allBooked = new Set<string>()
+    bookedFromDb.forEach(t => allBooked.add(t))
+    busyFromCalendar.forEach(t => allBooked.add(t))
+    const validSlots = getSlotsFromConfig(sessionType as SessionType, date, allBooked)
     const matching = validSlots.find((s) => s.time === time)
     if (!matching) {
       return NextResponse.json({ error: 'Horario no disponible para esta fecha' }, { status: 400 })
+    }
+    if (!matching.available) {
+      return NextResponse.json({ error: 'Este horario ya está reservado. Por favor elige otro.' }, { status: 409 })
     }
 
     // Try DB save (fails silently — email is the fallback)

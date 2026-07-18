@@ -19,8 +19,8 @@ const SITE_URL = 'https://psicobahamondes.cl'
 
 const SESSION_LABELS: Record<string, string> = {
   'sesion-cero': 'Sesión Cero (15 min)',
-  'consulta-presencial': 'Consulta Presencial (50 min)',
-  'consulta-telematica': 'Consulta Telemática (50 min)',
+  'consulta-presencial': 'Consulta Presencial (45 min)',
+  'consulta-telematica': 'Consulta Telemática (45 min)',
 }
 
 const SESSION_COLORS: Record<string, string> = {
@@ -61,10 +61,10 @@ function googleCalendarUrl(data: {
   // Default durations per session type (minutes)
   const durations: Record<string, number> = {
     'sesion-cero': 15,
-    'consulta-presencial': 50,
-    'consulta-telematica': 50,
+    'consulta-presencial': 45,
+    'consulta-telematica': 45,
   }
-  const duration = durations[data.sessionType] || 50
+  const duration = durations[data.sessionType] || 45
 
   const start = new Date(y, m - 1, d, hh, mm)
   const end = new Date(start.getTime() + duration * 60000)

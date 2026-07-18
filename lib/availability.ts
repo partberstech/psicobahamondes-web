@@ -24,14 +24,14 @@ export const SESSION_CONFIG: Record<SessionType, {
     days: [1, 2, 3, 4, 5, 6],
     start: '09:00',
     end: '14:00',
-    slotMinutes: 50,
+    slotMinutes: 45,
   },
   'consulta-telematica': {
     label: 'Consulta Telemática',
     days: [1, 2, 3, 4, 5],
     start: '15:00',
     end: '18:00',
-    slotMinutes: 50,
+    slotMinutes: 45,
   },
 }
 

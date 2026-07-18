@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
@@ -12,9 +12,9 @@ const HeroCanvas = dynamic(() => import('@/components/HeroCanvas'), { ssr: false
 const spring = [0.32, 0.72, 0, 1]
 const springHeavy = [0.16, 1, 0.3, 1]
 
-/* ══════════════════════════════════
+/* ═══════════════════════════════════════════
    MINIMALIST SVG ICONS
-   ══════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 function IconBrain({ className = '' }: { className?: string }) {
   return (
     <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -92,9 +92,9 @@ function IconCalendar({ className = '' }: { className?: string }) {
   )
 }
 
-/* ══════════════════════════════════
+/* ═══════════════════════════════════════════
    ANIMATION COMPONENTS
-   ══════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 function FadeIn({ children, className = '', delay = 0, y = 24 }: { children: React.ReactNode; className?: string; delay?: number; y?: number }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-80px' })
@@ -141,9 +141,9 @@ function StaggerItem({ children, className = '' }: { children: React.ReactNode; 
   )
 }
 
-/* ══════════════════════════════════
+/* ═══════════════════════════════════════════
    HERO ROTATING TEXT
-   ══════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 const heroRotatingTexts = [
   'Repetir las mismas historias familiares una y otra vez tiene una razón. ¿Descubrirla juntos?',
   'La ansiedad y los bloqueos mentales no tienen por qué definir tu vida. Hay un camino distinto.',
@@ -151,29 +151,9 @@ const heroRotatingTexts = [
   'Cargas del pasado que no logras soltar no son una sentencia. Son una invitación a sanar.',
 ]
 
-
-
-/* ══════════════════════════════════
-   DATA
-   ══════════════════════════════════ */
-const pasos = [
-  {
-    icon: IconTest,
-    titulo: 'Explora tu perfil',
-    desc: 'Ingresa a nuestra sección de Tests y elige el que resuene con tu momento actual (personalidad, estrés, vínculos). Te tomará solo unos minutos.',
-  },
-  {
-    icon: IconFileText,
-    titulo: 'Recibe tus resultados',
-    desc: 'Obtendrás un resumen inmediato que te dará una primera radiografía de tus dinámicas mentales y emocionales.',
-  },
-  {
-    icon: IconUsers,
-    titulo: 'Analicémoslos juntos',
-    desc: 'Revisamos en conjunto tus resultados en una Sesión Cero gratuita. En este espacio evaluaremos qué significan y cómo podemos trabajarlos.',
-  },
-]
-
+/* ═══════════════════════════════════════════
+   DATA - Services Section
+   ═══════════════════════════════════════════ */
 const serviciosCards = [
   {
     titulo: 'Psicoterapia Integrativa',
@@ -192,9 +172,6 @@ const serviciosCards = [
   },
 ]
 
-/* ══════════════════════════════════
-   PAGE
-   ══════════════════════════════════ */
 export default function Home() {
   const [rotatingIndex, setRotatingIndex] = useState(0)
 
@@ -207,7 +184,7 @@ export default function Home() {
 
   return (
     <>
-      {/* ═══════ 1. HERO — La Primera Impresión (Video Background) ═══════ */}
+      {/* ═══════ 1. HERO — The First Impression (Video Background) ═══════ */}
       <section className="section-block relative min-h-[70vh] flex items-center overflow-hidden">
         {/* Video background */}
         <video
@@ -277,7 +254,23 @@ export default function Home() {
           </FadeIn>
 
           <Stagger className="grid md:grid-cols-3 gap-6 md:gap-8 mb-12" stagger={0.12}>
-            {pasos.map((p, i) => (
+            {[
+              {
+                icon: IconTest,
+                titulo: 'Explora tu perfil',
+                desc: 'Ingresa a nuestra sección de Tests y elige el que resuene con tu momento actual (personalidad, estrés, vínculos). Te tomará solo unos minutos.',
+              },
+              {
+                icon: IconFileText,
+                titulo: 'Recibe tus resultados',
+                desc: 'Obtendrás un resumen inmediato que te dará una primera radiografía de tus dinámicas mentales y emocionales.',
+              },
+              {
+                icon: IconUsers,
+                titulo: 'Analicémoslos juntos',
+                desc: 'Revisamos en conjunto tus resultados en una Sesión Cero gratuita. En este espacio evaluaremos qué significan y cómo podemos trabajarlos.',
+              },
+            ].map((p, i) => (
               <StaggerItem key={p.titulo}>
                 <div className="relative">
                   <div className="flex items-center gap-3 mb-4">
@@ -364,7 +357,7 @@ export default function Home() {
           </FadeIn>
 
           <Stagger className="grid md:grid-cols-3 gap-5 mb-10" stagger={0.12}>
-            {serviciosCards.map((s) => (
+            {serviciosCards.map((s, i) => (
               <StaggerItem key={s.titulo}>
                 <motion.div className="card card-hover h-full" whileHover={{ y: -3 }} transition={{ duration: 0.5, ease: spring }}>
                   <div className="card-core flex flex-col h-full">

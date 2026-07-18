@@ -3,7 +3,7 @@ import { eneagramaReportTemplate, type EneagramaTestData } from '@/lib/eneagrama
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const FROM_EMAIL = process.env.EMAIL_FROM || 'reservas@psicobahamondes.cl'
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'contactopartnerstech@gmail.com'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'psicobahamondes@gmail.com'
 
 export async function POST(request: Request) {
   try {

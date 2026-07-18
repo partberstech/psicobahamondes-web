@@ -24,6 +24,21 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
   const [confirming, setConfirming] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
+  const [reportSent, setReportSent] = useState<boolean | null>(null)
+
+  // Detect if user came from eneagrama test, and if so load test data
+  const [fromEneagrama] = useState(() => {
+    if (typeof window === 'undefined') return false
+    const params = new URLSearchParams(window.location.search)
+    return params.get('from-eneagrama') === 'true'
+  })
+  const [eneagramaData] = useState(() => {
+    if (typeof window === 'undefined') return null
+    try {
+      const raw = sessionStorage.getItem('eneagrama_test_data')
+      return raw ? JSON.parse(raw) : null
+    } catch { return null }
+  })
 
   const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
   const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -89,6 +104,29 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
       const data = await resp.json()
       if (resp.ok) {
         setDone(true)
+        // If user came from eneagrama test, send the report now
+        if (fromEneagrama && eneagramaData) {
+          try {
+            const reportResp = await fetch('/api/eneagrama/report', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                nombre: eneagramaData.nombre,
+                email: eneagramaData.email,
+                telefono: eneagramaData.telefono || '',
+                scores: eneagramaData.scores,
+                tipoPredominante: eneagramaData.tipoPredominante,
+                ala: eneagramaData.ala,
+                centro: eneagramaData.centro,
+                timestamp: new Date().toISOString(),
+              }),
+            })
+            const reportResult = await reportResp.json()
+            setReportSent(reportResult.success === true)
+          } catch {
+            setReportSent(false)
+          }
+        }
       } else {
         setError(data.error || 'Error al agendar')
       }
@@ -123,15 +161,46 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
         <p style={{ color: '#6b7280' }} className="mb-6">
           {d}/{m}/{y} a las {selectedTime} hrs
         </p>
+
+        {/* Report status if coming from eneagrama */}
+        {fromEneagrama && (
+          <div className="mb-6 p-4 rounded-xl" style={{
+            background: reportSent === true ? '#f0fdf4' : reportSent === false ? '#fef2f2' : '#f9fafb',
+            border: `1px solid ${reportSent === true ? '#86efac' : reportSent === false ? '#fca5a5' : '#e5e7eb'}`,
+          }}>
+            {reportSent === null ? (
+              <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Enviando reporte al psicólogo...</p>
+            ) : reportSent ? (
+              <div>
+                <p style={{ color: '#16a34a', fontSize: '0.875rem', fontWeight: 600 }} className="mb-1">
+                  ✅ Reporte enviado correctamente
+                </p>
+                <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>
+                  El psicólogo recibió el resultado de tu test para preparar la sesión.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p style={{ color: '#dc2626', fontSize: '0.875rem', fontWeight: 600 }} className="mb-1">
+                  Reporte no enviado
+                </p>
+                <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>
+                  No pudimos enviar el reporte automáticamente. No te preocupes, puedes compartir tus resultados en la sesión.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         <p style={{ color: '#9ca3af', fontSize: '0.875rem' }} className="mb-8 max-w-sm mx-auto leading-relaxed">
           Te enviaremos un correo con los detalles. Si no encuentras el mensaje, revisa tu bandeja de spam.
         </p>
         <a
-          href="/"
+          href={fromEneagrama ? '/recursos' : '/'}
           className="btn btn-brand px-6 py-3 inline-flex items-center gap-2"
           style={{ fontFamily: 'var(--font-display)' }}
         >
-          Volver al inicio
+          {fromEneagrama ? 'Ver mi reporte completo' : 'Volver al inicio'}
         </a>
       </motion.div>
     )

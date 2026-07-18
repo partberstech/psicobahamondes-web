@@ -34,7 +34,7 @@ const SESSION_TYPES: SessionType[] = [
   {
     id: 'consulta-presencial',
     titulo: 'Consulta Presencial',
-    duracion: '50 min',
+    duracion: '45 min',
     precio: 'Fonasa · Isapre · Particular',
     descripcion: 'Sesión presencial en Osorno. Trabajamos juntos con toda la atención.',
     schedule: 'Lun–Sáb · 09:00 a 14:00',
@@ -45,7 +45,7 @@ const SESSION_TYPES: SessionType[] = [
   {
     id: 'consulta-telematica',
     titulo: 'Consulta Telemática',
-    duracion: '50 min',
+    duracion: '45 min',
     precio: 'Fonasa · Isapre · Particular',
     descripcion: 'Sesión online por videollamada desde cualquier lugar.',
     schedule: 'Lun–Vie · 15:00 a 18:00',
@@ -69,7 +69,25 @@ const fadeSlide = {
 export default function BookingFlow() {
   const [step, setStep] = useState<Step>('select')
   const [selected, setSelected] = useState<Modalidad>('sesion-cero')
-  const [form, setForm] = useState({ name: '', email: '', phone: '' })
+  const [form, setForm] = useState(() => {
+    // Pre-fill from eneagrama test data if available
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = sessionStorage.getItem('eneagrama_test_data')
+        if (raw) {
+          const data = JSON.parse(raw)
+          if (data.nombre || data.email || data.telefono) {
+            return {
+              name: data.nombre || '',
+              email: data.email || '',
+              phone: data.telefono || '',
+            }
+          }
+        }
+      } catch { /* ignore */ }
+    }
+    return { name: '', email: '', phone: '' }
+  })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [focused, setFocused] = useState<Record<string, boolean>>({})
 
