@@ -26,11 +26,13 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
   const [error, setError] = useState('')
   const [reportSent, setReportSent] = useState<boolean | null>(null)
 
-  // Detect if user came from eneagrama test, and if so load test data
+  // Detect if user came from eneagrama test (URL param + sessionStorage)
   const [fromEneagrama] = useState(() => {
     if (typeof window === 'undefined') return false
     const params = new URLSearchParams(window.location.search)
-    return params.get('from-eneagrama') === 'true'
+    const fromUrl = params.get('from-eneagrama') === 'true'
+    const hasData = sessionStorage.getItem('eneagrama_test_data') !== null
+    return fromUrl || hasData
   })
   const [eneagramaData] = useState(() => {
     if (typeof window === 'undefined') return null
@@ -89,44 +91,39 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
     setConfirming(true)
     setError('')
     try {
+      // Build the request body with optional eneagrama data
+      const body: Record<string, any> = {
+        sessionType,
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        date: selectedDate,
+        time: selectedTime,
+      }
+      // Include eneagrama test data if present — the server handles report generation
+      if (fromEneagrama && eneagramaData) {
+        body.eneagramaData = {
+          nombre: eneagramaData.nombre,
+          email: eneagramaData.email,
+          telefono: eneagramaData.telefono || '',
+          scores: eneagramaData.scores,
+          tipoPredominante: eneagramaData.tipoPredominante,
+          ala: eneagramaData.ala,
+          centro: eneagramaData.centro,
+          timestamp: new Date().toISOString(),
+        }
+      }
+
       const resp = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionType,
-          name: userData.name,
-          email: userData.email,
-          phone: userData.phone,
-          date: selectedDate,
-          time: selectedTime,
-        }),
+        body: JSON.stringify(body),
       })
       const data = await resp.json()
       if (resp.ok) {
         setDone(true)
-        // If user came from eneagrama test, send the report now
-        if (fromEneagrama && eneagramaData) {
-          try {
-            const reportResp = await fetch('/api/eneagrama/report', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                nombre: eneagramaData.nombre,
-                email: eneagramaData.email,
-                telefono: eneagramaData.telefono || '',
-                scores: eneagramaData.scores,
-                tipoPredominante: eneagramaData.tipoPredominante,
-                ala: eneagramaData.ala,
-                centro: eneagramaData.centro,
-                timestamp: new Date().toISOString(),
-              }),
-            })
-            const reportResult = await reportResp.json()
-            setReportSent(reportResult.success === true)
-          } catch {
-            setReportSent(false)
-          }
-        }
+        // report status comes from the server response
+        setReportSent(data.reportSent === true)
       } else {
         setError(data.error || 'Error al agendar')
       }

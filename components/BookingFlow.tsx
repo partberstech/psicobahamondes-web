@@ -99,6 +99,7 @@ export default function BookingFlow() {
     if (!form.email.trim()) e.email = 'Ingresa tu email'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Email inválido'
     if (!form.phone.trim()) e.phone = 'Ingresa tu teléfono'
+    else if (!/^(\+?56)?9\d{8}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Teléfono inválido — debe ser un número chileno (+569XXXXXXXX)'
     setErrors(e)
     return Object.keys(e).length === 0
   }

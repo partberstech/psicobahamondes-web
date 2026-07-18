@@ -25,6 +25,45 @@ export async function migrate() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `)
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS contacts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      source TEXT NOT NULL DEFAULT 'booking',
+      booking_id TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `)
+  await db.execute(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email)
+  `)
+}
+
+export async function saveContact(opts: {
+  name: string; email: string; phone: string; source?: string; bookingId?: string
+}): Promise<boolean> {
+  if (!tursoUrl()) return false
+  try {
+    const db = getDb()
+    await migrate()
+    // Upsert: update name/phone if contact already exists by email
+    await db.execute({
+      sql: `INSERT INTO contacts (name, email, phone, source, booking_id)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(email) DO UPDATE SET
+              name = excluded.name,
+              phone = excluded.phone,
+              source = excluded.source,
+              booking_id = COALESCE(excluded.booking_id, contacts.booking_id)`,
+      args: [opts.name, opts.email, opts.phone, opts.source || 'booking', opts.bookingId || null],
+    })
+    return true
+  } catch (e) {
+    console.error('[db] saveContact error:', e)
+    return false
+  }
 }
 
 export type SessionType = 'sesion-cero' | 'consulta-presencial' | 'consulta-telematica'

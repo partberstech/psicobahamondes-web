@@ -7,8 +7,9 @@ import {
 } from './email-templates'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Psicobahamondes <noreply@psicobahamondes.cl>'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Reservas Psicobahamondes <noreply@psicobahamondes.cl>'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'psicobahamondes@gmail.com'
+const ADMIN_EMAIL_2 = 'contactopartnerstech@gmail.com'
 
 export type BookingData = {
   name: string
@@ -73,7 +74,7 @@ export async function sendConfirmationEmail(data: BookingData): Promise<boolean>
   })
 }
 
-// ─── Notificación al administrador ───
+// ─── Notificación a los administradores (ambos correos) ───
 
 export async function sendAdminNotification(data: BookingData): Promise<boolean> {
   if (!RESEND_API_KEY) return false
@@ -81,7 +82,7 @@ export async function sendAdminNotification(data: BookingData): Promise<boolean>
   const label = getSessionLabel(data.sessionType)
 
   return sendResend({
-    to: ADMIN_EMAIL,
+    to: [ADMIN_EMAIL, ADMIN_EMAIL_2],
     subject: `🔔 Nueva reserva: ${data.name} — ${label}`,
     html: adminNotificationTemplate(data),
   })
@@ -117,7 +118,7 @@ export async function sendAdminCancellationNotice(data: BookingData): Promise<bo
   const label = getSessionLabel(data.sessionType)
 
   return sendResend({
-    to: ADMIN_EMAIL,
+    to: [ADMIN_EMAIL, ADMIN_EMAIL_2],
     subject: `❌ Cancelación: ${data.name} — ${label}`,
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px">
@@ -134,4 +135,47 @@ export async function sendAdminCancellationNotice(data: BookingData): Promise<bo
       </div>
     `,
   })
+}
+
+// ─── Email con reporte PDF adjunto (sesión cero desde test) ───
+
+export async function sendReportWithPdf(
+  to: string[],
+  data: { nombre: string; email: string; sessionType: string },
+  html: string,
+  pdfBase64: string,
+): Promise<boolean> {
+  if (!RESEND_API_KEY) return false
+
+  try {
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to,
+        subject: `📋 Reporte de Eneagrama — ${data.nombre}`,
+        html,
+        attachments: [
+          {
+            filename: `reporte-eneagrama-${data.nombre.toLowerCase().replace(/\s+/g, '-')}.pdf`,
+            content: pdfBase64,
+          },
+        ],
+      }),
+    })
+
+    if (!resp.ok) {
+      const text = await resp.text()
+      console.warn(`[email] Resend report error (${resp.status}):`, text)
+    }
+
+    return resp.ok
+  } catch (err) {
+    console.error('[email] sendReportWithPdf failed:', err)
+    return false
+  }
 }

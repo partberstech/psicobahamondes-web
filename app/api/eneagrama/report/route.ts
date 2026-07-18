@@ -3,8 +3,9 @@ import { eneagramaReportTemplate, type EneagramaTestData } from '@/lib/eneagrama
 import { getProfileByType } from '@/lib/eneagrama-profiles'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Psicobahamondes <noreply@psicobahamondes.cl>'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Reservas Psicobahamondes <noreply@psicobahamondes.cl>'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'psicobahamondes@gmail.com'
+const ADMIN_EMAIL_2 = 'contactopartnerstech@gmail.com'
 
 export async function POST(request: Request) {
   try {
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: FROM_EMAIL,
-        to: [ADMIN_EMAIL],
+        to: [ADMIN_EMAIL, ADMIN_EMAIL_2],
         subject: `Nuevo test de Eneagrama — ${data.nombre}`,
         html,
         attachments: [
@@ -172,7 +173,7 @@ async function generatePdfBase64(data: EneagramaTestData): Promise<string> {
     return rgb(parseInt(c.substring(0, 2), 16) / 255, parseInt(c.substring(2, 4), 16) / 255, parseInt(c.substring(4, 6), 16) / 255)
   }
 
-  const totalAnswered = Object.values(data.scores).reduce((a, b) => a + b, 0)
+  const totalAnswered = (Object.values(data.scores) as number[]).reduce((a, b) => a + b, 0)
   const sorted = Object.entries(data.scores).map(([id, score]) => ({ id: Number(id), score })).sort((a, b) => b.score - a.score)
   const topType = TYPES_FULL.find(t => t.id === data.tipoPredominante) || TYPES_FULL[0]
   const wingLabel = data.ala ? `${data.tipoPredominante}w${data.ala}` : 'No detectada'
