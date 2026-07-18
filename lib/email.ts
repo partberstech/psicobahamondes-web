@@ -136,13 +136,12 @@ export async function sendAdminCancellationNotice(data: BookingData): Promise<bo
   })
 }
 
-// ─── Email con reporte PDF adjunto a ambos admins ───
+// ─── Email con reporte de Eneagrama (HTML completo, sin PDF) ───
 
-export async function sendReportWithPdf(
+export async function sendEneagramaReport(
   to: string[],
   data: { nombre: string; email: string; sessionType: string },
   html: string,
-  pdfBase64: string,
 ): Promise<boolean> {
   if (!RESEND_API_KEY) return false
 
@@ -158,12 +157,6 @@ export async function sendReportWithPdf(
         to,
         subject: `📋 Reporte de Eneagrama — ${data.nombre}`,
         html,
-        attachments: [
-          {
-            filename: `reporte-eneagrama-${data.nombre.toLowerCase().replace(/\s+/g, '-')}.pdf`,
-            content: pdfBase64,
-          },
-        ],
       }),
     })
 
@@ -174,7 +167,7 @@ export async function sendReportWithPdf(
 
     return resp.ok
   } catch (err) {
-    console.error('[email] sendReportWithPdf failed:', err)
+    console.error('[email] sendEneagramaReport failed:', err)
     return false
   }
 }
