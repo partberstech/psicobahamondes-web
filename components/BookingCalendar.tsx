@@ -196,11 +196,11 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
           Te enviaremos un correo con los detalles. Si no encuentras el mensaje, revisa tu bandeja de spam.
         </p>
         <a
-          href={fromEneagrama ? '/recursos' : '/'}
+          href="/"
           className="btn btn-brand px-6 py-3 inline-flex items-center gap-2"
           style={{ fontFamily: 'var(--font-display)' }}
         >
-          {fromEneagrama ? 'Ver mi reporte completo' : 'Volver al inicio'}
+          Volver al inicio
         </a>
       </motion.div>
     )

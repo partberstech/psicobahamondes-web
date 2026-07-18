@@ -7,7 +7,7 @@ import {
 } from './email-templates'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.EMAIL_FROM || 'reservas@psicobahamondes.cl'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Psicobahamondes <noreply@psicobahamondes.cl>'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'psicobahamondes@gmail.com'
 
 export type BookingData = {
