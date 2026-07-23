@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TYPES, slideVariants } from './enneagrama-data'
 import { RHETI_144 } from './rheti-144'
@@ -410,7 +410,7 @@ function ResultsScreen({
 }) {
   const [emailSent, setEmailSent] = useState<boolean | null>(null)
   const [sending, setSending] = useState(false)
-  const [booked, setBooked] = useState(false)
+  const reportAutoSentRef = useRef(false)
 
   // Compute sorted scores
   const sorted = useMemo(() => {
@@ -489,15 +489,13 @@ function ResultsScreen({
     } catch { /* sessionStorage unavailable */ }
   }, [formData, scores, topTypeId, wingType, topType.center])
 
-  // Auto-send report if user returned from booking (?booked=true)
+  // Auto-send report to psychologist as soon as results are shown
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('booked') === 'true') {
-      setBooked(true)
+    if (phase === 'results' && !reportAutoSentRef.current) {
+      reportAutoSentRef.current = true
       sendReport()
-      window.history.replaceState({}, '', window.location.pathname)
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase, sendReport])
 
   return (
     <motion.div
@@ -915,7 +913,7 @@ function ResultsScreen({
           )
         })()}
 
-        {/* ── Unified: Book session + Send report ── */}
+        {/* ── Report status + Book session ── */}
         <div className="p-6 md:p-8 mb-6 text-center" style={{
           ...cardStyle,
           background: '#f5f5f5',
@@ -923,42 +921,30 @@ function ResultsScreen({
         }}>
           <span className="text-3xl block mb-3">📧</span>
           <h4 className="text-base mb-2" style={{ color: C.text, fontWeight: 500 }}>
-            Agenda tu Sesión Cero y envía tu reporte al psicólogo
+            Reporte enviado al psicólogo
           </h4>
           <p className="text-sm leading-relaxed mb-4 max-w-md mx-auto" style={{ color: C.secondary }}>
-            Tu reporte será enviado al psicólogo solo cuando agendes tu sesión cero.
+            {emailSent === null ? (
+              <>{sending ? 'Enviando tu reporte...' : 'Preparando reporte...'}</>
+            ) : emailSent ? (
+              '✅ Tu reporte fue enviado correctamente al psicólogo. Él lo revisará antes de tu sesión.'
+            ) : (
+              'No se pudo enviar el reporte automáticamente. Puedes contactar directamente.'
+            )}
           </p>
 
-          {booked ? (
-            /* ── Already booked: show send status ── */
-            emailSent === null ? (
-              <p className="text-sm" style={{ color: C.secondary }}>Enviando reporte...</p>
-            ) : emailSent ? (
-              <p className="text-sm font-medium" style={{ color: '#16a34a' }}>
-                ✅ Sesión agendada y reporte enviado correctamente
-              </p>
-            ) : (
-              <p className="text-sm" style={{ color: '#dc2626' }}>
-                Sesión agendada. No se pudo enviar el reporte. Contacta directamente.
-              </p>
-            )
-          ) : (
-            /* ── Not booked yet: show booking CTA ── */
-            <>
-              <a
-                href="/contacto?from-eneagrama=true"
-                className="inline-block px-6 py-3 rounded-sm text-sm font-medium text-white no-underline transition-opacity"
-                style={{ background: C.accent }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
-              >
-                Agendar Sesión Cero + Enviar Reporte
-              </a>
-              <p className="text-xs mt-3" style={{ color: C.muted }}>
-                El reporte se enviará automáticamente después de agendar.
-              </p>
-            </>
-          )}
+          <a
+            href="/contacto?from-eneagrama=true"
+            className="inline-block px-6 py-3 rounded-sm text-sm font-medium text-white no-underline transition-opacity mt-2"
+            style={{ background: C.accent }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+          >
+            Agendar Sesión Cero
+          </a>
+          <p className="text-xs mt-3" style={{ color: C.muted }}>
+            Sin compromiso. Conversemos y resolvemos tus dudas.
+          </p>
         </div>
 
         {/* ── Reset ── */}
