@@ -489,13 +489,13 @@ function ResultsScreen({
     } catch { /* sessionStorage unavailable */ }
   }, [formData, scores, topTypeId, wingType, topType.center])
 
-  // Auto-send report to psychologist as soon as results are shown
+  // Auto-send report to psychologist as soon as results screen mounts
   useEffect(() => {
-    if (phase === 'results' && !reportAutoSentRef.current) {
+    if (!reportAutoSentRef.current) {
       reportAutoSentRef.current = true
       sendReport()
     }
-  }, [phase, sendReport])
+  }, [sendReport])
 
   return (
     <motion.div
