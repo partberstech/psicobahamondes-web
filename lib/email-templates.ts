@@ -260,15 +260,16 @@ export function confirmationTemplate(data: {
 
     <!-- ═══ Info box ═══ -->
     <div style="background:${SURFACE};border-radius:10px;padding:16px 18px;margin:20px 0;font-size:13px;color:${MUTED};line-height:1.6">
-      <strong style="color:${INK_SOFT}">📍 Importante:</strong><br />
+      <strong style="color:${INK_SOFT}">📍 Qué esperar:</strong><br />
       ${data.sessionType === 'consulta-presencial'
-        ? 'La dirección exacta de la consulta presencial se confirma vía WhatsApp o email 24 horas antes de tu hora agendada.'
+        ? 'La dirección exacta de la consulta presencial se confirma vía WhatsApp o email. Llega 5 minutos antes y lleva tus datos de pago si corresponde.'
         : data.meetLink
-          ? 'Tu enlace de videollamada está listo. Haz clic en el botón de abajo para unirte el día de tu consulta.'
+          ? 'Tu enlace de videollamada está listo en este mismo correo. Haz clic en el botón de abajo el día de tu consulta.'
           : data.sessionType === 'sesion-cero'
-            ? 'Te contactaré al email registrado minutos antes de la Sesión Cero para coordinar el inicio.'
-            : 'El link de videollamada se enviará a tu correo 30 minutos antes de la consulta.'
-      }
+            ? 'Te escribiré al correo registrado antes de la Sesión Cero para coordinar el inicio y resolver dudas previas.'
+            : 'El link de videollamada se enviará por correo junto a las instrucciones de acceso.'
+      }<br />
+      <span style="color:${MUTED_LIGHT}">Recibirás además un recordatorio automático 12 horas antes de la sesión.</span>
     </div>
 
     ${data.sessionType !== 'sesion-cero' ? `
@@ -397,10 +398,10 @@ export function reminderTemplate(data: {
         <span style="font-size:26px">⏰</span>
       </div>
       <h1 style="font-family:'Plus Jakarta Sans','Helvetica Neue',Arial,sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.02em;color:${INK};margin:0 0 4px">
-        Tu consulta es mañana
+        Tu consulta es en 12 horas
       </h1>
       <p style="font-size:15px;color:${MUTED};margin:0">
-        Hola ${data.name}, te recordamos tu horario agendado.
+        Hola ${data.name}, este es tu recordatorio automático para la sesión agendada.
       </p>
     </div>
 
@@ -427,8 +428,8 @@ export function reminderTemplate(data: {
     <div style="background:${SURFACE};border-radius:10px;padding:16px 18px;margin:20px 0;font-size:13px;color:${MUTED};line-height:1.6">
       <strong style="color:${INK_SOFT}">📌 Recordatorio:</strong><br />
       ${data.sessionType === 'consulta-presencial'
-        ? 'Confirma tu dirección por WhatsApp si aún no la tienes. Llega 5 minutos antes.'
-        : 'Asegúrate de tener una buena conexión a internet. El link de videollamada se enviará 30 minutos antes.'
+        ? 'Confirma tu dirección por WhatsApp si aún no la tienes. Llega 5 minutos antes y ten a mano tu medio de pago.'
+        : 'Asegúrate de tener buena conexión a internet. Revisa tu correo porque ahí estará el enlace de videollamada.'
       }
     </div>
 

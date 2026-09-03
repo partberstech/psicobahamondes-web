@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import BookingCalendar from './BookingCalendar'
 
-// ─── Types ───
 type Modalidad = 'sesion-cero' | 'consulta-presencial' | 'consulta-telematica'
+type Step = 'select' | 'data' | 'calendar' | 'confirm'
 
 interface SessionType {
   id: Modalidad
@@ -55,9 +55,6 @@ const SESSION_TYPES: SessionType[] = [
   },
 ]
 
-type Step = 'select' | 'data' | 'calendar'
-
-// ─── Spring ───
 const fadeSlide = {
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
@@ -65,12 +62,22 @@ const fadeSlide = {
   transition: { duration: 0.35, ease: [0.32, 0.72, 0, 1] },
 }
 
-// ─── Component ───
+function formatDateHuman(dateStr: string) {
+  const dt = new Date(`${dateStr}T12:00:00`)
+  return dt.toLocaleDateString('es-CL', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
 export default function BookingFlow() {
   const [step, setStep] = useState<Step>('select')
   const [selected, setSelected] = useState<Modalidad>('sesion-cero')
+  const [selectedDate, setSelectedDate] = useState<string>('')
+  const [selectedTime, setSelectedTime] = useState<string>('')
   const [form, setForm] = useState(() => {
-    // Pre-fill from eneagrama test data if available
     if (typeof window !== 'undefined') {
       try {
         const raw = sessionStorage.getItem('eneagrama_test_data')
@@ -90,6 +97,10 @@ export default function BookingFlow() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [focused, setFocused] = useState<Record<string, boolean>>({})
+  const [submitting, setSubmitting] = useState(false)
+  const [done, setDone] = useState(false)
+  const [reportSent, setReportSent] = useState<boolean | null>(null)
+  const [submitError, setSubmitError] = useState('')
 
   const session = SESSION_TYPES.find((s) => s.id === selected)!
 
@@ -117,30 +128,156 @@ export default function BookingFlow() {
           : 'border-[rgba(0,0,0,0.07)]'
     } ${focused[field] ? 'shadow-[0_0_0_3px_rgba(37,99,235,0.08)]' : ''}`
 
+  const handleFinalConfirm = async () => {
+    if (!selectedDate || !selectedTime) {
+      setSubmitError('Falta seleccionar fecha y horario.')
+      return
+    }
+    if (!validate()) return
+
+    setSubmitting(true)
+    setSubmitError('')
+
+    try {
+      const body: Record<string, any> = {
+        sessionType: selected,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        date: selectedDate,
+        time: selectedTime,
+      }
+
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = sessionStorage.getItem('eneagrama_test_data')
+          if (raw) {
+            const data = JSON.parse(raw)
+            body.eneagramaData = {
+              nombre: data.nombre,
+              email: data.email,
+              telefono: data.telefono || '',
+              scores: data.scores,
+              tipoPredominante: data.tipoPredominante,
+              ala: data.ala,
+              centro: data.centro,
+              timestamp: new Date().toISOString(),
+            }
+          }
+        } catch { /* ignore */ }
+      }
+
+      const resp = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const data = await resp.json()
+
+      if (!resp.ok) {
+        setSubmitError(data.error || 'Error al agendar')
+        return
+      }
+
+      setReportSent(data.reportSent === true)
+      setDone(true)
+    } catch {
+      setSubmitError('Error de conexión. Intenta de nuevo.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (done) {
+    const [y, m, d] = selectedDate.split('-')
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+        className="text-center py-12"
+      >
+        <div
+          className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+          style={{ background: `${session.color}12` }}
+        >
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={session.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        </div>
+        <h2 style={{ color: '#111827', fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600 }} className="mb-2">
+          ¡Consulta agendada!
+        </h2>
+        <p style={{ color: '#6b7280' }} className="mb-2">
+          {d}/{m}/{y} a las {selectedTime} hrs
+        </p>
+
+        {reportSent !== null && (
+          <div className="mb-6 p-4 rounded-xl mt-6 max-w-xl mx-auto text-left" style={{
+            background: reportSent ? '#f0fdf4' : '#fef2f2',
+            border: `1px solid ${reportSent ? '#86efac' : '#fca5a5'}`,
+          }}>
+            {reportSent ? (
+              <div>
+                <p style={{ color: '#16a34a', fontSize: '0.875rem', fontWeight: 600 }} className="mb-1">
+                  ✅ Reporte enviado correctamente
+                </p>
+                <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>
+                  El psicólogo recibió el resultado de tu test para preparar la sesión.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p style={{ color: '#dc2626', fontSize: '0.875rem', fontWeight: 600 }} className="mb-1">
+                  Reporte no enviado
+                </p>
+                <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>
+                  No pudimos enviar el reporte automáticamente. No te preocupes, puedes compartir tus resultados en la sesión.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <p style={{ color: '#9ca3af', fontSize: '0.875rem' }} className="mb-8 max-w-sm mx-auto leading-relaxed">
+          Te enviamos un correo con los detalles y las instrucciones. Si no lo encuentras, revisa tu bandeja de spam.
+        </p>
+        <a
+          href="/"
+          className="btn btn-brand px-6 py-3 inline-flex items-center gap-2"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          Volver al inicio
+        </a>
+      </motion.div>
+    )
+  }
+
   return (
     <div className="w-full max-w-[880px] mx-auto">
-      {/* ═══ Progress Bar ═══ */}
       <div className="flex items-center justify-center gap-3 mb-8 md:mb-12">
         {([
           { key: 'select', label: 'Tipo' },
           { key: 'data', label: 'Datos' },
-          { key: 'calendar', label: 'Agendar' },
+          { key: 'calendar', label: 'Fecha' },
+          { key: 'confirm', label: 'Confirmar' },
         ] as { key: Step; label: string }[]).map((s, i) => {
-          const steps: Step[] = ['select', 'data', 'calendar']
+          const steps: Step[] = ['select', 'data', 'calendar', 'confirm']
           const idx = steps.indexOf(step)
-          const done = i < idx
+          const doneStep = i < idx
           const current = i === idx
           return (
             <div key={s.key} className="flex items-center gap-3">
               <div
                 className="relative w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500"
                 style={{
-                  background: done || current ? '#2563eb' : '#f3f4f6',
-                  color: done || current ? '#ffffff' : '#9ca3af',
+                  background: doneStep || current ? '#2563eb' : '#f3f4f6',
+                  color: doneStep || current ? '#ffffff' : '#9ca3af',
                   boxShadow: current ? '0 0 0 4px rgba(37,99,235,0.15)' : 'none',
                 }}
               >
-                {done ? (
+                {doneStep ? (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
@@ -151,10 +288,10 @@ export default function BookingFlow() {
               <span className="text-xs font-medium hidden sm:inline" style={{ color: current ? '#111827' : '#9ca3af' }}>
                 {s.label}
               </span>
-              {i < 2 && (
+              {i < 3 && (
                 <div
                   className="w-10 h-[2px] rounded-full transition-all duration-500"
-                  style={{ background: done ? '#2563eb' : '#e5e7eb' }}
+                  style={{ background: doneStep ? '#2563eb' : '#e5e7eb' }}
                 />
               )}
             </div>
@@ -163,7 +300,6 @@ export default function BookingFlow() {
       </div>
 
       <AnimatePresence mode="wait">
-        {/* ═══ STEP 1 — Select ═══ */}
         {step === 'select' && (
           <motion.div key="select" {...fadeSlide}>
             <div className="text-center mb-10">
@@ -244,11 +380,9 @@ export default function BookingFlow() {
           </motion.div>
         )}
 
-        {/* ═══ STEP 2 — User Data ═══ */}
         {step === 'data' && (
           <motion.div key="data" {...fadeSlide}>
             <div className="grid md:grid-cols-5 gap-8 items-start">
-              {/* Summary sidebar */}
               <div className="md:col-span-2">
                 <div
                   className="rounded-2xl p-6"
@@ -289,7 +423,6 @@ export default function BookingFlow() {
                 </button>
               </div>
 
-              {/* Form */}
               <div className="md:col-span-3">
                 <div className="mb-7">
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: '#111827' }} className="mb-1">
@@ -322,7 +455,7 @@ export default function BookingFlow() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium mb-1.5" style={{ color: '#374151' }}>Teléfono</label>
-                    <input type="tel" placeholder="+56961599313" value={form.phone}
+                    <input type="tel" placeholder="+569****9313" value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       onFocus={() => setFocused({ ...focused, phone: true })}
                       onBlur={() => setFocused({ ...focused, phone: false })}
@@ -345,73 +478,141 @@ export default function BookingFlow() {
           </motion.div>
         )}
 
-        {/* ═══ STEP 3 — Calendar ═══ */}
         {step === 'calendar' && (
           <motion.div key="calendar" {...fadeSlide}>
-            <div className="grid md:grid-cols-5 gap-8">
-              {/* Sidebar */}
+            <BookingCalendar
+              sessionType={session.id}
+              sessionColor={session.color}
+              onSelect={(date, time) => {
+                setSelectedDate(date)
+                setSelectedTime(time)
+                setSubmitError('')
+                setStep('confirm')
+              }}
+              onBack={() => setStep('data')}
+              userData={form}
+            />
+          </motion.div>
+        )}
+
+        {step === 'confirm' && (
+          <motion.div key="confirm" {...fadeSlide}>
+            <div className="grid md:grid-cols-5 gap-8 items-start">
               <div className="md:col-span-2 space-y-4">
                 <div
-                  className="rounded-2xl p-5"
+                  className="rounded-2xl p-6"
                   style={{
                     background: `linear-gradient(135deg, ${session.color}06, ${session.color}02)`,
                     border: `1px solid ${session.color}15`,
                   }}
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: `${session.color}12` }}>
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style={{ background: `${session.color}12` }}>
                       {session.icono}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold" style={{ color: '#111827' }}>{session.titulo}</p>
-                      <p className="text-xs" style={{ color: session.color }}>{session.duracion} · {session.precio}</p>
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.125rem', fontWeight: 600, color: '#111827' }}>
+                        Revisa tu reserva
+                      </h3>
+                      <span className="text-xs" style={{ color: session.color }}>Paso final</span>
                     </div>
                   </div>
-                  <div className="space-y-2.5 mb-4">
-                    <div className="flex items-center gap-2 text-xs" style={{ color: session.color }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-2 text-xs" style={{ color: '#6b7280' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                       {session.schedule}
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: '#6b7280' }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
                       {session.id === 'consulta-presencial' ? 'Edificio Plaza Bühler, 6to piso' : 'Online'}
                     </div>
                   </div>
-                  <div className="divider" />
-                  <div className="mt-4 space-y-1.5">
-                    <p className="text-xs font-medium" style={{ color: '#111827' }}>{form.name}</p>
-                    <p className="text-xs" style={{ color: '#6b7280' }}>{form.email}</p>
-                    <p className="text-xs" style={{ color: '#6b7280' }}>{form.phone}</p>
-                  </div>
-                  <button onClick={() => setStep('data')} className="flex items-center gap-1 text-xs mt-3 transition-opacity hover:opacity-60" style={{ color: '#2563eb' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                    Editar datos
-                  </button>
-                  <button onClick={() => setStep('select')} className="flex items-center gap-1 text-xs mt-1.5 transition-opacity hover:opacity-60" style={{ color: '#6b7280' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
-                    Cambiar tipo de consulta
-                  </button>
                 </div>
 
-                <div className="text-xs leading-relaxed p-4 rounded-xl flex items-start gap-3" style={{ background: '#f9fafb', color: '#6b7280' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
-                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
-                  </svg>
-                  <span>
-                    <strong style={{ color: '#111827' }}>Horarios disponibles:</strong> {session.schedule}. Si no encuentras un horario que te acomode, escríbeme por WhatsApp o email.
-                  </span>
-                </div>
+                <button onClick={() => setStep('calendar')} className="flex items-center gap-1 text-xs transition-opacity hover:opacity-60" style={{ color: '#6b7280' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+                  Cambiar fecha u horario
+                </button>
               </div>
 
-              {/* Calendar */}
               <div className="md:col-span-3">
-                <BookingCalendar
-                  sessionType={session.id}
-                  sessionColor={session.color}
-                  onSelect={(date, time) => {}}
-                  onBack={() => setStep('data')}
-                  userData={form}
-                />
+                <div className="mb-7">
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, color: '#111827' }} className="mb-1">
+                    Confirma tus datos
+                  </h3>
+                  <p className="text-sm" style={{ fontFamily: 'var(--font-body)', color: '#6b7280' }}>
+                    Al confirmar, enviaremos el correo con instrucciones, calendario y enlace de videollamada si corresponde.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border p-6" style={{ borderColor: 'rgba(0,0,0,0.06)', background: '#fff' }}>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Nombre</p>
+                      <p className="text-sm font-medium text-gray-900">{form.name}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Email</p>
+                      <p className="text-sm font-medium text-gray-900">{form.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Teléfono</p>
+                      <p className="text-sm font-medium text-gray-900">{form.phone}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Modalidad</p>
+                      <p className="text-sm font-medium text-gray-900">{session.titulo}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Fecha</p>
+                      <p className="text-sm font-medium text-gray-900">{formatDateHuman(selectedDate)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Horario</p>
+                      <p className="text-sm font-medium text-gray-900">{selectedTime} hrs</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-xl p-4" style={{ background: `${session.color}08`, border: `1px solid ${session.color}15` }}>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      <strong className="text-gray-900">Qué recibirás:</strong> un correo de confirmación con la información de tu sesión, el enlace de Google Meet si corresponde, y un recordatorio automático 12 horas antes.
+                    </p>
+                  </div>
+
+                  {submitError && (
+                    <p className="text-sm mt-4" style={{ color: '#ef4444' }}>
+                      {submitError}
+                    </p>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                    <button
+                      onClick={() => setStep('calendar')}
+                      className="px-5 py-3 text-sm rounded-xl transition-all"
+                      style={{
+                        background: 'transparent',
+                        border: '1.5px solid rgba(0,0,0,0.06)',
+                        color: '#6b7280',
+                      }}
+                    >
+                      Revisar horario
+                    </button>
+                    <motion.button
+                      onClick={handleFinalConfirm}
+                      disabled={submitting}
+                      whileHover={submitting ? {} : { scale: 1.01 }}
+                      whileTap={submitting ? {} : { scale: 0.98 }}
+                      className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
+                      style={{
+                        background: submitting ? '#cbd5e1' : session.color,
+                        color: '#ffffff',
+                        cursor: submitting ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      {submitting ? 'Agendando...' : 'Confirmar y agendar'}
+                    </motion.button>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

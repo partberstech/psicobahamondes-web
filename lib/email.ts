@@ -96,7 +96,7 @@ export async function sendReminderEmail(data: BookingData): Promise<boolean> {
   const label = getSessionLabel(data.sessionType)
   return sendResend({
     to: data.email,
-    subject: `⏰ Recordatorio: ${label} — Psicobahamondes`,
+    subject: `⏰ Recordatorio 12h: ${label} — Psicobahamondes`,
     html: reminderTemplate(data),
   })
 }

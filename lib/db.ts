@@ -22,9 +22,11 @@ export async function migrate() {
       date TEXT NOT NULL,
       time TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'confirmed',
+      reminder_sent_at TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     )
   `)
+  try { await db.execute(`ALTER TABLE bookings ADD COLUMN reminder_sent_at TEXT`) } catch { /* column exists */ }
   await db.execute(`
     CREATE TABLE IF NOT EXISTS contacts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -77,7 +79,7 @@ export type Booking = {
   date: string
   time: string
   status: string
-  created_at: string
+  reminder_sent_at?: string | null
 }
 
 // Escapes single quotes for safe inline SQL (date/sessionType are validated against regexp)
