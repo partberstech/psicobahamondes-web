@@ -388,7 +388,7 @@ export function eneagramaReportTemplate(data: EneagramaTestData): string {
                 <a href="https://psicobahamondes.cl" style="color:${BRAND};text-decoration:none">psicobahamondes.cl</a>
               </td>
               <td style="padding:0;text-align:right;font-size:13px;color:${MUTED};line-height:1.7">
-                Edificio Plaza Bühler, 6to piso<br />Av. Guillermo Bühler 2005, Santiago<br />
+                Edificio Plaza Bühler, 6to piso<br />Av. Guillermo Bühler 2005, Osorno<br />
                 <a href="mailto:contacto@psicobahamondes.cl" style="color:${BRAND};text-decoration:none">contacto@psicobahamondes.cl</a>
               </td>
             </tr>

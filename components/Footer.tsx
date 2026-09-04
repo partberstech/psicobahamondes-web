@@ -70,7 +70,7 @@ export default function Footer() {
             >
               <a href="mailto:contacto@psicobahamondes.cl" className="hover:underline">contacto@psicobahamondes.cl</a>
               <a href="tel:+56961599313" className="hover:underline">+56961599313</a>
-              <span>Edificio Plaza Bühler, 6to piso, Av. Guillermo Bühler 2005</span>
+              <span>Edificio Plaza Bühler, 6to piso, Av. Guillermo Bühler 2005, Osorno</span>
             </div>
           </motion.div>
         </div>
@@ -94,6 +94,10 @@ export default function Footer() {
             Política de Cookies
           </Link>
         </motion.div>
+
+        <p className="text-center text-xs mt-6" style={{ color: '#6b7280' }}>
+          Diseño Web - DIGITAL PARTNERS - 2026
+        </p>
       </div>
     </footer>
   )
