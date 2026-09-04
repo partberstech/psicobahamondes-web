@@ -78,7 +78,7 @@ function googleCalendarUrl(data: {
     dates: `${fmt(start)}/${fmt(end)}`,
     details: `Consulta con ${data.name} · ${label}`,
     location: data.sessionType === 'consulta-presencial'
-      ? 'Edificio Plaza Bühler, 6to piso, Av. Guillermo Bühler 2005, Santiago'
+      ? 'Edificio Plaza Bühler, 6to piso, Av. Guillermo Bühler 2005, Osorno'
       : 'Online · Videollamada (el link se envía por separado)',
     sf: 'true',
     output: 'xml',
@@ -161,7 +161,7 @@ function baseWrapper(
                 <a href="${SITE_URL}" style="color:${BRAND};text-decoration:none">psicobahamondes.cl</a>
               </td>
               <td style="padding:0;text-align:right;font-size:13px;color:${MUTED};line-height:1.7">
-                Edificio Plaza Bühler, 6to piso<br />Av. Guillermo Bühler 2005, Santiago<br />
+                Edificio Plaza Bühler, 6to piso<br />Av. Guillermo Bühler 2005, Osorno<br />
                 <a href="mailto:contacto@psicobahamondes.cl" style="color:${BRAND};text-decoration:none">contacto@psicobahamondes.cl</a>
               </td>
             </tr>
@@ -267,7 +267,7 @@ export function confirmationTemplate(data: {
           ? 'Tu enlace de videollamada está listo en este mismo correo. Haz clic en el botón de abajo el día de tu consulta.'
           : data.sessionType === 'sesion-cero'
             ? 'Te escribiré al correo registrado antes de la Sesión Cero para coordinar el inicio y resolver dudas previas.'
-            : 'El link de videollamada se enviará por correo junto a las instrucciones de acceso.'
+            : 'Recibirás la invitación de Google Calendar con el enlace de videollamada en tu correo. Revisa también la bandeja de spam.'
       }<br />
       <span style="color:${MUTED_LIGHT}">Recibirás además un recordatorio automático 12 horas antes de la sesión.</span>
     </div>
@@ -318,6 +318,7 @@ export function adminNotificationTemplate(data: {
   date: string
   time: string
   meetLink?: string
+  eventLink?: string
 }): string {
   const label = getSessionLabel(data.sessionType)
   const icon = SESSION_ICONS[data.sessionType] || '📅'
@@ -357,7 +358,11 @@ export function adminNotificationTemplate(data: {
       ${detailRow('Tipo', label)}
       ${detailRow('Fecha', data.date)}
       ${detailRow('Horario', `${data.time} hrs`)}
-      ${data.meetLink ? detailRow('Google Meet', `<a href="${data.meetLink}" style="color:${BRAND};text-decoration:none;font-weight:600">${data.meetLink}</a>`, BRAND) : ''}
+      ${data.meetLink
+        ? detailRow('Google Meet', `<a href="${data.meetLink}" style="color:${BRAND};text-decoration:none;font-weight:600">${data.meetLink}</a>`, BRAND)
+        : data.eventLink
+          ? detailRow('Evento creado', `<a href="${data.eventLink}" style="color:${BRAND};text-decoration:none;font-weight:600">Abrir evento en Google Calendar</a>`, BRAND)
+          : ''}
     </table>
   `
 
@@ -373,6 +378,7 @@ export function reminderTemplate(data: {
   sessionType: string
   date: string
   time: string
+  meetLink?: string
 }): string {
   const label = getSessionLabel(data.sessionType)
   const color = SESSION_COLORS[data.sessionType] || BRAND
@@ -429,9 +435,18 @@ export function reminderTemplate(data: {
       <strong style="color:${INK_SOFT}">📌 Recordatorio:</strong><br />
       ${data.sessionType === 'consulta-presencial'
         ? 'Confirma tu dirección por WhatsApp si aún no la tienes. Llega 5 minutos antes y ten a mano tu medio de pago.'
-        : 'Asegúrate de tener buena conexión a internet. Revisa tu correo porque ahí estará el enlace de videollamada.'
+        : data.meetLink
+          ? 'Tu enlace de Google Meet está listo. Haz clic en el botón de abajo el día de tu consulta y asegúrate de tener buena conexión a internet.'
+          : 'Asegúrate de tener buena conexión a internet. Revisa tu correo porque ahí estará el enlace de videollamada.'
       }
     </div>
+
+    ${data.meetLink ? `
+    <a href="${data.meetLink}" target="_blank" rel="noopener"
+      style="display:block;text-align:center;background:#7c3aed;color:#ffffff;text-decoration:none;font-family:'Plus Jakarta Sans','Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:600;padding:14px 24px;border-radius:12px;margin:16px 0 12px">
+      <span style="margin-right:8px">🎥</span> Unirme a Google Meet
+    </a>
+    ` : ''}
 
     <a href="${gcalUrl}" target="_blank" rel="noopener"
       style="display:block;text-align:center;background:${BRAND};color:#ffffff;text-decoration:none;font-family:'Plus Jakarta Sans','Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:600;padding:14px 24px;border-radius:12px;margin:20px 0 12px">

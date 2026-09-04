@@ -22,6 +22,7 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
   const [slots, setSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [googleOk, setGoogleOk] = useState(true)
 
   const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
   const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -36,8 +37,10 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
       const resp = await fetch(`/api/availability?type=${sessionType}&date=${dateStr}`)
       const data = await resp.json()
       setSlots(data.slots || [])
+      setGoogleOk(data.googleCalendarOk !== false)
     } catch {
       setSlots([])
+      setGoogleOk(false)
       setError('No pudimos cargar la disponibilidad. Intenta nuevamente.')
     }
     setLoading(false)
@@ -114,7 +117,7 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
               </div>
               <div className="flex items-center gap-2 text-xs" style={{ color: '#6b7280' }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
-                {sessionType === 'consulta-presencial' ? 'Edificio Plaza Bühler, 6to piso' : 'Online'}
+                {sessionType === 'consulta-presencial' ? 'Edificio Plaza Bühler, 6to piso, Osorno' : 'Online'}
               </div>
               <div className="flex items-center gap-2 text-xs" style={{ color: '#6b7280' }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
@@ -230,6 +233,19 @@ export default function BookingCalendar({ sessionType, sessionColor, onSelect, o
                     · {selectedDate}
                   </span>
                 </p>
+
+                {!googleOk && (
+                  <div
+                    className="mb-4 p-3 rounded-xl text-xs leading-relaxed"
+                    style={{
+                      background: '#fffbeb',
+                      border: '1px solid #fde68a',
+                      color: '#92400e',
+                    }}
+                  >
+                    ⚠️ No se pudo verificar la agenda de Google Calendar en este momento, así que los horarios podrían no estar al día. Al confirmar se volverá a validar.
+                  </div>
+                )}
 
                 {loading ? (
                   <div className="flex items-center gap-2 py-6" style={{ color: '#9ca3af' }}>

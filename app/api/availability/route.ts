@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSlotsFromConfig, getBusyTimesForDate, type SessionType, type BusyRange } from '@/lib/availability'
+import { getSlotsFromConfig, getBusyTimesForDate, type SessionType } from '@/lib/availability'
 import { queryBookedTimes } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
@@ -15,11 +15,16 @@ export async function GET(request: NextRequest) {
   }
 
   // Fetch exact booked times from DB + range-based busy times from Google Calendar
-  const [dbBooked, busyRanges] = await Promise.all([
+  const [dbBooked, busyCheck] = await Promise.all([
     queryBookedTimes(date, type),
     getBusyTimesForDate(date),
   ])
 
-  const slots = getSlotsFromConfig(type, date, dbBooked, busyRanges)
-  return NextResponse.json({ slots, type, date })
+  const slots = getSlotsFromConfig(type, date, dbBooked, busyCheck.busy)
+  return NextResponse.json({
+    slots,
+    type,
+    date,
+    googleCalendarOk: busyCheck.ok,
+  })
 }

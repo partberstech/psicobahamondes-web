@@ -24,6 +24,8 @@ function bookingDateToUtc(date: string, time: string): Date {
   return new Date(utcMillis)
 }
 
+export const maxDuration = 60
+
 export async function GET(_request: NextRequest) {
   try {
     if (!process.env.TURSO_DATABASE_URL || !process.env.RESEND_API_KEY) {
@@ -33,7 +35,7 @@ export async function GET(_request: NextRequest) {
     await migrate()
     const db = getDb()
     const result = await db.execute(`
-      SELECT id, session_type, name, email, phone, date, time, status, reminder_sent_at
+      SELECT id, session_type, name, email, phone, date, time, status, reminder_sent_at, meet_link
       FROM bookings
       WHERE status = 'confirmed' AND (reminder_sent_at IS NULL OR reminder_sent_at = '')
       ORDER BY date ASC, time ASC
@@ -57,6 +59,7 @@ export async function GET(_request: NextRequest) {
         sessionType: booking.session_type,
         date: booking.date,
         time: booking.time,
+        ...(booking.meet_link ? { meetLink: booking.meet_link } : {}),
       })
 
       if (ok) {

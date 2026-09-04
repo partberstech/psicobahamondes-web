@@ -23,10 +23,44 @@ export async function migrate() {
       time TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'confirmed',
       reminder_sent_at TEXT,
+      event_id TEXT,
+      meet_link TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     )
   `)
-  try { await db.execute(`ALTER TABLE bookings ADD COLUMN reminder_sent_at TEXT`) } catch { /* column exists */ }
+  for (const col of ['reminder_sent_at', 'event_id', 'meet_link']) {
+    try { await db.execute(`ALTER TABLE bookings ADD COLUMN ${col} TEXT`) } catch { /* column already exists */ }
+  }
+  // Reconcile legacy double-bookings: keep only the first confirmed booking per
+  // (date, session_type, time) and cancel the rest, so the unique index below
+  // can be created. Idempotent — no-ops once the data is clean.
+  try {
+    await db.execute(`
+      UPDATE bookings
+      SET status = 'cancelled'
+      WHERE status = 'confirmed'
+        AND id NOT IN (
+          SELECT id FROM (
+            SELECT id, ROW_NUMBER() OVER (
+              PARTITION BY date, session_type, time ORDER BY rowid
+            ) AS rn
+            FROM bookings
+            WHERE status = 'confirmed'
+          ) WHERE rn = 1
+        )
+    `)
+  } catch (e) {
+    console.warn('[db] slot dedupe skipped:', (e as Error)?.message)
+  }
+  // Prevent double-booking the same slot from concurrent requests
+  try {
+    await db.execute(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_bookings_slot
+      ON bookings(date, session_type, time) WHERE status = 'confirmed'
+    `)
+  } catch (e) {
+    console.warn('[db] slot unique index not created:', (e as Error)?.message)
+  }
   await db.execute(`
     CREATE TABLE IF NOT EXISTS contacts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,6 +114,8 @@ export type Booking = {
   time: string
   status: string
   reminder_sent_at?: string | null
+  event_id?: string | null
+  meet_link?: string | null
 }
 
 // Escapes single quotes for safe inline SQL (date/sessionType are validated against regexp)

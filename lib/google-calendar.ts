@@ -1,37 +1,99 @@
 import { google } from 'googleapis'
 
-const oAuth2 = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  'http://localhost'
-)
-oAuth2.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN })
-
-export const calendar = google.calendar({ version: 'v3', auth: oAuth2 })
-export const gmail = google.gmail({ version: 'v1', auth: oAuth2 })
+export type CalendarEventResult = {
+  id: string
+  htmlLink: string | null
+  meetLink: string | null
+}
 
 /**
- * Get busy times from the psychologist's Google Calendar for a date range.
- * Returns array of { start, end } in ISO format.
+ * Build the OAuth client from environment credentials.
+ * Throws a descriptive error when credentials are missing so callers can
+ * distinguish "not configured" from real API failures.
+ */
+function getAuth() {
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error(
+      'Google Calendar no configurado: faltan GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET o GOOGLE_REFRESH_TOKEN'
+    )
+  }
+  const oAuth2 = new google.auth.OAuth2(clientId, clientSecret, 'http://localhost')
+  oAuth2.setCredentials({ refresh_token: refreshToken })
+  return oAuth2
+}
+
+/** "pending" until Google finishes materialising the Meet conference. */
+function conferenceIsPending(conferenceData: any): boolean {
+  return conferenceData?.createRequest?.status?.statusCode === 'pending'
+}
+
+/**
+ * Calendar where booking events are created.
+ * Set GOOGLE_CALENDAR_ID to a dedicated calendar (e.g. "Agendamiento Web")
+ * so bookings never mix with the professional's personal calendar.
+ * Defaults to the account's primary calendar.
+ */
+function bookingCalendarId(): string {
+  return process.env.GOOGLE_CALENDAR_ID || 'primary'
+}
+
+/**
+ * Calendars whose busy times block availability. Always includes the booking
+ * calendar; GOOGLE_BUSY_CALENDAR_IDS (comma-separated) can add more, e.g. the
+ * personal calendar ("primary") so personal events also block bookings.
+ */
+function calendarsToCheck(): string[] {
+  const ids = new Set<string>()
+  ids.add(bookingCalendarId())
+  const extra = process.env.GOOGLE_BUSY_CALENDAR_IDS
+  if (extra) {
+    for (const id of extra.split(',').map((s) => s.trim()).filter(Boolean)) {
+      ids.add(id)
+    }
+  }
+  return Array.from(ids)
+}
+
+/**
+ * Get busy times from the relevant Google Calendar(s) for a date range.
+ * Returns an array of { start, end } in ISO format aggregated across the
+ * booking calendar and any extra calendars listed in GOOGLE_BUSY_CALENDAR_IDS.
  */
 export async function getBusyTimes(start: string, end: string) {
-  const res = await calendar.freebusy.query({
+  const cal = google.calendar({ version: 'v3', auth: getAuth() })
+  const items = calendarsToCheck().map((id) => ({ id }))
+  const res = await cal.freebusy.query({
     requestBody: {
       timeMin: start,
       timeMax: end,
-      items: [{ id: 'primary' }],
+      items,
     },
   })
-  const busy = res.data.calendars?.primary?.busy ?? []
-  return busy.map((b) => ({
-    start: b.start!,
-    end: b.end!,
-  }))
+  const busy: { start: string; end: string }[] = []
+  for (const calendarId of Object.keys(res.data.calendars ?? {})) {
+    for (const b of res.data.calendars?.[calendarId]?.busy ?? []) {
+      busy.push({ start: b.start!, end: b.end! })
+    }
+  }
+  return busy
+}
+
+function extractVideoUri(conferenceData: any): string | null {
+  const entry = conferenceData?.entryPoints?.find(
+    (ep: any) => ep.entryPointType === 'video'
+  )
+  return entry?.uri ?? null
 }
 
 /**
  * Create a Google Calendar event for a booking.
- * For online sessions (sesion-cero, consulta-telematica), generates a Google Meet link.
+ * For online sessions (sesion-cero, consulta-telematica) it requests a Google
+ * Meet conference. Conference creation can finish asynchronously on Google's
+ * side, so if the insert returns a "pending" conference we poll events.get a
+ * few seconds to capture the real Meet URL before returning.
  */
 export async function createBookingEvent(params: {
   summary: string
@@ -41,8 +103,9 @@ export async function createBookingEvent(params: {
   durationMinutes: number
   attendeeEmail?: string
   sessionType?: string
-}) {
+}): Promise<CalendarEventResult> {
   const { summary, description, date, time, durationMinutes, attendeeEmail, sessionType } = params
+  const cal = google.calendar({ version: 'v3', auth: getAuth() })
 
   const startDateTime = `${date}T${time}:00`
   const [h, m] = time.split(':').map(Number)
@@ -60,11 +123,11 @@ export async function createBookingEvent(params: {
     end: { dateTime: endDateTime, timeZone: 'America/Santiago' },
   }
 
-  // Generate Google Meet link for online sessions
+  // Request a Google Meet conference for online sessions
   if (isOnline) {
     event.conferenceData = {
       createRequest: {
-        requestId: `booking-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        requestId: `booking-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`,
         conferenceSolutionKey: { type: 'hangoutsMeet' },
       },
     }
@@ -74,20 +137,51 @@ export async function createBookingEvent(params: {
     event.attendees = [{ email: attendeeEmail }]
   }
 
-  const res = await calendar.events.insert({
-    calendarId: 'primary',
+  // Await the insert completely (no artificial timeout): it must succeed before
+  // the booking is confirmed, otherwise the slot would stay un-blocked in the
+  // professional's calendar and no Meet link could ever be generated.
+  const res = await cal.events.insert({
+    calendarId: bookingCalendarId(),
     requestBody: event,
     conferenceDataVersion: isOnline ? 1 : undefined,
     sendUpdates: 'all',
   })
 
-  const meetLink = res.data.conferenceData?.entryPoints?.find(
-    (ep: any) => ep.entryPointType === 'video'
-  )?.uri || null
+  const eventId = res.data.id!
+  const htmlLink = res.data.htmlLink || null
+  let meetLink = extractVideoUri(res.data.conferenceData)
 
-  return {
-    id: res.data.id,
-    htmlLink: res.data.htmlLink,
-    meetLink,
+  if (isOnline && !meetLink && conferenceIsPending(res.data.conferenceData)) {
+    // Poll briefly: Google usually materialises the Meet URL a couple of
+    // seconds after the insert when the conference is created asynchronously.
+    for (let attempt = 0; attempt < 10; attempt++) {
+      await new Promise((r) => setTimeout(r, 1500))
+      try {
+        const got = await cal.events.get({
+          calendarId: bookingCalendarId(),
+          eventId,
+        })
+        meetLink = extractVideoUri(got.data.conferenceData)
+        if (meetLink) break
+        if (!conferenceIsPending(got.data.conferenceData)) break
+      } catch (err: any) {
+        console.error('[google-calendar] meet poll error:', err?.message || err)
+        break
+      }
+    }
+  }
+
+  return { id: eventId, htmlLink, meetLink }
+}
+
+/** Delete a previously created event (used to roll back failed bookings). */
+export async function deleteBookingEvent(eventId: string): Promise<boolean> {
+  try {
+    const cal = google.calendar({ version: 'v3', auth: getAuth() })
+    await cal.events.delete({ calendarId: bookingCalendarId(), eventId, sendUpdates: 'none' })
+    return true
+  } catch (err: any) {
+    console.error('[google-calendar] delete error:', err?.message || err)
+    return false
   }
 }

@@ -147,13 +147,29 @@ export function getSlotsFromConfig(
   return slots
 }
 
+/** True when the Google Calendar credentials are present in the environment. */
+export function isGoogleConfigured(): boolean {
+  return Boolean(
+    process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    process.env.GOOGLE_REFRESH_TOKEN
+  )
+}
+
+export type BusyCheck = {
+  busy: BusyRange[]
+  ok: boolean
+}
+
 /**
  * Fetch busy times from Google Calendar for a specific date
  * and return as BusyRange[] (minutes from midnight in America/Santiago).
+ * `ok:false` means Google could not be verified (missing creds or API error) —
+ * in that case the calendar is NOT really controlling availability.
  */
-export async function getBusyTimesForDate(dateStr: string): Promise<BusyRange[]> {
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_REFRESH_TOKEN) {
-    return [] // No Google configured — all slots available
+export async function getBusyTimesForDate(dateStr: string): Promise<BusyCheck> {
+  if (!isGoogleConfigured()) {
+    return { busy: [], ok: false } // No Google configured — calendar cannot block slots
   }
 
   try {
@@ -163,11 +179,18 @@ export async function getBusyTimesForDate(dateStr: string): Promise<BusyRange[]>
     const dayEnd = `${dateStr}T23:59:59${offset}`
     const busy = await getBusyTimes(dayStart, dayEnd)
 
-    return busy.map(b => ({
-      start: toSantiagoMinutes(b.start),
-      end: toSantiagoMinutes(b.end),
-    }))
-  } catch {
-    return [] // Fallback — don't block slots on API error
+    return {
+      busy: busy.map(b => ({
+        start: toSantiagoMinutes(b.start),
+        end: toSantiagoMinutes(b.end),
+      })),
+      ok: true,
+    }
+  } catch (err: any) {
+    // Do NOT silently fall back: if Google is configured but failing (e.g.
+    // expired refresh token), availability is NOT verified against the real
+    // calendar. Log loudly so the problem is visible in Vercel logs.
+    console.warn('[availability] Google Calendar check failed:', err?.message || err)
+    return { busy: [], ok: false }
   }
 }

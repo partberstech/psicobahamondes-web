@@ -23,6 +23,8 @@ export type BookingData = {
   date: string
   time: string
   meetLink?: string
+  /** Link to the created Google Calendar event (fallback when Meet link is pending) */
+  eventLink?: string
 }
 
 type EmailOptions = {
