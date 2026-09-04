@@ -144,6 +144,7 @@ export async function sendEneagramaReport(
   to: string[],
   data: { nombre: string; email: string; sessionType: string },
   html: string,
+  options?: { subject?: string },
 ): Promise<boolean> {
   if (!RESEND_API_KEY) return false
 
@@ -157,7 +158,7 @@ export async function sendEneagramaReport(
       body: JSON.stringify({
         from: FROM_EMAIL,
         to,
-        subject: `📋 Reporte de Eneagrama — ${data.nombre}`,
+        subject: options?.subject || `📋 Reporte de Eneagrama — ${data.nombre}`,
         html,
       }),
     })

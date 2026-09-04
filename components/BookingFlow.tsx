@@ -161,11 +161,14 @@ export default function BookingFlow() {
               tipoPredominante: data.tipoPredominante,
               ala: data.ala,
               centro: data.centro,
+              reportSent: data.reportSent === true,
               timestamp: new Date().toISOString(),
             }
           }
         } catch { /* ignore */ }
       }
+
+      const carriedReport = !!body.eneagramaData
 
       const resp = await fetch('/api/bookings', {
         method: 'POST',
@@ -179,7 +182,8 @@ export default function BookingFlow() {
         return
       }
 
-      setReportSent(data.reportSent === true)
+      // Only show the report-status panel when this booking carried test data
+      setReportSent(carriedReport ? data.reportSent === true : null)
       setDone(true)
     } catch {
       setSubmitError('Error de conexión. Intenta de nuevo.')
@@ -224,7 +228,7 @@ export default function BookingFlow() {
                   ✅ Reporte enviado correctamente
                 </p>
                 <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>
-                  El psicólogo recibió el resultado de tu test para preparar la sesión.
+                  Recibirás tu reporte de Eneagrama en tu correo y el psicólogo lo tendrá listo para tu sesión.
                 </p>
               </div>
             ) : (

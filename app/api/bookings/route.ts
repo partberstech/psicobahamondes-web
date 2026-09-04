@@ -175,15 +175,27 @@ export async function POST(request: NextRequest) {
       console.error('[booking] emails failed after successful booking', { dbId, calResult: calResult?.id })
     }
 
-    // ── 5) If eneagrama test data is present, send HTML report (no PDF) ──
+    // ── 5) Eneagrama report delivery ──
+    // The psychologist ALWAYS receives the report when the test is completed on
+    // the page (/api/eneagrama/report). Here, when a booking carries test data:
+    //   • the USER receives their report by email (booking = the hook to deliver
+    //     the results and review them in a Sesión Cero / session);
+    //   • the psychologist is included again ONLY if the original send failed
+    //     (client reported reportSent !== true), so the report is never lost.
     let reportSent = false
-    if (eneagramaData && sessionType === 'sesion-cero') {
+    const hasReport = !!(eneagramaData && eneagramaData.scores && eneagramaData.tipoPredominante)
+    if (hasReport) {
       try {
         const html = eneagramaReportTemplate(eneagramaData)
+        const to: string[] = [email]
+        if (eneagramaData.reportSent !== true) {
+          to.push('psicobahamondes@gmail.com', 'contactopartnerstech@gmail.com')
+        }
         reportSent = await sendEneagramaReport(
-          ['psicobahamondes@gmail.com', 'contactopartnerstech@gmail.com'],
+          to,
           { nombre: eneagramaData.nombre, email: eneagramaData.email, sessionType },
           html,
+          { subject: `📋 Tu reporte de Eneagrama — ${eneagramaData.nombre || name}` },
         )
         if (!reportSent) {
           console.error('[booking] report send failed (Resend returned non-ok)')

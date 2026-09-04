@@ -474,7 +474,9 @@ function ResultsScreen({
     }
   }, [formData, scores, topTypeId, wingType, topType.center])
 
-  // Store test data in sessionStorage so the booking page can reference it
+  // Store test data in sessionStorage so the booking page can reference it.
+  // reportSent tells the booking flow whether the psychologist already received
+  // the report at test-completion time (avoids duplicate emails on booking).
   useEffect(() => {
     try {
       sessionStorage.setItem('eneagrama_test_data', JSON.stringify({
@@ -485,9 +487,10 @@ function ResultsScreen({
         tipoPredominante: topTypeId,
         ala: wingType,
         centro: topType.center,
+        reportSent: emailSent === true,
       }))
     } catch { /* sessionStorage unavailable */ }
-  }, [formData, scores, topTypeId, wingType, topType.center])
+  }, [formData, scores, topTypeId, wingType, topType.center, emailSent])
 
   // Auto-send report to psychologist as soon as results screen mounts
   useEffect(() => {
@@ -931,6 +934,10 @@ function ResultsScreen({
             ) : (
               'No se pudo enviar el reporte automáticamente. Puedes contactar directamente.'
             )}
+          </p>
+
+          <p className="text-xs mb-4 max-w-md mx-auto" style={{ color: C.muted }}>
+            Al agendar una consulta o Sesión Cero, también recibirás tu reporte de Eneagrama en tu correo para conversarlo juntos.
           </p>
 
           <a
