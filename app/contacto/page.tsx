@@ -35,14 +35,24 @@ export default function Contacto() {
       {/* ═══════ HERO ═══════ */}
       <section className="relative overflow-hidden" style={{ minHeight: 'clamp(500px, 70vh, 700px)' }}>
         <div className="absolute inset-0">
+          {/* Encuadre móvil: recorte vertical dedicado con el sujeto centrado */}
+          <Image
+            src="/images/Hero_Contacto_mobile.jpg"
+            alt="Contacto - Psicobahamondes"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover md:hidden"
+            style={{ objectPosition: 'center 30%' }}
+          />
+          {/* Versión original panorámica para desktop */}
           <Image
             src="/images/Hero_Contacto.jpeg"
             alt="Contacto - Psicobahamondes"
             fill
-            className="object-cover"
-            style={{ objectPosition: 'center 20%' }}
             sizes="100vw"
-            priority
+            className="hidden md:block object-cover"
+            style={{ objectPosition: 'center 20%' }}
           />
           <div className="absolute inset-0" style={{
             background: 'linear-gradient(135deg, rgba(17,24,39,0.75) 0%, rgba(17,24,39,0.45) 50%, rgba(17,24,39,0.15) 100%)',
@@ -80,9 +90,10 @@ export default function Contacto() {
                 color: 'rgba(255,255,255,0.8)',
               }}
             >
-              Elegí la modalidad que prefieras — presencial en Osorno u online desde
-              cualquier lugar — completá tus datos y agendá tu sesión en el horario que
-              mejor te acomode. La primera consulta es gratuita y sin compromiso.
+              Elegí la modalidad que prefieras — online desde cualquier lugar, o
+              presencial a través de la red de atención Osornosalud — completá tus
+              datos y agendá tu sesión en el horario que mejor te acomode.
+              La primera consulta es gratuita y sin compromiso.
             </p>
           </motion.div>
         </div>

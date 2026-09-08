@@ -193,6 +193,7 @@ export default function Home() {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: '80% 50%' }}
           src="/Hero_inicio.mp4"
         />
         {/* Dark gradient overlay on left side for readability */}

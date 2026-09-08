@@ -65,14 +65,24 @@ function Blog() {
       {/* ═══════ HERO ═══════ */}
       <section className="relative overflow-hidden" style={{ minHeight: 'clamp(420px, 60vh, 600px)' }}>
         <div className="absolute inset-0">
+          {/* Encuadre móvil: recorte vertical dedicado con el sujeto centrado */}
+          <Image
+            src="/images/Hero_Contenidos_mobile.jpg"
+            alt="Contenidos - Psicobahamondes"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover md:hidden"
+            style={{ objectPosition: 'center 30%' }}
+          />
+          {/* Versión original panorámica para desktop */}
           <Image
             src="/images/Hero_Contenidos.jpeg"
             alt="Contenidos - Psicobahamondes"
             fill
-            className="object-cover"
-            style={{ objectPosition: 'center 20%' }}
             sizes="100vw"
-            priority
+            className="hidden md:block object-cover"
+            style={{ objectPosition: 'center 20%' }}
           />
           <div className="absolute inset-0" style={{
             background: 'linear-gradient(135deg, rgba(17,24,39,0.75) 0%, rgba(17,24,39,0.45) 50%, rgba(17,24,39,0.15) 100%)',

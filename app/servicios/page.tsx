@@ -69,13 +69,24 @@ const IconArrow = () => (
   </svg>
 )
 
-const modalidades = [
+type Modalidad = {
+  icon: () => JSX.Element
+  titulo: string
+  desc: string
+  detalles: string[]
+  image: string
+  /** Cuando existe, el botón lleva a un sitio externo (Osornosalud) en vez de /contacto. */
+  externalUrl?: string
+}
+
+const modalidades: Modalidad[] = [
   {
     icon: IconLocation,
     titulo: 'Presencial',
-    desc: 'Un espacio seguro, privado y de absoluto cuidado en Osorno. La cercanía del encuentro cara a cara permite trabajar tu proceso con la profundidad y la calidez que solo la presencia puede ofrecer.',
-    detalles: ['Sesiones de 45 minutos', 'Consultorio en Osorno — ambiente confidencial y acogedor', 'Enfoque integrativo personalizado', 'Agenda flexible: mañanas y tardes'],
+    desc: 'Atención presencial a través de la red de atención Osornosalud en su centro médico de Osorno. Agenda tu hora directamente en su sitio web, donde también gestionas tu bono según tu previsión.',
+    detalles: ['Sesiones de 45 minutos', 'Centro médico de la red Osornosalud en Osorno', 'Enfoque integrativo personalizado', 'Agenda gestionada por Osornosalud'],
     image: '/images/cardpresencial_servicios.jpeg',
+    externalUrl: 'https://osornosalud.com/agenda-tu-hora/',
   },
   {
     icon: IconGlobe,
@@ -113,15 +124,19 @@ const metodologias = [
 const faqs = [
   {
     q: '¿Cuánto dura una sesión?',
-    r: '45 minutos aproximadamente. La primera sesión (Consulta 0) es de 15 minutos, sin costo y sin compromiso, para que podamos conocernos.',
+    r: '45 minutos aproximadamente. La primera sesión (Sesión Cero) es de 15 minutos, sin costo y sin compromiso, para que podamos conocernos.',
   },
   {
     q: '¿Cómo sé si necesito terapia presencial u online?',
-    r: 'Ambas modalidades ofrecen la misma profundidad terapéutica. Si estás en Osorno y prefieres el encuentro cara a cara, el espacio presencial es ideal. Si viajas frecuentemente o prefieres la comodidad de tu hogar, la modalidad online mantiene la misma calidad clínica.',
+    r: 'Ambas modalidades ofrecen la misma profundidad terapéutica. Si prefieres el encuentro cara a cara, la atención presencial se agenda a través de la red Osornosalud en su sitio web. Si viajas frecuentemente o prefieres la comodidad de tu hogar, la modalidad online la agendás directamente aquí, con los mismos estándares de calidad clínica.',
+  },
+  {
+    q: '¿Cómo agendo una atención presencial?',
+    r: 'La atención presencial se realiza a través de la red de atención Osornosalud. Debes agendar tu hora directamente en su sitio web: osornosalud.com/agenda-tu-hora/. Las sesiones online se agendan desde esta página.',
   },
   {
     q: '¿Atiendes por FONASA?',
-    r: 'Sí, atiendo por FONASA y el bono lo puedes comprar directamente desde su sitio web.',
+    r: 'Sí, atiendo por FONASA. En la modalidad online el bono lo puedes comprar directamente desde el sitio web habilitado para ello; en la atención presencial la gestión la realiza Osornosalud.',
   },
   {
     q: '¿Cuál es el valor de la sesión?',
@@ -133,7 +148,7 @@ const faqs = [
   },
   {
     q: '¿Cuántas sesiones necesito?',
-    r: 'Cada proceso es único. Algunas personas encuentran avances significativos en pocas sesiones; otras prefieren un acompañamiento más extendido. Lo conversaremos en tu Consulta 0 y ajustaremos el plan según tus necesidades.',
+    r: 'Cada proceso es único. Algunas personas encuentran avances significativos en pocas sesiones; otras prefieren un acompañamiento más extendido. Lo conversaremos en tu Sesión Cero y ajustaremos el plan según tus necesidades.',
   },
 ]
 
@@ -145,13 +160,23 @@ export default function Servicios() {
       {/* ═══════ HERO ═══════ */}
       <section className="relative overflow-hidden" style={{ minHeight: 'clamp(400px, 55vh, 560px)' }}>
         <div className="absolute inset-0">
+          {/* Encuadre móvil: recorte vertical dedicado con el sujeto centrado */}
+          <Image
+            src="/images/hero_servicios_mobile.jpg"
+            alt="Servicios psicológicos"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover md:hidden"
+            style={{ objectPosition: 'center 30%' }}
+          />
+          {/* Versión original panorámica para desktop */}
           <Image
             src="/images/hero_servicios.jpeg"
             alt="Servicios psicológicos"
             fill
-            className="object-cover"
             sizes="100vw"
-            priority
+            className="hidden md:block object-cover"
           />
           <div className="absolute inset-0" style={{
             background: 'linear-gradient(135deg, rgba(17,24,39,0.8) 0%, rgba(17,24,39,0.5) 50%, rgba(17,24,39,0.2) 100%)',
@@ -237,10 +262,22 @@ export default function Servicios() {
                         </li>
                       ))}
                     </ul>
-                    <Link href="/contacto" className="btn btn-primary self-start">
-                      Agendar {mod.titulo.toLowerCase()}
-                      <IconArrow />
-                    </Link>
+                    {mod.externalUrl ? (
+                      <a
+                        href={mod.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-primary self-start"
+                      >
+                        Agendar en Osornosalud
+                        <IconArrow />
+                      </a>
+                    ) : (
+                      <Link href="/contacto" className="btn btn-primary self-start">
+                        Agendar {mod.titulo.toLowerCase()}
+                        <IconArrow />
+                      </Link>
+                    )}
                   </div>
                 </motion.article>
               )

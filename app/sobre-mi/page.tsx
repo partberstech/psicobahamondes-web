@@ -119,13 +119,23 @@ export default function SobreMi() {
       <section className="section-block relative overflow-hidden" style={{ minHeight: 'clamp(400px, 60vh, 600px)' }}>
         {/* Background image */}
         <div className="absolute inset-0">
+          {/* Encuadre móvil: recorte vertical dedicado con el sujeto centrado */}
+          <Image
+            src="/images/hero_sobre-mi_mobile.jpg"
+            alt="Pedro Bahamondes"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover md:hidden"
+            style={{ objectPosition: 'center 35%' }}
+          />
+          {/* Versión original panorámica para desktop */}
           <Image
             src="/images/hero_sobre-mi.jpeg"
             alt="Pedro Bahamondes"
             fill
-            className="object-cover"
             sizes="100vw"
-            priority
+            className="hidden md:block object-cover"
           />
           <div
             className="absolute inset-0"

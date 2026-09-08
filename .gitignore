@@ -17,3 +17,6 @@ data/*.db-wal
 data/*.db-shm
 .vercel
 .env*
+
+# Capturas de revisión local (portadas, comparaciones)
+_preview-shots/
