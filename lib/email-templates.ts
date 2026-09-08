@@ -269,7 +269,7 @@ export function confirmationTemplate(data: {
             ? 'Te escribiré al correo registrado antes de la Sesión Cero para coordinar el inicio y resolver dudas previas.'
             : 'Recibirás la invitación de Google Calendar con el enlace de videollamada en tu correo. Revisa también la bandeja de spam.'
       }<br />
-      <span style="color:${MUTED_LIGHT}">Recibirás además un recordatorio automático 12 horas antes de la sesión.</span>
+      <span style="color:${MUTED_LIGHT}">Recibirás además un recordatorio automático 24 horas antes de la sesión.</span>
     </div>
 
     ${data.sessionType !== 'sesion-cero' ? `
@@ -404,10 +404,10 @@ export function reminderTemplate(data: {
         <span style="font-size:26px">⏰</span>
       </div>
       <h1 style="font-family:'Plus Jakarta Sans','Helvetica Neue',Arial,sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.02em;color:${INK};margin:0 0 4px">
-        Tu consulta es en 12 horas
+        Tu consulta es mañana
       </h1>
       <p style="font-size:15px;color:${MUTED};margin:0">
-        Hola ${data.name}, este es tu recordatorio automático para la sesión agendada.
+        Hola ${data.name}, te recordamos tu sesión agendada para mañana.
       </p>
     </div>
 

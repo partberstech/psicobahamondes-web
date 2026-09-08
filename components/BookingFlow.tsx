@@ -17,6 +17,8 @@ interface SessionType {
   icono: string
   color: string
   badge: string
+  /** Si existe, la modalidad NO se agenda en este flujo: se deriva a este enlace externo. */
+  externalUrl?: string
 }
 
 const SESSION_TYPES: SessionType[] = [
@@ -26,7 +28,7 @@ const SESSION_TYPES: SessionType[] = [
     duracion: '15 min',
     precio: 'Gratuita',
     descripcion: 'Conversación breve para conocernos y resolver tus dudas. Sin compromiso.',
-    schedule: 'Lun–Vie · 19:00 a 21:00',
+    schedule: 'Mar–Jue · 09:00 a 10:00',
     icono: '☕',
     color: '#2563eb',
     badge: 'Conocernos',
@@ -36,11 +38,12 @@ const SESSION_TYPES: SessionType[] = [
     titulo: 'Consulta Presencial',
     duracion: '45 min',
     precio: 'Fonasa · Isapre · Particular',
-    descripcion: 'Sesión presencial en Osorno. Trabajamos juntos con toda la atención.',
-    schedule: 'Lun–Sáb · 09:00 a 14:00',
+    descripcion: 'Atención presencial a través de la red de atención Osornosalud en su centro médico. Agenda tu hora directamente en su sitio web.',
+    schedule: 'Agenda vía Osornosalud',
     icono: '📍',
     color: '#059669',
     badge: 'Presencial',
+    externalUrl: 'https://osornosalud.com/agenda-tu-hora/',
   },
   {
     id: 'consulta-telematica',
@@ -48,7 +51,7 @@ const SESSION_TYPES: SessionType[] = [
     duracion: '45 min',
     precio: 'Fonasa · Isapre · Particular',
     descripcion: 'Sesión online por videollamada desde cualquier lugar.',
-    schedule: 'Lun–Vie · 15:00 a 18:00',
+    schedule: 'Mar 10–14 · Mié 10–13 · Jue 10–12 y 15–17',
     icono: '💻',
     color: '#7c3aed',
     badge: 'Online',
@@ -317,6 +320,7 @@ export default function BookingFlow() {
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
               {SESSION_TYPES.map((s) => {
                 const active = selected === s.id
+                const isExternal = Boolean(s.externalUrl)
                 return (
                   <motion.button
                     key={s.id}
@@ -363,23 +367,50 @@ export default function BookingFlow() {
                       </svg>
                       {s.schedule}
                     </div>
+                    {isExternal && (
+                      <div
+                        className="mt-4 rounded-xl text-center text-xs font-semibold py-2.5"
+                        style={{
+                          background: active ? s.color : `${s.color}10`,
+                          color: active ? '#ffffff' : s.color,
+                        }}
+                      >
+                        Agendar en osornosalud.com ↗
+                      </div>
+                    )}
                   </motion.button>
                 )
               })}
             </div>
 
             <div className="flex justify-center mt-10">
-              <motion.button
-                onClick={() => setStep('data')}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="btn btn-brand px-8 py-3.5"
-              >
-                Continuar
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-                </svg>
-              </motion.button>
+              {session.externalUrl ? (
+                <a
+                  href={session.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn px-8 py-3.5 inline-flex items-center gap-2"
+                  style={{ background: session.color, color: '#ffffff' }}
+                >
+                  Agendar en Osornosalud
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </a>
+              ) : (
+                <motion.button
+                  onClick={() => setStep('data')}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="btn btn-brand px-8 py-3.5"
+                >
+                  Continuar
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </motion.button>
+              )}
             </div>
           </motion.div>
         )}
@@ -413,7 +444,7 @@ export default function BookingFlow() {
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: '#6b7280' }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
-                      {session.id === 'consulta-presencial' ? 'Edificio Plaza Bühler, 6to piso, Osorno' : 'Online'}
+                      {session.id === 'consulta-presencial' ? 'Red de atención Osornosalud, Osorno' : 'Online'}
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: '#6b7280' }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
@@ -528,7 +559,7 @@ export default function BookingFlow() {
                     </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: '#6b7280' }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
-                      {session.id === 'consulta-presencial' ? 'Edificio Plaza Bühler, 6to piso, Osorno' : 'Online'}
+                      {session.id === 'consulta-presencial' ? 'Red de atención Osornosalud, Osorno' : 'Online'}
                     </div>
                   </div>
                 </div>
@@ -579,7 +610,7 @@ export default function BookingFlow() {
 
                   <div className="mt-6 rounded-xl p-4" style={{ background: `${session.color}08`, border: `1px solid ${session.color}15` }}>
                     <p className="text-sm text-gray-700 leading-relaxed">
-                      <strong className="text-gray-900">Qué recibirás:</strong> un correo de confirmación con la información de tu sesión, el enlace de Google Meet si corresponde, y un recordatorio automático 12 horas antes.
+                      <strong className="text-gray-900">Qué recibirás:</strong> un correo de confirmación con la información de tu sesión, el enlace de Google Meet si corresponde, y un recordatorio automático 24 horas antes.
                     </p>
                   </div>
 

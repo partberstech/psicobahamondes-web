@@ -92,13 +92,13 @@ export async function sendAdminNotification(data: BookingData): Promise<boolean>
   })
 }
 
-// ─── Recordatorio (24h antes) ───
+// ─── Recordatorio (día previo, ~24h antes) ───
 
 export async function sendReminderEmail(data: BookingData): Promise<boolean> {
   const label = getSessionLabel(data.sessionType)
   return sendResend({
     to: data.email,
-    subject: `⏰ Recordatorio 12h: ${label} — Psicobahamondes`,
+    subject: `⏰ Recordatorio 24h: ${label} — Psicobahamondes`,
     html: reminderTemplate(data),
   })
 }

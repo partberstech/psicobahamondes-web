@@ -19,6 +19,18 @@ export async function POST(request: NextRequest) {
     if (!['sesion-cero', 'consulta-presencial', 'consulta-telematica'].includes(sessionType)) {
       return NextResponse.json({ error: 'Tipo de sesión inválido' }, { status: 400 })
     }
+    // La consulta presencial ya no se agenda desde la web: el paciente agenda
+    // directamente en la red de atención Osornosalud.
+    if (sessionType === 'consulta-presencial') {
+      return NextResponse.json(
+        {
+          error:
+            'La atención presencial se agenda directamente en Osornosalud. ' +
+            'Ingresa a https://osornosalud.com/agenda-tu-hora/ para agendar tu hora.',
+        },
+        { status: 400 }
+      )
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Email inválido' }, { status: 400 })
     }

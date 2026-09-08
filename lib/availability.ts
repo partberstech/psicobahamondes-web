@@ -11,33 +11,51 @@ export type BusyRange = {
   end: number
 }
 
-export const SESSION_CONFIG: Record<SessionType, {
-  label: string
-  days: number[]
+/** Una franja de atención: [start, end) en formato HH:MM (hora local de Chile). */
+export type ScheduleBlock = {
   start: string
   end: string
+}
+
+/**
+ * Horarios de atención por día de la semana (0=Domingo … 6=Sábado).
+ * Cada tipo define las franjas en las que se generan slots de `slotMinutes`.
+ * La consulta presencial NO se agenda por la web: se agenda en Osornosalud
+ * (https://osornosalud.com/agenda-tu-hora/), por eso su agenda está vacía.
+ */
+export const SESSION_CONFIG: Record<SessionType, {
+  label: string
   slotMinutes: number
+  schedule: Partial<Record<number, ScheduleBlock[]>>
 }> = {
   'sesion-cero': {
     label: 'Sesión Cero',
-    days: [1, 2, 3, 4, 5],
-    start: '19:00',
-    end: '21:00',
     slotMinutes: 15,
+    // Mar (2), Mié (3), Jue (4): 09:00–10:00
+    schedule: {
+      2: [{ start: '09:00', end: '10:00' }],
+      3: [{ start: '09:00', end: '10:00' }],
+      4: [{ start: '09:00', end: '10:00' }],
+    },
   },
   'consulta-presencial': {
     label: 'Consulta Presencial',
-    days: [1, 2, 3, 4, 5, 6],
-    start: '09:00',
-    end: '14:00',
     slotMinutes: 45,
+    // No se agenda desde la web — la agenda el paciente en Osornosalud.
+    schedule: {},
   },
   'consulta-telematica': {
     label: 'Consulta Telemática',
-    days: [1, 2, 3, 4, 5],
-    start: '15:00',
-    end: '18:00',
     slotMinutes: 45,
+    // Mar (2): 10:00–14:00 · Mié (3): 10:00–13:00 · Jue (4): 10:00–12:00 y 15:00–17:00
+    schedule: {
+      2: [{ start: '10:00', end: '14:00' }],
+      3: [{ start: '10:00', end: '13:00' }],
+      4: [
+        { start: '10:00', end: '12:00' },
+        { start: '15:00', end: '17:00' },
+      ],
+    },
   },
 }
 
@@ -108,8 +126,10 @@ export function getSlotsFromConfig(
   const dt = new Date(dateStr + 'T12:00:00')
   const dayOfWeek = dt.getDay()
   const config = SESSION_CONFIG[sessionType]
+  const blocks = config.schedule[dayOfWeek]
 
-  if (!config.days.includes(dayOfWeek)) return []
+  // El tipo no atiende este día (o no agenda en la web, caso presencial)
+  if (!blocks || blocks.length === 0) return []
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -120,28 +140,31 @@ export function getSlotsFromConfig(
   const isToday = dateStr === now.toISOString().slice(0, 10)
   const nowMinutes = now.getHours() * 60 + now.getMinutes()
 
-  const startMinutes = parseTime(config.start)
-  const endMinutes = parseTime(config.end)
   const slotLen = config.slotMinutes
-
   const slots: TimeSlot[] = []
-  let current = startMinutes
 
-  while (current + slotLen <= endMinutes) {
-    const time = formatTime(current)
-    const slotEnd = current + slotLen
+  // Recorre cada franja del día (p. ej. telemática jueves: 10–12 y 15–17)
+  for (const block of blocks) {
+    const startMinutes = parseTime(block.start)
+    const endMinutes = parseTime(block.end)
+    let current = startMinutes
 
-    if (isToday && slotEnd <= nowMinutes) {
+    while (current + slotLen <= endMinutes) {
+      const time = formatTime(current)
+      const slotEnd = current + slotLen
+
+      if (isToday && slotEnd <= nowMinutes) {
+        current += slotLen
+        continue
+      }
+
+      // Check both sources of unavailability
+      const exactBusy = bookedTimes?.has(time) ?? false        // DB-match on exact HH:MM start
+      const rangeBusy = busyRanges ? hasSlotOverlap(current, slotEnd, busyRanges) : false  // Calendar overlap
+
+      slots.push({ time, available: !exactBusy && !rangeBusy })
       current += slotLen
-      continue
     }
-
-    // Check both sources of unavailability
-    const exactBusy = bookedTimes?.has(time) ?? false        // DB-match on exact HH:MM start
-    const rangeBusy = busyRanges ? hasSlotOverlap(current, slotEnd, busyRanges) : false  // Calendar overlap
-
-    slots.push({ time, available: !exactBusy && !rangeBusy })
-    current += slotLen
   }
 
   return slots

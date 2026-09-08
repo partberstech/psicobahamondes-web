@@ -2,26 +2,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendReminderEmail } from '@/lib/email'
 import { getDb, migrate, type Booking } from '@/lib/db'
 
-function getSantiagoOffset(dateStr: string): string {
-  const date = new Date(`${dateStr}T12:00:00Z`)
+/**
+ * Fecha de hoy (YYYY-MM-DD) en America/Santiago, calculada a partir de la hora
+ * local de Chile para no depender del huso horario del servidor (UTC en Vercel).
+ */
+function chileToday(date = new Date()): string {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Santiago',
-    timeZoneName: 'longOffset',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
   }).formatToParts(date)
-  const tzPart = parts.find((p) => p.type === 'timeZoneName')
-  const match = tzPart?.value?.match(/GMT([+-]\d{2}:\d{2})/)
-  return match?.[1] || '-04:00'
+  const get = (t: string) => parts.find((p) => p.type === t)?.value || ''
+  return `${get('year')}-${get('month')}-${get('day')}`
 }
 
-function bookingDateToUtc(date: string, time: string): Date {
-  const offset = getSantiagoOffset(date)
-  const sign = offset.startsWith('-') ? -1 : 1
-  const [oh, om] = offset.slice(1).split(':').map(Number)
-  const offsetMinutes = sign * (oh * 60 + om)
-  const [y, m, d] = date.split('-').map(Number)
-  const [hh, mm] = time.split(':').map(Number)
-  const utcMillis = Date.UTC(y, m - 1, d, hh, mm) - offsetMinutes * 60_000
-  return new Date(utcMillis)
+/** Suma días a una fecha YYYY-MM-DD sin pasar por zonas horarias locales. */
+function addDays(dateStr: string, days: number): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const dt = new Date(Date.UTC(y, m - 1, d + days))
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, '0')
+  const dd = String(dt.getUTCDate()).padStart(2, '0')
+  return `${dt.getUTCFullYear()}-${mm}-${dd}`
 }
 
 export const maxDuration = 60
@@ -34,24 +36,25 @@ export async function GET(_request: NextRequest) {
 
     await migrate()
     const db = getDb()
-    const result = await db.execute(`
-      SELECT id, session_type, name, email, phone, date, time, status, reminder_sent_at, meet_link
-      FROM bookings
-      WHERE status = 'confirmed' AND (reminder_sent_at IS NULL OR reminder_sent_at = '')
-      ORDER BY date ASC, time ASC
-    `)
+    // Recordatorio "día previo" (~24h antes): solo Sesión Cero y Telemática,
+    // que son las modalidades que se agendan en la web y tienen link de Meet.
+    // La presencial se agenda vía Osornosalud, fuera de este sistema.
+    const tomorrow = addDays(chileToday(), 1)
+    const result = await db.execute({
+      sql: `SELECT id, session_type, name, email, phone, date, time, status, reminder_sent_at, meet_link
+            FROM bookings
+            WHERE status = 'confirmed'
+              AND session_type IN ('sesion-cero', 'consulta-telematica')
+              AND date = ?
+              AND (reminder_sent_at IS NULL OR reminder_sent_at = '')
+            ORDER BY time ASC`,
+      args: [tomorrow],
+    })
 
-    const now = new Date()
-    const targetMs = 12 * 60 * 60 * 1000
-    const windowMs = 20 * 60 * 1000
     const due = result.rows as unknown as Booking[]
     const sentIds: string[] = []
 
     for (const booking of due) {
-      const bookingDate = bookingDateToUtc(booking.date, booking.time)
-      const diff = bookingDate.getTime() - now.getTime()
-      if (Math.abs(diff - targetMs) > windowMs) continue
-
       const ok = await sendReminderEmail({
         name: booking.name,
         email: booking.email,
@@ -71,7 +74,7 @@ export async function GET(_request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ ok: true, sent: sentIds.length, ids: sentIds })
+    return NextResponse.json({ ok: true, sent: sentIds.length, date: tomorrow, ids: sentIds })
   } catch (err: any) {
     console.error('[reminders] error:', err)
     return NextResponse.json({ ok: false, error: 'Reminder sweep failed' }, { status: 500 })
