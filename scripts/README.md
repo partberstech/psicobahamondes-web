@@ -1,5 +1,66 @@
 # Scripts de utilidad — Psicobahamondes
 
+## `deploy.sh` — push a GitHub + deploy en Vercel
+
+Hace `git push` sin pedir credenciales y, si hay token de Vercel, lanza el
+deploy a producción. Las credenciales se leen de `.secrets.local`, un archivo
+en la raíz del proyecto **ignorado por git**.
+
+### Configuración (una sola vez)
+
+**1. Crear un token de GitHub (fine-grained, mínimo privilegio)**
+
+GitHub → *Settings* → *Developer settings* → *Personal access tokens* →
+*Fine-grained tokens* → **Generate new token**:
+
+- **Repository access**: *Only select repositories* → `partberstech/psicobahamondes-web`
+- **Permissions** → *Repository permissions* → **Contents: Read and write**
+- **Expiration**: 90 días (o el plazo que prefieras)
+
+Copia el token (`github_pat_…`).
+
+**2. Guardarlo en el proyecto**
+
+```bash
+cd "/ruta/a/01. Psicobahamondes"
+printf 'GITHUB_TOKEN=%s\n' 'github_pat_xxx' > .secrets.local
+chmod 600 .secrets.local
+```
+
+Verifica que git lo ignora:
+
+```bash
+git check-ignore -v .secrets.local   # debe imprimir una regla de .gitignore
+```
+
+**3. (Opcional) deploy directo con Vercel CLI**
+
+Solo si quieres desplegar sin pasar por GitHub. Crea un token en
+<https://vercel.com/account/tokens> y agrégalo:
+
+```bash
+printf 'VERCEL_TOKEN=%s\n' 'tu_token' >> .secrets.local
+```
+
+> Si no defines `VERCEL_TOKEN`, Vercel despliega automáticamente al recibir
+> el push a `main` (deploy automático ya conectado al proyecto
+> `psicobahamondes-web`).
+
+### Uso
+
+```bash
+./scripts/deploy.sh            # push a main
+./scripts/deploy.sh mi-rama    # push a otra rama
+```
+
+### Seguridad
+
+- `.secrets.local` está en `.gitignore` y con permisos `600` (solo tu usuario).
+- El token se inyecta por variable de entorno a un credential helper efímero:
+  **no** queda en el historial de git, ni en `.git/config`, ni en la URL del remoto.
+- Revoca el token cuando quieras en la misma página de GitHub; el script
+  dejará de funcionar y basta con generar otro.
+
 ## `google-oauth-refresh.mjs`
 
 Regenera el `GOOGLE_REFRESH_TOKEN` del sistema de agendamiento (Google Calendar).
