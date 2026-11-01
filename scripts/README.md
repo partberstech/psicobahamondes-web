@@ -103,3 +103,71 @@ No requiere verificación si el único usuario autorizado es la propia cuenta
 | `GOOGLE_REFRESH_TOKEN` | (regenerado con el script) | Token de acceso a Calendar |
 | `GOOGLE_CALENDAR_ID` | `eb7b7cab…@group.calendar.google.com` | Calendario "agenda psicológica" donde se crean las reservas |
 | `GOOGLE_BUSY_CALENDAR_IDS` | `primary` | Calendario principal también bloquea horarios ocupados |
+
+## Newsletter
+
+Sistema en `lib/newsletter.ts`. Lee los artículos publicados de los últimos
+**7 días** desde la base *Blog Psicobahamondes* y los envía a los suscriptores
+con estado distinto de `Inactivo`.
+
+**Envío privado:** cada correo se manda a UN destinatario (API batch de Resend),
+así nadie ve las direcciones de los demás.
+
+### Variables de entorno
+
+| Variable | Obligatoria | Rol |
+|---|---|---|
+| `RESEND_API_KEY` | sí | Envío de correos |
+| `CRON_SECRET` | sí en Vercel | Autentica el cron y los envíos manuales |
+| `NEWSLETTER_FROM` | no | Remitente. Si falta se usa `EMAIL_FROM` (ya verificado en Resend) |
+| `ADMIN_EMAIL` | no | Se usa como `reply-to` |
+
+> **Importante:** Vercel Cron solo envía la cabecera
+> `Authorization: Bearer <CRON_SECRET>` si esa variable existe en el proyecto.
+> Sin ella, el cron recibe `401` y no envía nada.
+
+### Endpoints
+
+| Método | Ruta | Uso |
+|---|---|---|
+| `GET` | `/api/newsletter/send` | Cron semanal (protegido por `CRON_SECRET`) |
+| `POST` | `/api/newsletter/send` | Envío manual (mismo secreto) |
+| `GET` | `/api/newsletter/unsubscribe?token=…` | Baja firmada desde el correo |
+
+Parámetros del envío:
+
+- `?preview=1` → devuelve el HTML del correo (para revisar el diseño).
+- `?dryRun=1` → no envía, informa cuántos artículos y suscriptores hay.
+- `?to=correo@dominio` → envía una **prueba** a una sola dirección.
+- `?days=7` → ventana de artículos (1–90).
+
+### Uso manual
+
+```bash
+# desde .env.local
+set -a; . ./.env.local; set +a
+
+# revisar el diseño en el navegador
+open "http://localhost:3000/api/newsletter/send?preview=1&token=$CRON_SECRET"
+
+# simular sin enviar
+curl "http://localhost:3000/api/newsletter/send?dryRun=1&token=$CRON_SECRET"
+
+# enviar prueba real a una sola dirección
+curl "http://localhost:3000/api/newsletter/send?to=tu@correo.cl&token=$CRON_SECRET"
+
+# envío real a toda la lista
+curl "https://www.psicobahamondes.cl/api/newsletter/send?token=$CRON_SECRET"
+```
+
+### Programación
+
+`vercel.json` → `0 13 * * 1` = **lunes 10:00 en Chile** (UTC−3). Vercel evalúa
+los cron en UTC, así que en invierno (UTC−4) se enviará a las 09:00 locales.
+
+### Baja
+
+El enlace del pie lleva un token firmado con HMAC-SHA256 (`CRON_SECRET`); al
+abrirlo se marca al suscriptor como `Inactivo` en Notion. No expone el correo
+en la URL.
+
