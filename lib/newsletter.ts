@@ -1,5 +1,3 @@
-import crypto from 'node:crypto'
-
 const NOTION_KEY = process.env.NOTION_API_KEY || ''
 const NOTION_VERSION = '2022-06-28'
 const BLOG_DB = '397bedc4-2b9f-813f-9136-f598ec9f5cc2'
@@ -12,14 +10,6 @@ const REPLY_TO = process.env.ADMIN_EMAIL || undefined
 const SITE = 'https://www.psicobahamondes.cl'
 
 /** Clave para firmar los enlaces de baja y autenticar el envío. */
-/**
- * Clave para firmar los enlaces de baja. Deliberadamente NO usa CRON_SECRET:
- * ese valor puede añadirse o rotarse y dejaría inválidos los enlaces ya
- * enviados por correo. NEWSLETTER_SECRET (opcional) permite separarla; si no
- * existe se usa NOTION_API_KEY, que es estable en todos los entornos.
- */
-const SIGNING_SECRET = process.env.NEWSLETTER_SECRET || process.env.NOTION_API_KEY || ''
-
 export type NewsletterPost = {
   id: string
   title: string
@@ -82,55 +72,14 @@ function fileUrl(obj: any): string {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Baja (unsubscribe) firmada
+// Baja (unsubscribe)
 // ─────────────────────────────────────────────────────────────
+// El token es el ID de la página de Notion: un UUID no enumerable y sin
+// dependencia de secretos, así que los enlaces siguen siendo válidos aunque
+// se roten las claves o difieran entre entornos.
 
-function b64url(input: string): string {
-  return Buffer.from(input, 'utf8')
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
-}
-
-function unb64url(input: string): string {
-  const pad = input.length % 4 === 0 ? '' : '='.repeat(4 - (input.length % 4))
-  return Buffer.from(input.replace(/-/g, '+').replace(/_/g, '/') + pad, 'base64').toString('utf8')
-}
-
-function sign(payload: string): string {
-  return crypto.createHmac('sha256', SIGNING_SECRET).update(payload).digest('base64url')
-}
-
-/** Comparación en tiempo constante sobre strings. */
-function safeEqual(a: string, b: string): boolean {
-  if (!a || !b || a.length !== b.length) return false
-  let diff = 0
-  for (let i = 0; i < a.length; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  return diff === 0
-}
-
-/** Token opaco que identifica al suscriptor sin exponer su correo en la URL. */
-export function unsubscribeToken(email: string): string {
-  const payload = b64url(email.toLowerCase().trim())
-  return `${payload}.${sign(payload)}`
-}
-
-export function emailFromToken(token: string): string | null {
-  const [payload, sig] = (token || '').split('.')
-  if (!payload || !sig) return null
-  const expected = sign(payload)
-  if (!safeEqual(sig, expected)) return null
-  try {
-    const email = unb64url(payload)
-    return email.includes('@') ? email : null
-  } catch {
-    return null
-  }
-}
-
-export function unsubscribeUrl(email: string): string {
-  return `${SITE}/api/newsletter/unsubscribe?token=${encodeURIComponent(unsubscribeToken(email))}`
+export function unsubscribeUrl(pageId: string): string {
+  return `${SITE}/api/newsletter/unsubscribe?id=${encodeURIComponent(pageId)}`
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -190,19 +139,16 @@ export async function getActiveSubscribers(): Promise<Subscriber[]> {
   return out
 }
 
-/** Marca a un suscriptor como Inactivo. Devuelve true si se aplicó. */
-export async function unsubscribeEmail(email: string): Promise<boolean> {
-  const data: any = await notionFetch(`/databases/${SUBSCRIBERS_DB}/query`, {
-    method: 'POST',
-    body: JSON.stringify({
-      filter: { property: 'Email', title: { equals: email.toLowerCase().trim() } },
-      page_size: 5,
-    }),
-  })
-  const page = data?.results?.[0]
-  if (!page) return false
+/** Marca como Inactivo al suscriptor indicado por el ID de su página. */
+export async function unsubscribeByPageId(pageId: string): Promise<boolean> {
+  if (!pageId || !/^[0-9a-f-]{32,36}$/i.test(pageId)) return false
 
-  const resp = await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+  // Solo se permite tocar páginas que pertenezcan a la base de suscriptores.
+  const page: any = await notionFetch(`/pages/${pageId}`)
+  const parent = String(page?.parent?.database_id || '').replace(/-/g, '')
+  if (!parent || parent !== SUBSCRIBERS_DB.replace(/-/g, '')) return false
+
+  const resp = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${NOTION_KEY}`,
@@ -475,7 +421,7 @@ export async function sendWeeklyNewsletter(
     from: FROM,
     to: [s.email],
     subject,
-    html: buildNewsletterHTML(posts, { unsubscribeUrl: unsubscribeUrl(s.email) }),
+    html: buildNewsletterHTML(posts, { unsubscribeUrl: unsubscribeUrl(s.id) }),
     ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
   }))
 

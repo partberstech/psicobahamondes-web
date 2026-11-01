@@ -1,4 +1,4 @@
-import { emailFromToken, unsubscribeEmail } from '@/lib/newsletter'
+import { unsubscribeByPageId } from '@/lib/newsletter'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -48,23 +48,24 @@ function page(title: string, message: string, status = 200): Response {
 }
 
 export async function GET(request: Request) {
-  const token = new URL(request.url).searchParams.get('token') || ''
-  const email = emailFromToken(token)
+  const params = new URL(request.url).searchParams
+  // Acepta ?id= (formato actual) y ?token= (compatibilidad).
+  const id = params.get('id') || params.get('token') || ''
 
-  if (!email) {
+  if (!id) {
     return page(
       'Enlace inválido',
-      'Este enlace de baja no es válido o fue alterado. Si quieres dejar de recibir el newsletter, escríbenos y lo hacemos manualmente.',
+      'Este enlace de baja está incompleto. Si quieres dejar de recibir el newsletter, escríbenos y lo hacemos manualmente.',
       400
     )
   }
 
   try {
-    const ok = await unsubscribeEmail(email)
+    const ok = await unsubscribeByPageId(id)
     if (!ok) {
       return page(
         'No encontramos esa suscripción',
-        'Puede que ya estés dado de baja. Si sigues recibiendo correos, escríbenos y lo revisamos.'
+        'Puede que ya estés dado de baja o que el enlace esté alterado. Si sigues recibiendo correos, escríbenos y lo revisamos.'
       )
     }
     return page(

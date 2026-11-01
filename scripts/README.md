@@ -167,12 +167,11 @@ los cron en UTC, así que en invierno (UTC−4) se enviará a las 09:00 locales.
 
 ### Baja
 
-El enlace del pie lleva un token firmado con HMAC-SHA256 y al abrirlo se marca
-al suscriptor como `Inactivo` en Notion. No expone el correo en la URL.
+El enlace del pie lleva el **ID de la página de Notion** del suscriptor
+(`/api/newsletter/unsubscribe?id=…`) y al abrirlo se marca como `Inactivo`.
 
-La clave de firma es `NEWSLETTER_SECRET` si existe; si no, `NOTION_API_KEY`
-(estable en todos los entornos). **No** se usa `CRON_SECRET` para firmar, para
-que rotar ese secreto no invalide los enlaces que ya están en las bandejas.
-Si quieres una clave dedicada, define `NEWSLETTER_SECRET` **antes** del primer
-envío real: cambiarla después invalida los enlaces anteriores.
+Se eligió el UUID de Notion en lugar de un token firmado para que el enlace
+sea válido siempre: no depende de ningún secreto, así que rotar claves o tener
+valores distintos entre local y Vercel no los invalida. El endpoint verifica
+que la página pertenezca a la base de suscriptores antes de tocar nada.
 
