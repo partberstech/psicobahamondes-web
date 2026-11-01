@@ -1,5 +1,8 @@
 import { listPosts } from '@/lib/notion'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const SITE_URL = 'https://psicobahamondes.cl'
 
 function escapeXml(str: string): string {
@@ -45,7 +48,10 @@ export async function GET() {
     return new Response(xml, {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 's-maxage=3600, stale-while-revalidate',
+        // Sin caché: el feed refleja los cambios de Notion al instante.
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        'CDN-Cache-Control': 'no-store',
+        'Vercel-CDN-Cache-Control': 'no-store',
       },
     })
   } catch (err) {

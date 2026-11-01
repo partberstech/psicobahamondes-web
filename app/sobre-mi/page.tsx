@@ -107,7 +107,7 @@ export default function SobreMi() {
   const [socialLoading, setSocialLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/social')
+    fetch('/api/social', { cache: 'no-store' })
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(d => { setSocialPosts(d.posts); setSocialLoading(false) })
       .catch(() => setSocialLoading(false))

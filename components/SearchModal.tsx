@@ -32,7 +32,7 @@ export default function SearchModal() {
   // Load posts once
   useEffect(() => {
     if (open && !loaded) {
-      fetch('/api/blog')
+      fetch('/api/blog', { cache: 'no-store' })
         .then((r) => (r.ok ? r.json() : Promise.reject()))
         .then((d) => {
           setPosts(d.posts || [])

@@ -1,24 +1,25 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useMemo, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import type { BlogPost } from '@/lib/notion'
+import PostCard from '@/components/blog/PostCard'
+import NewsletterForm from '@/components/NewsletterForm'
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.5, ease: [0.2, 0, 0, 1] },
+  transition: { duration: 0.5, ease: [0.2, 0, 0, 1] as [number, number, number, number] },
 }
 
 const fadeUpDelayed = (i: number) => ({
-  initial: { opacity: 0, y: 30 },
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.5, ease: [0.2, 0, 0, 1], delay: i * 0.12 },
+  transition: { duration: 0.5, ease: [0.2, 0, 0, 1] as [number, number, number, number], delay: Math.min(i, 6) * 0.07 },
 })
 
 const IconSearch = () => (
@@ -27,6 +28,28 @@ const IconSearch = () => (
     <path d="M21 21l-4.35-4.35" />
   </svg>
 )
+
+function SkeletonCard() {
+  return (
+    <div
+      style={{
+        borderRadius: 22,
+        border: '1px solid rgba(0,0,0,0.06)',
+        background: '#ffffff',
+        overflow: 'hidden',
+      }}
+    >
+      <div className="animate-pulse" style={{ aspectRatio: '16 / 10', background: '#f3f4f6' }} />
+      <div className="animate-pulse p-6">
+        <div style={{ height: 10, width: '38%', borderRadius: 9999, background: '#f3f4f6', marginBottom: 16 }} />
+        <div style={{ height: 16, width: '92%', borderRadius: 6, background: '#f3f4f6', marginBottom: 9 }} />
+        <div style={{ height: 16, width: '68%', borderRadius: 6, background: '#f3f4f6', marginBottom: 20 }} />
+        <div style={{ height: 10, width: '100%', borderRadius: 6, background: '#f9fafb', marginBottom: 7 }} />
+        <div style={{ height: 10, width: '84%', borderRadius: 6, background: '#f9fafb' }} />
+      </div>
+    </div>
+  )
+}
 
 export default function BlogPage() {
   return (
@@ -39,33 +62,64 @@ export default function BlogPage() {
 function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const searchParams = useSearchParams()
   const [activa, setActiva] = useState(searchParams.get('categoria') || 'Todos')
   const [busqueda, setBusqueda] = useState('')
 
   useEffect(() => {
-    fetch('/api/blog')
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(d => { setPosts(d.posts); setLoading(false) })
-      .catch(() => setLoading(false))
+    let cancelled = false
+    fetch('/api/blog', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad response'))))
+      .then((d) => {
+        if (cancelled) return
+        setPosts(Array.isArray(d.posts) ? d.posts : [])
+        setLoading(false)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setError(true)
+        setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  const categorias = ['Todos', ...Array.from(new Set(posts.map(p => p.category)))]
-  const filtrados = posts.filter(p => {
-    const matchCat = activa === 'Todos' || p.category === activa
-    const matchBusq = busqueda === '' ||
-      p.title.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.excerpt.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.category.toLowerCase().includes(busqueda.toLowerCase())
-    return matchCat && matchBusq
-  })
+  const categorias = useMemo(() => {
+    const counts = new Map<string, number>()
+    posts.forEach((p) => {
+      const c = p.category || 'General'
+      counts.set(c, (counts.get(c) || 0) + 1)
+    })
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }))
+  }, [posts])
+
+  const filtrados = useMemo(() => {
+    const q = busqueda.trim().toLowerCase()
+    return posts.filter((p) => {
+      const matchCat = activa === 'Todos' || (p.category || 'General') === activa
+      const matchBusq =
+        q === '' ||
+        p.title.toLowerCase().includes(q) ||
+        (p.excerpt || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q)
+      return matchCat && matchBusq
+    })
+  }, [posts, activa, busqueda])
+
+  const hayFiltro = activa !== 'Todos' || busqueda.trim() !== ''
+  const mostrarDestacado = !hayFiltro && filtrados.length >= 3
+  const destacado = mostrarDestacado ? filtrados[0] : null
+  const resto = mostrarDestacado ? filtrados.slice(1) : filtrados
 
   return (
     <>
       {/* ═══════ HERO ═══════ */}
-      <section className="relative overflow-hidden" style={{ minHeight: 'clamp(420px, 60vh, 600px)' }}>
+      <section className="relative overflow-hidden" style={{ minHeight: 'clamp(420px, 58vh, 580px)' }}>
         <div className="absolute inset-0">
-          {/* Encuadre móvil: recorte vertical dedicado con el sujeto centrado */}
           <Image
             src="/images/Hero_Contenidos_mobile.jpg"
             alt="Contenidos - Psicobahamondes"
@@ -75,94 +129,170 @@ function Blog() {
             className="object-cover md:hidden"
             style={{ objectPosition: 'center 30%' }}
           />
-          {/* Versión original panorámica para desktop */}
           <Image
             src="/images/Hero_Contenidos.jpeg"
             alt="Contenidos - Psicobahamondes"
             fill
+            priority
             sizes="100vw"
             className="hidden md:block object-cover"
             style={{ objectPosition: 'center 20%' }}
           />
-          <div className="absolute inset-0" style={{
-            background: 'linear-gradient(135deg, rgba(17,24,39,0.75) 0%, rgba(17,24,39,0.45) 50%, rgba(17,24,39,0.15) 100%)',
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(17,24,39,0.82) 0%, rgba(17,24,39,0.55) 50%, rgba(17,24,39,0.22) 100%)',
+            }}
+          />
         </div>
-        <div className="container-page relative z-10" style={{ paddingTop: 'clamp(160px, 26vh, 280px)', paddingBottom: 'clamp(60px, 10vh, 100px)' }}>
+
+        <div
+          className="container-page relative z-10"
+          style={{
+            paddingTop: 'clamp(150px, 24vh, 250px)',
+            paddingBottom: 'clamp(56px, 9vh, 96px)',
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.2, 0, 0, 1] }}
             className="max-w-3xl"
           >
-            <span className="eyebrow mb-5" style={{ display: 'inline-flex', background: 'rgba(37,99,235,0.2)', color: '#93c5fd', border: '1px solid rgba(37,99,235,0.3)' }}>
+            <span
+              className="mb-5 inline-flex"
+              style={{
+                alignItems: 'center',
+                padding: '5px 13px',
+                borderRadius: 9999,
+                background: 'rgba(37,99,235,0.18)',
+                border: '1px solid rgba(147,197,253,0.35)',
+                color: '#bfdbfe',
+                fontFamily: 'var(--font-display)',
+                fontSize: 10,
+                letterSpacing: '0.16em',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+              }}
+            >
               Contenidos
             </span>
-            <h1 className="mb-6" style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.25rem, 7vw, 5.5rem)',
-              lineHeight: 0.92,
-              letterSpacing: '-0.035em',
-              fontWeight: 800,
-              color: '#ffffff',
-            }}>
+
+            <h1
+              className="mb-6"
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2.25rem, 6.5vw, 5rem)',
+                lineHeight: 0.94,
+                letterSpacing: '-0.04em',
+                fontWeight: 800,
+                color: '#ffffff',
+              }}
+            >
               Noticias y reflexiones
             </h1>
-            <p className="text-base md:text-lg leading-relaxed max-w-2xl" style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '1.0625rem',
-              lineHeight: 1.7,
-              color: 'rgba(255,255,255,0.8)',
-            }}>
+
+            <p
+              className="max-w-2xl"
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '1.0625rem',
+                lineHeight: 1.7,
+                color: 'rgba(255,255,255,0.82)',
+              }}
+            >
               Artículos, videos y recursos sobre neuropsicología, Eneagrama y
               Constelaciones Familiares. Contenido diseñado para acompañar tu
               proceso de autodescubrimiento y crecimiento personal.
             </p>
+
+            {!loading && posts.length > 0 && (
+              <p
+                className="mt-7"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(255,255,255,0.5)',
+                }}
+              >
+                {posts.length} {posts.length === 1 ? 'artículo publicado' : 'artículos publicados'}
+              </p>
+            )}
           </motion.div>
         </div>
       </section>
 
-      {/* ═══════ SEARCH + FILTER PILLS ═══════ */}
+      {/* ═══════ SEARCH + FILTROS ═══════ */}
       {!loading && posts.length > 0 && (
-        <div className="py-6" style={{ background: '#ffffff', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-          <div className="container-page">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              {/* Search bar */}
-              <div className="relative flex-1 w-full sm:max-w-xs">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9ca3af' }}>
+        <div
+          className="sticky top-0 z-30"
+          style={{
+            background: 'rgba(255,255,255,0.92)',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+          }}
+        >
+          <div className="container-page py-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+              <div className="relative w-full lg:max-w-xs">
+                <div
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2"
+                  style={{ color: '#9ca3af' }}
+                >
                   <IconSearch />
                 </div>
                 <input
                   type="text"
-                  placeholder="Buscar artículos..."
+                  placeholder="Buscar artículos…"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 text-sm rounded-full outline-none transition-all duration-300"
+                  className="w-full outline-none transition-all duration-300"
                   style={{
+                    paddingLeft: 42,
+                    paddingRight: 16,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    fontSize: '0.875rem',
+                    borderRadius: 9999,
                     background: '#f9fafb',
                     border: '1px solid rgba(0,0,0,0.08)',
                     fontFamily: 'var(--font-body)',
                     color: '#111827',
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(37,99,235,0.3)'
+                    e.currentTarget.style.borderColor = 'rgba(37,99,235,0.35)'
                     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'
+                    e.currentTarget.style.background = '#ffffff'
                   }}
                   onBlur={(e) => {
                     e.currentTarget.style.borderColor = 'rgba(0,0,0,0.08)'
                     e.currentTarget.style.boxShadow = 'none'
+                    e.currentTarget.style.background = '#f9fafb'
                   }}
                 />
               </div>
-              {/* Category pills */}
-              <div className="flex flex-wrap gap-3">
+
+              <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
+                <button
+                  onClick={() => setActiva('Todos')}
+                  className={activa === 'Todos' ? 'pill pill-active' : 'pill pill-default'}
+                  style={{ cursor: 'pointer', border: 'none' }}
+                >
+                  Todos
+                  <span style={{ marginLeft: 6, opacity: 0.55 }}>{posts.length}</span>
+                </button>
                 {categorias.map((cat) => (
                   <button
-                    key={cat}
-                    onClick={() => setActiva(cat)}
-                    className={cat === activa ? 'btn btn-primary' : 'btn btn-outline'}
+                    key={cat.name}
+                    onClick={() => setActiva(cat.name)}
+                    className={activa === cat.name ? 'pill pill-active' : 'pill pill-default'}
+                    style={{ cursor: 'pointer', border: 'none' }}
                   >
-                    {cat}
+                    {cat.name}
+                    <span style={{ marginLeft: 6, opacity: 0.55 }}>{cat.count}</span>
                   </button>
                 ))}
               </div>
@@ -171,113 +301,125 @@ function Blog() {
         </div>
       )}
 
-      {/* ═══════ ARTICLES ═══════ */}
-      <section className="section-block" style={{ background: '#f9fafb' }}>
+      {/* ═══════ ARTÍCULOS ═══════ */}
+      <section className="section-block" style={{ background: '#f9fafb', paddingBlock: 'clamp(48px, 7vh, 88px)' }}>
         <div className="container-page">
           {loading ? (
-            <div className="flex items-center justify-center gap-3 py-20" style={{ color: '#9ca3af' }}>
-              <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" opacity="0.3" />
-                <path d="M22 12a10 10 0 0 1-10 10" />
-              </svg>
-              <span className="text-sm">Cargando artículos...</span>
-            </div>
-          ) : filtrados.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtrados.map((post, i) => (
-                <motion.article key={post.id} {...fadeUpDelayed(i)}>
-                  <div className="card card-hover">
-                    <div className="card-core flex flex-col h-full">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="eyebrow">{post.category}</span>
-                        {post.type === 'Video' && (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#fef2f2', color: '#dc2626' }}>🎬</span>
-                        )}
-                        <span className="label ml-auto" style={{ color: '#9ca3af' }}>
-                          {post.date}
-                        </span>
-                      </div>
-                      <h3 className="mb-3" style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: 'clamp(1.125rem, 1.8vw, 1.375rem)',
-                        lineHeight: 1.35,
-                        fontWeight: 600,
-                        color: '#111827',
-                      }}>
-                        <Link href={`/blog/${post.slug}`} className="hover:opacity-60 transition-opacity" style={{ color: '#111827' }}>
-                          {post.title}
-                        </Link>
-                      </h3>
-                      <p className="text-sm leading-relaxed mb-6 flex-1" style={{ fontFamily: 'var(--font-body)', color: '#6b7280' }}>
-                        {post.excerpt}
-                      </p>
-                      <Link href={`/blog/${post.slug}`} className="label inline-flex items-center gap-2" style={{ color: '#2563eb' }}>
-                        {post.type === 'Video' ? 'Ver video' : 'Leer artículo'} <span>→</span>
-                      </Link>
-                    </div>
-                  </div>
-                </motion.article>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
               ))}
             </div>
-          ) : (
-            <motion.div {...fadeUp} className="text-center py-20">
-              <h2 className="mb-4" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', lineHeight: 0.95, letterSpacing: '-0.025em', fontWeight: 700, color: '#111827' }}>
+          ) : error ? (
+            <motion.div {...fadeUp} className="mx-auto max-w-md py-16 text-center">
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                  fontWeight: 700,
+                  color: '#111827',
+                  marginBottom: '0.75rem',
+                }}
+              >
+                No pudimos cargar los artículos
+              </h2>
+              <p style={{ fontFamily: 'var(--font-body)', color: '#6b7280', fontSize: '0.9375rem' }}>
+                Hubo un problema de conexión. Recarga la página en unos segundos.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="btn btn-primary mt-6"
+                style={{ cursor: 'pointer' }}
+              >
+                Reintentar
+              </button>
+            </motion.div>
+          ) : filtrados.length === 0 ? (
+            <motion.div {...fadeUp} className="mx-auto max-w-md py-16 text-center">
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
+                  lineHeight: 1.05,
+                  letterSpacing: '-0.025em',
+                  fontWeight: 700,
+                  color: '#111827',
+                  marginBottom: '0.85rem',
+                }}
+              >
                 {busqueda ? 'Sin resultados' : 'Próximamente'}
               </h2>
-              <p className="text-sm max-w-md mx-auto" style={{ fontFamily: 'var(--font-body)', color: '#6b7280' }}>
+              <p style={{ fontFamily: 'var(--font-body)', color: '#6b7280', fontSize: '0.9375rem', lineHeight: 1.7 }}>
                 {busqueda
-                  ? `No encontramos artículos que coincidan con "${busqueda}". Intenta con otro término.`
-                  : 'Estamos preparando contenido de valor. Muy pronto encontrarás artículos, reflexiones y recursos sobre nuestro enfoque integrativo.'
-                }
+                  ? `No encontramos artículos que coincidan con "${busqueda}". Prueba con otro término.`
+                  : 'Estamos preparando contenido de valor. Muy pronto encontrarás artículos, reflexiones y recursos sobre nuestro enfoque integrativo.'}
               </p>
+              {busqueda && (
+                <button
+                  onClick={() => setBusqueda('')}
+                  className="btn btn-outline mt-6"
+                  style={{ cursor: 'pointer' }}
+                >
+                  Limpiar búsqueda
+                </button>
+              )}
             </motion.div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              {destacado && (
+                <motion.div {...fadeUp}>
+                  <PostCard post={destacado} featured />
+                </motion.div>
+              )}
+
+              {resto.length > 0 && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {resto.map((post, i) => (
+                    <motion.div key={post.id} {...fadeUpDelayed(i)}>
+                      <PostCard post={post} />
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </section>
 
-      {/* ═══════ NEWSLETTER CTA ═══════ */}
-      <section className="section-block text-center" style={{ background: '#111827' }}>
-        <div className="container-page max-w-lg">
-          <motion.div {...fadeUp}>
-            <h2 className="mb-4" style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
-              lineHeight: 0.95,
-              letterSpacing: '-0.025em',
-              fontWeight: 700,
-              color: '#ffffff',
-            }}>
-              Recibe los artículos en tu correo
-            </h2>
-            <p className="text-sm mb-8" style={{ fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.6)' }}>
-              Suscríbete para recibir cada nueva publicación directamente en tu bandeja de entrada.
-            </p>
-            <div className="flex max-w-sm mx-auto">
-              <input
-                type="email"
-                placeholder="tu@email.com"
-                className="input"
+      {/* ═══════ NEWSLETTER ═══════ */}
+      <section className="section-block" style={{ background: '#111827' }}>
+        <div className="container-page">
+          <div className="mx-auto grid max-w-4xl items-center gap-10 md:grid-cols-2">
+            <motion.div {...fadeUp}>
+              <h2
+                className="mb-4"
                 style={{
-                  borderRadius: '9999px 0 0 9999px',
-                  background: '#ffffff',
-                  color: '#111827',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  borderRight: 'none',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
+                  lineHeight: 1,
+                  letterSpacing: '-0.03em',
+                  fontWeight: 700,
+                  color: '#ffffff',
                 }}
-              />
-              <button className="btn" style={{
-                background: '#2563eb',
-                color: '#ffffff',
-                borderRadius: '0 9999px 9999px 0',
-                fontSize: '0.8125rem',
-                fontWeight: 600,
-                padding: '11px 24px',
-                whiteSpace: 'nowrap',
-              }}>
-                Suscribirme
-              </button>
-            </div>
-          </motion.div>
+              >
+                Recibe los artículos en tu correo
+              </h2>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9375rem',
+                  lineHeight: 1.7,
+                  color: 'rgba(255,255,255,0.6)',
+                }}
+              >
+                Suscríbete para recibir cada nueva publicación directamente en
+                tu bandeja de entrada.
+              </p>
+            </motion.div>
+            <motion.div {...fadeUpDelayed(1)}>
+              <NewsletterForm />
+            </motion.div>
+          </div>
         </div>
       </section>
     </>
