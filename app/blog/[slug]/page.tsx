@@ -388,8 +388,7 @@ export default function BlogPostPage() {
         <div className="container-page">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="mx-auto text-center"
             style={{ maxWidth: 560 }}

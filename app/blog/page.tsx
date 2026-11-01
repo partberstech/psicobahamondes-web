@@ -10,16 +10,18 @@ import NewsletterForm from '@/components/NewsletterForm'
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
+  animate: { opacity: 1, y: 0 },
   transition: { duration: 0.5, ease: [0.2, 0, 0, 1] as [number, number, number, number] },
 }
 
 const fadeUpDelayed = (i: number) => ({
   initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5, ease: [0.2, 0, 0, 1] as [number, number, number, number], delay: Math.min(i, 6) * 0.07 },
+  animate: { opacity: 1, y: 0 },
+  transition: {
+    duration: 0.5,
+    ease: [0.2, 0, 0, 1] as [number, number, number, number],
+    delay: Math.min(i, 6) * 0.07,
+  },
 })
 
 const IconSearch = () => (
