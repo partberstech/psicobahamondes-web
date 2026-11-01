@@ -167,7 +167,12 @@ los cron en UTC, así que en invierno (UTC−4) se enviará a las 09:00 locales.
 
 ### Baja
 
-El enlace del pie lleva un token firmado con HMAC-SHA256 (`CRON_SECRET`); al
-abrirlo se marca al suscriptor como `Inactivo` en Notion. No expone el correo
-en la URL.
+El enlace del pie lleva un token firmado con HMAC-SHA256 y al abrirlo se marca
+al suscriptor como `Inactivo` en Notion. No expone el correo en la URL.
+
+La clave de firma es `NEWSLETTER_SECRET` si existe; si no, `NOTION_API_KEY`
+(estable en todos los entornos). **No** se usa `CRON_SECRET` para firmar, para
+que rotar ese secreto no invalide los enlaces que ya están en las bandejas.
+Si quieres una clave dedicada, define `NEWSLETTER_SECRET` **antes** del primer
+envío real: cambiarla después invalida los enlaces anteriores.
 

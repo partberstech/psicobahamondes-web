@@ -12,8 +12,13 @@ const REPLY_TO = process.env.ADMIN_EMAIL || undefined
 const SITE = 'https://www.psicobahamondes.cl'
 
 /** Clave para firmar los enlaces de baja y autenticar el envío. */
-const SECRET =
-  process.env.NEWSLETTER_SECRET || process.env.CRON_SECRET || process.env.NOTION_API_KEY || ''
+/**
+ * Clave para firmar los enlaces de baja. Deliberadamente NO usa CRON_SECRET:
+ * ese valor puede añadirse o rotarse y dejaría inválidos los enlaces ya
+ * enviados por correo. NEWSLETTER_SECRET (opcional) permite separarla; si no
+ * existe se usa NOTION_API_KEY, que es estable en todos los entornos.
+ */
+const SIGNING_SECRET = process.env.NEWSLETTER_SECRET || process.env.NOTION_API_KEY || ''
 
 export type NewsletterPost = {
   id: string
@@ -94,7 +99,7 @@ function unb64url(input: string): string {
 }
 
 function sign(payload: string): string {
-  return crypto.createHmac('sha256', SECRET).update(payload).digest('base64url')
+  return crypto.createHmac('sha256', SIGNING_SECRET).update(payload).digest('base64url')
 }
 
 /** Comparación en tiempo constante sobre strings. */
